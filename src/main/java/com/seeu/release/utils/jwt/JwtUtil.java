@@ -1,4 +1,4 @@
-package com.seeu.shopper.utils.jwt;
+package com.seeu.release.utils.jwt;
 
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.Claims;

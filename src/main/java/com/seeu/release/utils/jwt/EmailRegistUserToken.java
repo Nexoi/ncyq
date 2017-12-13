@@ -1,4 +1,4 @@
-package com.seeu.shopper.utils.jwt;
+package com.seeu.release.utils.jwt;
 
 /**
  * Created by neo on 02/07/2017.

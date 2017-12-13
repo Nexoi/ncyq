@@ -1,4 +1,4 @@
-package com.seeu.shopper.user.model;
+package com.seeu.release.user.model;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Email;

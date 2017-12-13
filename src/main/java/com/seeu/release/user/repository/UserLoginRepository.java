@@ -1,6 +1,6 @@
-package com.seeu.shopper.user.repository;
+package com.seeu.release.user.repository;
 
-import com.seeu.shopper.user.model.UserLogin;
+import com.seeu.release.user.model.UserLogin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {

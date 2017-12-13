@@ -1,6 +1,6 @@
-package com.seeu.shopper.user.repository;
+package com.seeu.release.user.repository;
 
-import com.seeu.shopper.user.model.UserAuthRole;
+import com.seeu.release.user.model.UserAuthRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 

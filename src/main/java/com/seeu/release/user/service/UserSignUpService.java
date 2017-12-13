@@ -1,13 +1,13 @@
-package com.seeu.shopper.user.service;
+package com.seeu.release.user.service;
 
-import com.seeu.shopper.user.model.USER_STATUS;
-import com.seeu.shopper.user.repository.UserLoginRepository;
-import com.seeu.shopper.user.model.UserLogin;
-import com.seeu.shopper.utils.EmailService;
-import com.seeu.shopper.utils.MD5Service;
+import com.seeu.release.user.model.USER_STATUS;
+import com.seeu.release.user.repository.UserLoginRepository;
+import com.seeu.release.user.model.UserLogin;
+import com.seeu.release.utils.EmailService;
+import com.seeu.release.utils.MD5Service;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.seeu.shopper.utils.jwt.*;
+import com.seeu.release.utils.jwt.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

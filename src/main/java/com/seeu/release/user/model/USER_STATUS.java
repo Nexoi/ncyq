@@ -1,4 +1,4 @@
-package com.seeu.shopper.user.model;
+package com.seeu.release.user.model;
 
 /**
  * Created by neoxiaoyi.

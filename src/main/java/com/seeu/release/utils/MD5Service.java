@@ -1,4 +1,4 @@
-package com.seeu.shopper.utils;
+package com.seeu.release.utils;
 
 import org.springframework.stereotype.Service;
 

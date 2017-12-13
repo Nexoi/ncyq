@@ -3,7 +3,7 @@ package com.seeu.file;
 
 import com.alibaba.fastjson.JSONObject;
 import com.seeu.file.storage.StorageService;
-import com.seeu.shopper.user.model.UserLogin;
+import com.seeu.release.user.model.UserLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;

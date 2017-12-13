@@ -1,8 +1,8 @@
-package com.seeu.shopper.user.service;
+package com.seeu.release.user.service;
 
-import com.seeu.shopper.user.model.USER_STATUS;
-import com.seeu.shopper.user.repository.UserLoginRepository;
-import com.seeu.shopper.user.model.UserLogin;
+import com.seeu.release.user.model.USER_STATUS;
+import com.seeu.release.user.repository.UserLoginRepository;
+import com.seeu.release.user.model.UserLogin;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

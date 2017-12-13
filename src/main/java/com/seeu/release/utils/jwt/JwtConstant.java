@@ -1,4 +1,4 @@
-package com.seeu.shopper.utils.jwt;
+package com.seeu.release.utils.jwt;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
