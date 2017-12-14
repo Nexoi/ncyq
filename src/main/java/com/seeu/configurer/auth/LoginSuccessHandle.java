@@ -17,11 +17,12 @@ public class LoginSuccessHandle implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         // TODO
-        Object url = httpServletRequest.getSession().getAttribute("loginSuccessURL");
-        String redirectUrl = url == null ? "/" : url.toString();
-        if (redirectUrl.contains("/signin")) {
-            redirectUrl = "/";
-        }
-        httpServletResponse.sendRedirect(redirectUrl);
+//        Object url = httpServletRequest.getSession().getAttribute("loginSuccessURL");
+//        String redirectUrl = url == null ? "/" : url.toString();
+//        if (redirectUrl.contains("/signin")) {
+//            redirectUrl = "/";
+//        }
+//        httpServletResponse.sendRedirect(redirectUrl);
+        // 更新登陆信息
     }
 }

@@ -1,8 +1,8 @@
 package com.seeu.configurer.auth;
 
-import com.seeu.release.user.model.USER_STATUS;
-import com.seeu.release.user.model.UserLogin;
-import com.seeu.release.user.repository.UserLoginRepository;
+import com.seeu.ywq.user.model.USER_STATUS;
+import com.seeu.ywq.user.model.UserLogin;
+import com.seeu.ywq.user.repository.UserLoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,12 +22,12 @@ public class YWQAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
+        String phone = authentication.getName();
         String password = authentication.getCredentials().toString();
 
         // 普通 账号／密码 验证
         // 用户必须为【正常状态】用户
-        UserLogin user = userLoginRepository.findByEmail(email);
+        UserLogin user = userLoginRepository.findByPhone(phone);
         if (user != null
                 && user.getPassword().equals(password)
                 && user.getMemberStatus() != null

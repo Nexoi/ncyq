@@ -41,11 +41,11 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin()
-                .usernameParameter("email") // 用 email 登录
+                .usernameParameter("phone") // 用 email 登录
                 .loginPage("/signin")
                 //设置默认登录成功跳转页面
-//                .defaultSuccessUrl("/")
-                .failureUrl("/signin?error")
+                .defaultSuccessUrl("/signin-success")
+                .failureUrl("/signin-failure")
                 .successHandler(new LoginSuccessHandle())
                 .permitAll()
 
@@ -55,14 +55,14 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 //设置cookie有效期
                 .tokenValiditySeconds(60 * 60 * 24 * 7)
                 //设置cookie的私钥
-                .key("seeucokey")
+                .key("privateKeyxx")
 
                 .and()
                 .logout()
                 //默认注销行为为logout，可以通过下面的方式来修改
                 .logoutUrl("/signout")
                 //设置注销成功后跳转页面，默认是跳转到登录页面
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/signout?success")
                 .permitAll()
 
 
