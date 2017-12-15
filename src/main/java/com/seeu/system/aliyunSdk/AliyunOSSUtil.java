@@ -32,25 +32,25 @@ public class AliyunOSSUtil {
     /**
      * 阿里云API外网域名
      */
-    @Value("endpoint")
+    @Value("${endpoint}")
     private String ENDPOINT;
 
     /**
      * 阿里云API的密钥Access Key ID
      */
-    @Value("access.key.id")
+    @Value("${access.key.id}")
     private String ACCESS_KEY_ID;
 
     /**
      * 阿里云API的密钥Access Key Secret
      */
-    @Value("accessKeySecret")
+    @Value("${accessKeySecret}")
     private String ACCESS_KEY_SECRET;
 
     /**
      * URL过期时间
      */
-    @Value("expiration.date")
+    @Value("${expiration.date}")
     private String EXPIRATION_DATE;
 
     //处理图片的样式
@@ -60,7 +60,17 @@ public class AliyunOSSUtil {
 
     private String STYLE_C = "image/auto-orient,1/sharpen,150/quality,q_100/format,jpg/interlace,1/bright,30/contrast,10";//自己DIY的效果
 
-    private String STYLE_D = "";
+    private String STYLE_ORIGINAL = "image/quality,Q_100";
+    private String STYLE_WIDTH_100 = "image/resize,w_100";
+    private String STYLE_WIDTH_200 = "image/resize,w_200";
+    private String STYLE_WIDTH_300 = "image/resize,w_300";
+    private String STYLE_WIDTH_500 = "image/resize,w_500";
+
+    private String STYLE_HAZY_ORIGINAL = "image/blur,r_40,s_15/quality,Q_100";
+    private String STYLE_HAZY_WIDTH_100 = "image/blur,r_40,s_15/resize,w_100";
+    private String STYLE_HAZY_WIDTH_200 = "image/blur,r_40,s_15/resize,w_200";
+    private String STYLE_HAZY_WIDTH_300 = "image/blur,r_40,s_15/resize,w_300";
+    private String STYLE_HAZY_WIDTH_500 = "image/blur,r_40,s_15/resize,w_500";
 
     private String STYLE_E = "";
 
@@ -254,20 +264,40 @@ public class AliyunOSSUtil {
         Date expiration = new Date(new Date().getTime() + Integer.parseInt(EXPIRATION_DATE));
         req.setExpiration(expiration);
 
-        // 生成URL
-        req.setProcess(STYLE_A);
-        URL urlA = client.generatePresignedUrl(req);
+        // 正常图片
+        req.setProcess(STYLE_ORIGINAL);
+        URL url_0 = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_WIDTH_100);
+        URL url_1 = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_WIDTH_200);
+        URL url_2 = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_WIDTH_300);
+        URL url_3 = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_WIDTH_500);
+        URL url_5 = client.generatePresignedUrl(req);
+        urlList.add(url_0.toString());
+        urlList.add(url_1.toString());
+        urlList.add(url_2.toString());
+        urlList.add(url_3.toString());
+        urlList.add(url_5.toString());
+        // 模糊图片
+        req.setProcess(STYLE_HAZY_ORIGINAL);
+        URL url_0_hazy = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_HAZY_WIDTH_100);
+        URL url_1_hazy = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_HAZY_WIDTH_200);
+        URL url_2_hazy = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_HAZY_WIDTH_300);
+        URL url_3_hazy = client.generatePresignedUrl(req);
+        req.setProcess(STYLE_HAZY_WIDTH_500);
+        URL url_5_hazy = client.generatePresignedUrl(req);
+        urlList.add(url_0_hazy.toString());
+        urlList.add(url_1_hazy.toString());
+        urlList.add(url_2_hazy.toString());
+        urlList.add(url_3_hazy.toString());
+        urlList.add(url_5_hazy.toString());
 
-        req.setProcess(STYLE_B);
-        URL urlB = client.generatePresignedUrl(req);
-
-        req.setProcess(STYLE_C);
-        URL urlC = client.generatePresignedUrl(req);
-
-        urlList.add(urlA.toString());
-        urlList.add(urlB.toString());
-        urlList.add(urlC.toString());
-
+        // 生成URL，10 张图
         return urlList;
     }
 

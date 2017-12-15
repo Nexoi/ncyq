@@ -1,8 +1,8 @@
 package com.seeu.configurer.auth;
 
-import com.seeu.ywq.user.model.USER_STATUS;
-import com.seeu.ywq.user.model.UserLogin;
-import com.seeu.ywq.user.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.model.USER_STATUS;
+import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

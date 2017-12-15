@@ -28,7 +28,7 @@ public class Swagger2 {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.seeu"))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.ant("/api/v1/**"))
                 .build();
 //        return new Docket(DocumentationType.SWAGGER_2)
 //                .select()
@@ -39,10 +39,10 @@ public class Swagger2 {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("SeeU Shopper Api Document")
-                .description("西柚 Shopper 项目 API 文档")
-                .termsOfServiceUrl("http://shopper.seeuio.com/")
-                .version("2.0")
+                .title("YWQ Api Document")
+                .description("YWQ 项目 API 文档")
+                .version("1.0")
+                .termsOfServiceUrl("/api/v1/")
                 .build();
     }
 

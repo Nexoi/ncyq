@@ -1,4 +1,4 @@
-package com.seeu.ywq.user.model;
+package com.seeu.ywq.userlogin.model;
 
 /**
  * Created by neoxiaoyi.

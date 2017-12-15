@@ -69,8 +69,15 @@ public class YWQResponseBodyAdvice implements ResponseBodyAdvice {
     public boolean supports(MethodParameter methodParameter, Class aClass) {
         // 除了 /error 全部捕获
         String methodName = methodParameter.getMethod().getName();
-        return methodName.startsWith("/api/") &&
-                !(methodParameter.getMethod().getName().equalsIgnoreCase("error"));
+//        return methodName.startsWith("/api/") &&
+//        return !aClass.getName().equals("Swagger2Controller") &&
+//                !aClass.getName().equals("ApiResourceController") &&
+//                !(methodParameter.getMethod().getName().equalsIgnoreCase("securityConfiguration")) &&
+//                !(methodParameter.getMethod().getName().equalsIgnoreCase("getDocumentation")) &&
+//                !(methodParameter.getMethod().getName().equalsIgnoreCase("uiConfiguration")) &&
+//                !(methodParameter.getMethod().getName().equalsIgnoreCase("swaggerResources")) &&
+//        return !(methodParameter.getMethod().getName().equalsIgnoreCase("error"));
+        return false;
     }
 
     @Override
@@ -83,7 +90,7 @@ public class YWQResponseBodyAdvice implements ResponseBodyAdvice {
         map.put("timestamp", new Date().getTime());
         map.put("status", response.getStatus());
         map.put("path", serverHttpRequest.getURI().getPath());
-        map.put("version", "2.0");
+        map.put("version", "1.0");
         if (response.getStatus() == 200) {
             map.put("data", returnValue);
         } else {

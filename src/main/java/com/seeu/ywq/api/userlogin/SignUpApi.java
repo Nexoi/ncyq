@@ -1,12 +1,9 @@
-package com.seeu.ywq.api.user;
+package com.seeu.ywq.api.userlogin;
 
-import com.seeu.ywq.user.repository.UserLoginRepository;
-import com.seeu.ywq.user.service.UserSignUpService;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserSignUpService;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +12,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
+@Api(value = "注册用户")
+@RequestMapping("/api/v1")
 public class SignUpApi {
     @Resource
     private UserLoginRepository userLoginRepository;
@@ -23,6 +22,7 @@ public class SignUpApi {
 
 
     @PostMapping("/signup/sendcode/{phone}")
+    @ApiOperation(value = "发送验证码", notes = "发送给对应手机验证码信息，十分钟内有效")
     @ApiResponses({
             @ApiResponse(code = 200, message = "验证码发送成功"),
             @ApiResponse(code = 400, message = "验证码发送失败")
@@ -33,6 +33,7 @@ public class SignUpApi {
             // 写入 cookie
             String signCheckToken = userSignUpService.genSignCheckToken(phone, result.getCode());
             Cookie cookie = new Cookie("signCheck", signCheckToken);
+            cookie.setPath("/");
             cookie.setMaxAge(10 * 60 * 1000); // ms
             response.addCookie(cookie);
             return ResponseEntity.ok().body("验证码发送成功");
@@ -42,6 +43,7 @@ public class SignUpApi {
 
 
     @PostMapping("/signup")
+    @ApiOperation(value = "注册账号", notes = "账号注册，密码会被自动转成 MD5 值，登陆时需要客户端对密码进行 MD5 加密")
     @ApiResponses({
             @ApiResponse(code = 200, message = "注册成功"),
             @ApiResponse(code = 4001, message = "注册失败，验证码错误"),
@@ -54,6 +56,7 @@ public class SignUpApi {
     public ResponseEntity signUp(@RequestParam String username,
                                  @RequestParam String phone,
                                  @RequestParam String password,
+                                 @RequestParam String code,
                                  @ApiParam(name = "注册码校验签名，存在 cookie 中，不需要手动传入")
                                  @CookieValue(required = false) String signCheck) {
         // 检查手机号码是否被注册
@@ -61,7 +64,7 @@ public class SignUpApi {
             return ResponseEntity.badRequest().body("该手机号码已被注册");
         }
         // start sign up
-        UserSignUpService.SIGN_STATUS status = userSignUpService.signUp(username, phone, password, signCheck);
+        UserSignUpService.SIGN_STATUS status = userSignUpService.signUp(username, phone, password, code, signCheck);
         switch (status) {
             case signup_success:
                 return ResponseEntity.status(200).body("注册成功");

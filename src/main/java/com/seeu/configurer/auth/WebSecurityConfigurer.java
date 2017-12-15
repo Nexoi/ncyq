@@ -42,7 +42,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .usernameParameter("phone") // 用 email 登录
-                .loginPage("/signin")
+                .loginPage("/api/v1/signin")
                 //设置默认登录成功跳转页面
                 .defaultSuccessUrl("/signin-success")
                 .failureUrl("/signin-failure")
@@ -60,9 +60,9 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 //默认注销行为为logout，可以通过下面的方式来修改
-                .logoutUrl("/signout")
+                .logoutUrl("/api/v1/signout")
                 //设置注销成功后跳转页面，默认是跳转到登录页面
-                .logoutSuccessUrl("/signout?success")
+                .logoutSuccessUrl("/signout-success")
                 .permitAll()
 
 
@@ -78,6 +78,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         // 302 转 401 完成 REST-ful 的权限限制时返回 302 的不合理信息
         http.exceptionHandling()
+//                .accessDeniedHandler(new YWQAccessDeniedHandler());
                 //Actually Spring already configures default AuthenticationEntryPoint - LoginUrlAuthenticationEntryPoint
                 //This one is REST-specific addition to default one, that is based on PathRequest
                 .defaultAuthenticationEntryPointFor(

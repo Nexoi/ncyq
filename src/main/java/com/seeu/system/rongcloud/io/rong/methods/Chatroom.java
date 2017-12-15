@@ -147,7 +147,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/query.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/query.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (ChatroomUserQueryResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), ChatroomUserQueryResult.class);
@@ -234,7 +234,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/gag/add.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/gag/add.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);
@@ -259,7 +259,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/gag/list.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/gag/list.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (ListGagChatroomUserResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), ListGagChatroomUserResult.class);
@@ -290,7 +290,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/gag/rollback.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/gag/rollback.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);
@@ -327,7 +327,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/block/add.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/block/add.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);
@@ -352,7 +352,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/block/list.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/block/list.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (ListBlockChatroomUserResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), ListBlockChatroomUserResult.class);
@@ -383,7 +383,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/block/rollback.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/block/rollback.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);
@@ -479,7 +479,7 @@ public class Chatroom {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/user/whitelist/add.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/chatroom/userlogin/whitelist/add.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);

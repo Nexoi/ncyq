@@ -191,7 +191,7 @@ public class Group {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/user/query.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/userlogin/query.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (GroupUserQueryResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), GroupUserQueryResult.class);
@@ -264,7 +264,7 @@ public class Group {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/user/gag/add.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/userlogin/gag/add.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);
@@ -289,7 +289,7 @@ public class Group {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/user/gag/list.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/userlogin/gag/list.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (ListGagGroupUserResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), ListGagGroupUserResult.class);
@@ -325,7 +325,7 @@ public class Group {
 	   		body = body.substring(1, body.length());
 	   	}
 	   	
-		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/user/gag/rollback.json", "application/x-www-form-urlencoded");
+		HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/group/userlogin/gag/rollback.json", "application/x-www-form-urlencoded");
 		HttpUtil.setBodyParameter(body, conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);

@@ -159,6 +159,6 @@ public class PropertiesUtil
 	
 	public static void main(String[] args)throws Exception
 	{
-		System.out.println(getProperty("sec/user.properties", "user.image.upload.path"));
+		System.out.println(getProperty("sec/userlogin.properties", "userlogin.image.upload.path"));
 	}
 }

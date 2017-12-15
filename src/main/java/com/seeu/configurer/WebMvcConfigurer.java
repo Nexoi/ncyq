@@ -1,7 +1,7 @@
 package com.seeu.configurer;
 
 
-import com.seeu.ywq.user.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserLogin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;

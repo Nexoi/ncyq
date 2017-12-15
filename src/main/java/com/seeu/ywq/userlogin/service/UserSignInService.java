@@ -1,8 +1,8 @@
-package com.seeu.ywq.user.service;
+package com.seeu.ywq.userlogin.service;
 
-import com.seeu.ywq.user.model.USER_STATUS;
-import com.seeu.ywq.user.repository.UserLoginRepository;
-import com.seeu.ywq.user.model.UserLogin;
+import com.seeu.ywq.userlogin.model.USER_STATUS;
+import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

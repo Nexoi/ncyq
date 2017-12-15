@@ -31,7 +31,7 @@ public class Push {
 			throw new IllegalArgumentException("Paramer 'userTag' is required");
 		}
 		
-	    HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/user/tag/set.json", "application/json");
+	    HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(HostType.API, appKey, appSecret, "/userlogin/tag/set.json", "application/json");
 	    HttpUtil.setBodyParameter(userTag.toString(), conn);
 	    
 	    return (CodeSuccessResult) GsonUtil.fromJson(HttpUtil.returnResult(conn), CodeSuccessResult.class);

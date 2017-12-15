@@ -1,5 +1,6 @@
-package com.seeu.ywq.user.model;
+package com.seeu.ywq.userlogin.model;
 
+import io.swagger.annotations.ApiParam;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
@@ -16,9 +17,13 @@ import javax.persistence.Table;
 @Table(name = "user_auth_role")
 @DynamicUpdate
 public class UserAuthRole {
+
+    @ApiParam(hidden = true)
     @Id
     @GeneratedValue
     private Long id;
+
+    @ApiParam(hidden = true)
     private String name;
 
     public Long getId() {
