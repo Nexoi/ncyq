@@ -18,6 +18,7 @@ import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 阿里云OSS工具类
@@ -167,14 +168,14 @@ public class AliyunOSSUtil {
      * @param fileName   文件名
      * @return urls 返回对应文件url
      */
-    public List<String> uploadObject2OSS(OSSClient ossClient, File file, String bucketName, String folder, String fileName) {
+    public List<String> uploadObject2OSS(OSSClient ossClient, MultipartFile file, String bucketName, String folder, String fileName) {
 
         String fileNameNow = null;
         try {
             //以输入流的形式上传文件  
-            InputStream is = new FileInputStream(file);
+            InputStream is = file.getInputStream();
             //文件大小  
-            Long fileSize = file.length();
+            Long fileSize = file.getSize();
             //创建上传Object的Metadata    
             ObjectMetadata metadata = new ObjectMetadata();
             //上传的文件的长度  

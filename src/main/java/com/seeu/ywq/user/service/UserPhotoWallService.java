@@ -8,7 +8,15 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserPhotoWallService {
-    List<PhotoWall> findAllByUid(Long uid);
+    List<PhotoWallVO> findAllByUid(Long uid);
 
     List<PhotoWallVO> saveImages(Long uid, MultipartFile[] images) throws Exception;
+
+    /**
+     * 未删除的照片墙数量
+     *
+     * @param uid
+     * @return
+     */
+    int countExistPhotos(Long uid);
 }

@@ -3,7 +3,7 @@ package com.seeu.ywq.user.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ali_image_user", indexes = {
+@Table(name = "image_with_user", indexes = {
         @Index(name = "ALI_IMAGE_USER_INDEX1", columnList = "image_id"),
         @Index(name = "ALI_IMAGE_USER_INDEX2", columnList = "uid")
 })

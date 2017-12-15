@@ -1,5 +1,6 @@
 package com.seeu.ywq.api.user;
 
+import com.seeu.ywq.user.dto.PhotoWallVO;
 import com.seeu.ywq.user.model.PhotoWall;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.repository.UserRepository;
@@ -50,7 +51,7 @@ public class UserInfoApi {
         if (user == null)
             return ResponseEntity.notFound().build();
         // 其余信息
-        List<PhotoWall> userAlbums = userPhotoWallService.findAllByUid(uid);
+        List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         Map map = new HashMap();
         map.put("info", user);
         map.put("albums", userAlbums);
@@ -74,7 +75,7 @@ public class UserInfoApi {
         if (user == null)
             return ResponseEntity.notFound().build();
         // 其余信息
-        List<PhotoWall> userAlbums = userPhotoWallService.findAllByUid(uid);
+        List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         Map map = new HashMap();
         map.put("info", user);
         map.put("albums", userAlbums);

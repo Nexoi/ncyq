@@ -28,6 +28,8 @@ public class PhotoWall {
     @NotNull
     private Long uid;//用户账号
 
+    @OneToOne(targetEntity = Image.class)
+    @JoinColumn(name = "image_id",referencedColumnName = "id")
     private Image image;//图
 
     @ApiParam(hidden = true)

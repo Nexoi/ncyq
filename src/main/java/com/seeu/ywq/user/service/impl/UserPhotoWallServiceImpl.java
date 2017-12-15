@@ -7,6 +7,7 @@ import com.seeu.ywq.user.model.Image;
 import com.seeu.ywq.user.repository.AliImageRepository;
 import com.seeu.ywq.user.repository.UserPhotoWallRepository;
 import com.seeu.ywq.user.service.UserPhotoWallService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,21 +29,15 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
 
 
     @Override
-    public List<PhotoWall> findAllByUid(Long uid) {
-//        List<PhotoWall> albumWalls = userPhotoWallRepository.findAllByUidAndDeleteFlag(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
-//        // 替换 image-url
-//        if (albumWalls.size() != 0) {
-//            for (PhotoWall albumWall : albumWalls) {
-//                if (albumWall == null || albumWall.getImageUrl().trim().length() == 0) continue;
-//                Long imageId = Long.parseLong(albumWall.getImageUrl());// 这是图片的 id
-//                // 替换
-//                Image image = aliImageRepository.findOne(imageId);
-//                if (image == null) continue;
-//                albumWall.setImageUrl(image.getImageOpenUrl());
-//                albumWall.setThumbImageUrl(image.getThumbImageOpenUrl());
-//            }
-//        }
-        return null;
+    public List<PhotoWallVO> findAllByUid(Long uid) {
+        List<PhotoWall> photoWalls = userPhotoWallRepository.findAllByUidAndDeleteFlag(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
+        List<PhotoWallVO> photoWallVOS = new ArrayList<>();
+        for (PhotoWall photoWall : photoWalls) {
+            PhotoWallVO vo = new PhotoWallVO();
+            BeanUtils.copyProperties(photoWall, vo);
+            photoWallVOS.add(vo);
+        }
+        return photoWallVOS;
     }
 
     /* 照片墙都是 open 的 */
@@ -53,13 +48,13 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
         List<Image> imageList = new ArrayList<>();
         List<PhotoWallVO> photoWallVOS = new ArrayList<>();
         List<PhotoWall> photoWalls = new ArrayList<>();
-        StorageImageService.Result result = storageImageService.saveImages(images);
+        StorageImageService.Result result = storageImageService.saveImages(images); // 暂时采用的阿里云 OSS
         if (result != null && result.getStatus() == StorageImageService.Result.STATUS.success) {
             // 拿到返回的图片信息，未持久化
             // 拿第 2n 号图片信息（非模糊的）
             List<Image> imageListFromStorage = result.getImageList();
-            for (int i = 0; i < result.getImageNum(); i = 1 + 2) {
-                imageList.add(imageListFromStorage.get(0));
+            for (int i = 0; i < result.getImageNum(); i++) {
+                imageList.add(imageListFromStorage.get(i * 2));
             }
         }
 
@@ -78,9 +73,16 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
         for (PhotoWall photoWall : savedPhotoWallList) {
             PhotoWallVO photoWallVO = new PhotoWallVO();
             photoWallVO.setId(photoWall.getId());
+            photoWallVO.setUid(photoWall.getUid());
             photoWallVO.setImage(photoWall.getImage());
+            photoWallVO.setCreateTime(photoWall.getCreateTime());
             photoWallVOS.add(photoWallVO);
         }
         return photoWallVOS;
+    }
+
+    @Override
+    public int countExistPhotos(Long uid) {
+        return userPhotoWallRepository.countAllByUidAndDeleteFlag(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
     }
 }

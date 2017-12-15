@@ -34,13 +34,8 @@ public class AliImageStorgeServiceImpl implements StorageImageService {
         List<List<String>> urlList = new ArrayList<>();
         List<int[]> imagePXList = new ArrayList<>();
         for (MultipartFile file : files) {
-            // 临时存放至项目文件夹
-            CommonsMultipartFile cf = (CommonsMultipartFile) file;
-            DiskFileItem fi = (DiskFileItem) cf.getFileItem();
-            File f = fi.getStoreLocation();
             // 获取宽高
-            FileInputStream fis = new FileInputStream(f);
-            BufferedImage bufferedImg = ImageIO.read(fis);
+            BufferedImage bufferedImg = ImageIO.read(file.getInputStream());
             int imgWidth = bufferedImg.getWidth();
             int imgHeight = bufferedImg.getHeight();
             imagePXList.add(new int[]{imgWidth, imgHeight});
@@ -48,12 +43,12 @@ public class AliImageStorgeServiceImpl implements StorageImageService {
             // 上传阿里云
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             String dir = dateFormat.format(new Date());
-            String folder = "ywq" + "/" + dir;
+            String folder = "ywq" + "/" + dir + "/";
             String fileName = file.getOriginalFilename();
             String suffix = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf('.')) : "";
             fileName = "YGQImage_" + UUID.randomUUID() + suffix;
             //保存图片
-            List<String> urls = aliyunOSSUtil.uploadObject2OSS(client, f, BACKET_NAME, folder, fileName);
+            List<String> urls = aliyunOSSUtil.uploadObject2OSS(client, file, BACKET_NAME, folder, fileName);
             urlList.add(urls);
         }
         client.shutdown();//释放资源
@@ -63,7 +58,7 @@ public class AliImageStorgeServiceImpl implements StorageImageService {
         for (int i = 0; i < urlList.size(); i++) {
             // px
             int width = imagePXList.get(i)[0];
-            int height = imagePXList.get(i)[0];
+            int height = imagePXList.get(i)[1];
 
             // URLs
             List<String> urls = urlList.get(i);
