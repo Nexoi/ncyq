@@ -1,10 +1,14 @@
 package com.seeu.configurer;
 
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -14,6 +18,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Spring MVC 配置
@@ -22,6 +27,20 @@ import javax.servlet.http.HttpServletResponse;
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        //定义一个转换消息的对象
+        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+        //添加fastjson的配置信息 比如 ：是否要格式化返回的json数据
+        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+//        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+        fastJsonConfig.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect); // 不做循环检测
+        //在转换器中添加配置信息
+        fastConverter.setFastJsonConfig(fastJsonConfig);
+        //将转换器添加到converters中
+        converters.add(fastConverter);
+    }
 
     //解决跨域问题
     @Override
@@ -53,6 +72,6 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                     modelAndView.addObject("signed", authUser.getUsername()); // email
                 }
             }
-        }).addPathPatterns("/**").excludePathPatterns("/signin","/*.xml");
+        }).addPathPatterns("/**").excludePathPatterns("/signin", "/*.xml");
     }
 }

@@ -1,5 +1,7 @@
 package com.seeu.ywq.user.model;
 
+import io.swagger.annotations.ApiParam;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -9,17 +11,32 @@ import java.util.Date;
 @Entity
 @Table(name = "image")
 public class Image {
+    @ApiParam(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @ApiParam(hidden = true)
+    @Column(length = 400)
     private String imageUrl;
+    @ApiParam(hidden = true)
     private Integer height;
+    @ApiParam(hidden = true)
     private Integer width;
     // 缩略图
+    @ApiParam(hidden = true)
+    @Column(length = 400)
     private String thumbImage100pxUrl;
+    @ApiParam(hidden = true)
+    @Column(length = 400)
     private String thumbImage200pxUrl;
+    @ApiParam(hidden = true)
+    @Column(length = 400)
     private String thumbImage300pxUrl;
+    @ApiParam(hidden = true)
+    @Column(length = 400)
     private String thumbImage500pxUrl;
+    @ApiParam(hidden = true)
     private Date createDate;
 
 

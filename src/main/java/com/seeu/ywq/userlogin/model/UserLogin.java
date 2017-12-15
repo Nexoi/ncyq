@@ -41,6 +41,10 @@ public class UserLogin implements UserDetails {
     private String username;
 
     @ApiParam(hidden = true)
+    @Column(length = 400)
+    private String headIconUrl;
+
+    @ApiParam(hidden = true)
     private String password;
 
     @ApiParam(hidden = true)
@@ -152,7 +156,16 @@ public class UserLogin implements UserDetails {
     public void setLatitude(BigDecimal latitude) {
         this.latitude = latitude;
     }
-// 以下是权限验证块
+
+    public String getHeadIconUrl() {
+        return headIconUrl;
+    }
+
+    public void setHeadIconUrl(String headIconUrl) {
+        this.headIconUrl = headIconUrl;
+    }
+
+    // 以下是权限验证块
 
 
     public List<UserAuthRole> getRoles() {

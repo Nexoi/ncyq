@@ -68,7 +68,7 @@ public class UserPhotoWallApi {
             @ApiResponse(code = 4003, message = "传入图片过多，照片墙上照片数总量不能超过 5 张")
     })
     @PostMapping("/photo-wall")
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity add(@AuthenticationPrincipal UserLogin authUser,
                               MultipartFile[] images) {
         if (images == null || images.length == 0)
@@ -76,10 +76,10 @@ public class UserPhotoWallApi {
         // 查看已有多少张，看是否传入超额，最多 5 张
         if (images.length > 5)
             return ResponseEntity.status(4002).body("传入图片过多，请不要超过 5 张");
-        if (userPhotoWallService.countExistPhotos(1l) + images.length > 5)
+        if (userPhotoWallService.countExistPhotos(authUser.getUid()) + images.length > 5)
             return ResponseEntity.status(4003).body("传入图片过多，照片墙上照片数总量不能超过 5 张");
         try {
-            List<PhotoWallVO> photoWallVOS = userPhotoWallService.saveImages(1l, images);
+            List<PhotoWallVO> photoWallVOS = userPhotoWallService.saveImages(authUser.getUid(), images);
             return photoWallVOS.size() == 0 ? ResponseEntity.badRequest().body("请至少传入一张图片") : ResponseEntity.ok(photoWallVOS);
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）

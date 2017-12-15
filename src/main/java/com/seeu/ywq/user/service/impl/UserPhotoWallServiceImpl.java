@@ -4,7 +4,7 @@ import com.seeu.file.aliyun_storage.StorageImageService;
 import com.seeu.ywq.user.dto.PhotoWallVO;
 import com.seeu.ywq.user.model.PhotoWall;
 import com.seeu.ywq.user.model.Image;
-import com.seeu.ywq.user.repository.AliImageRepository;
+import com.seeu.ywq.user.repository.ImageRepository;
 import com.seeu.ywq.user.repository.UserPhotoWallRepository;
 import com.seeu.ywq.user.service.UserPhotoWallService;
 import org.springframework.beans.BeanUtils;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,7 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
     @Resource
     UserPhotoWallRepository userPhotoWallRepository;
     @Resource
-    AliImageRepository aliImageRepository;
+    ImageRepository imageRepository;
     @Autowired
     StorageImageService storageImageService;
 
@@ -59,7 +58,7 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
         }
 
         // 数据持久化到数据库，以后根据此信息进行访问图片
-        List<Image> savedImages = aliImageRepository.save(imageList);
+        List<Image> savedImages = imageRepository.save(imageList);
         for (Image image : savedImages) {
             PhotoWall photoWall = new PhotoWall();
             photoWall.setUid(uid);

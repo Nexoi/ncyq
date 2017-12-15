@@ -34,16 +34,20 @@ public class Picture {
     @NotNull
     private Long uid;
 
+    @ApiParam(hidden = true)
     @Enumerated
     private ALBUM_TYPE albumType;//相册类型(公开、私密)
 
+    @ApiParam(hidden = true)
     @Column(name = "publish_id")
     private Long publishId; //发布动态的 id
 
+    @ApiParam(hidden = true)
     @OneToOne(targetEntity = Image.class)
     @JoinColumn(name = "image_open_id",referencedColumnName = "id")
     private Image imageOpen;
 
+    @ApiParam(hidden = true)
     @OneToOne(targetEntity = Image.class)
     @JoinColumn(name = "image_close_id",referencedColumnName = "id")
     private Image imageClose;
