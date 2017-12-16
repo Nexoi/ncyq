@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name = "user_login", indexes = {
         @Index(name = "USERLOGIN_INDEX1", unique = true, columnList = "uid"),
         @Index(name = "USERLOGIN_INDEX2", unique = true, columnList = "phone"),
-        @Index(name = "USERLOGIN_INDEX3", unique = true, columnList = "username"),
+        @Index(name = "USERLOGIN_INDEX3", unique = true, columnList = "nickname"),
         @Index(name = "USERLOGIN_INDEX4", unique = true, columnList = "longitude"),
         @Index(name = "USERLOGIN_INDEX5", unique = true, columnList = "latitude")
 })
@@ -38,7 +38,7 @@ public class UserLogin implements UserDetails {
 
     @ApiParam(hidden = true)
     @Column(length = 20)
-    private String username;
+    private String nickname;
 
     @ApiParam(hidden = true)
     @Column(length = 400)
@@ -94,8 +94,12 @@ public class UserLogin implements UserDetails {
         this.phone = phone;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**

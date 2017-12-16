@@ -1,6 +1,7 @@
 package com.seeu.configurer.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +20,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)  // TODO 方法注解开启（关闭时方便调试）
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Value("${token.interval}")
+    private Integer tokenInterval;
 
     @Autowired
     private YWQAuthenticationProvider ywqAuthenticationProvider;
@@ -53,7 +57,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 //开启cookie保存用户数据
                 .rememberMe()
                 //设置cookie有效期
-                .tokenValiditySeconds(60 * 60 * 24 * 7)
+                .tokenValiditySeconds(tokenInterval)
                 //设置cookie的私钥
                 .key("privateKeyxx")
 

@@ -1,6 +1,6 @@
 package com.seeu.file.aliyun_storage;
 
-import com.seeu.ywq.user.model.Image;
+import com.seeu.ywq.release.model.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

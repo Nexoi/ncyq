@@ -10,11 +10,11 @@ import java.util.Date;
  * @author Scary
  *
  */
-@Entity
-@Table(name = "comment",indexes = {
-		@Index(name = "comment_index1",columnList = "uid"),
-		@Index(name = "comment_index2",columnList = "leave_uid")
-})
+//@Entity
+//@Table(name = "comment",indexes = {
+//		@Index(name = "comment_index1",columnList = "uid"),
+//		@Index(name = "comment_index2",columnList = "leave_uid")
+//})
 public class Comment implements Serializable {
 	public static enum MESSAGE_HASREAD{
 		read,

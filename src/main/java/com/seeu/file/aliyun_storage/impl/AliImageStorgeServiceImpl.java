@@ -3,7 +3,7 @@ package com.seeu.file.aliyun_storage.impl;
 import com.aliyun.oss.OSSClient;
 import com.seeu.file.aliyun_storage.StorageImageService;
 import com.seeu.system.aliyunSdk.AliyunOSSUtil;
-import com.seeu.ywq.user.model.Image;
+import com.seeu.ywq.release.model.Image;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

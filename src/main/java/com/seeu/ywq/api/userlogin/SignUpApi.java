@@ -1,5 +1,6 @@
 package com.seeu.ywq.api.userlogin;
 
+import com.seeu.core.R;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import io.swagger.annotations.*;
@@ -11,8 +12,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+@Api(tags = "注册账号", description = "短信验证码发送/账号注册")
 @RestController
-@Api(value = "注册用户")
 @RequestMapping("/api/v1")
 public class SignUpApi {
     @Resource
@@ -36,22 +37,18 @@ public class SignUpApi {
             cookie.setPath("/");
             cookie.setMaxAge(10 * 60 * 1000); // ms
             response.addCookie(cookie);
-            return ResponseEntity.ok().body("验证码发送成功");
+            return ResponseEntity.ok().body(R.code(200).message("验证码发送成功").build());
         }
-        return ResponseEntity.badRequest().body("验证码发送失败");
+        return ResponseEntity.badRequest().body(R.code(400).message("验证码发送失败").build());
     }
 
 
     @PostMapping("/signup")
-    @ApiOperation(value = "注册账号", notes = "账号注册，密码会被自动转成 MD5 值，登陆时需要客户端对密码进行 MD5 加密")
+    @ApiOperation(value = "注册账号", notes = "账号注册，密码会被自动转成 MD5 值，登陆时需要客户端对密码进行 MD5 加密，必须要先进行获取验证码操作")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "注册成功"),
-            @ApiResponse(code = 4001, message = "注册失败，验证码错误"),
-            @ApiResponse(code = 4002, message = "注册失败，手机号码有误"),
-            @ApiResponse(code = 4003, message = "注册失败，昵称非法，不能为空"),
-            @ApiResponse(code = 4004, message = "注册失败，密码需大于 6 位"),
-            @ApiResponse(code = 400, message = "未知异常，请联系管理员"),
-            @ApiResponse(code = 500, message = "注册失败，服务器异常，请稍后再试"),
+            @ApiResponse(code = 201, message = "注册成功"),
+            @ApiResponse(code = 400, message = "400 数据错误"),
+            @ApiResponse(code = 500, message = "500 注册失败，服务器异常，请稍后再试"),
     })
     public ResponseEntity signUp(@RequestParam String username,
                                  @RequestParam String phone,
@@ -61,25 +58,27 @@ public class SignUpApi {
                                  @CookieValue(required = false) String signCheck) {
         // 检查手机号码是否被注册
         if (userLoginRepository.findByPhone(phone) != null) {
-            return ResponseEntity.badRequest().body("该手机号码已被注册");
+            return ResponseEntity.badRequest().body(R.code(4006).message("该手机号码已被注册").build());
         }
+        if (signCheck == null || signCheck.trim().length() < 10)
+            return ResponseEntity.badRequest().body(R.code(4000).message("请先获取验证码").build());
         // start sign up
         UserSignUpService.SIGN_STATUS status = userSignUpService.signUp(username, phone, password, code, signCheck);
         switch (status) {
             case signup_success:
-                return ResponseEntity.status(200).body("注册成功");
+                return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
             case signup_error_sign_check:
-                return ResponseEntity.status(4001).body("注册失败，验证码错误");
+                return ResponseEntity.badRequest().body(R.code(4001).message("注册失败，验证码错误").build());
             case signup_error_phone:
-                return ResponseEntity.status(4002).body("注册失败，手机号码有误");
+                return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码有误").build());
             case signup_error_name:
-                return ResponseEntity.status(4003).body("注册失败，昵称非法，不能为空");
+                return ResponseEntity.badRequest().body(R.code(4003).message("注册失败，昵称非法，不能为空").build());
             case signup_error_password:
-                return ResponseEntity.status(4004).body("注册失败，密码需大于 6 位");
+                return ResponseEntity.badRequest().body(R.code(4004).message("注册失败，密码需大于 6 位").build());
             case sign_exception:
-                return ResponseEntity.status(500).body("注册失败，服务器异常，请稍后再试");
+                return ResponseEntity.status(500).body(R.code(500).message("注册失败，服务器异常，请稍后再试").build());
             default:
-                return ResponseEntity.badRequest().body("未知异常，请联系管理员");
+                return ResponseEntity.badRequest().body(R.code(4005).message("未知异常，请联系管理员").build());
         }
     }
 }

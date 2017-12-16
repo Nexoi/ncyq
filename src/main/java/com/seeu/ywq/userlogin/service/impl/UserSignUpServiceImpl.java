@@ -1,8 +1,8 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.system.sms.service.ISmsSV;
-import com.seeu.ywq.user.model.User;
-import com.seeu.ywq.user.repository.UserRepository;
+import com.seeu.ywq.release.model.User;
+import com.seeu.ywq.release.repository.UserRepository;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -102,7 +102,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (password == null || password.length() < 6) return UserSignUpService.SIGN_STATUS.signup_error_password;
 
         UserLogin userLogin = new UserLogin();
-        userLogin.setUsername(name);
+        userLogin.setNickname(name);
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(password));
 

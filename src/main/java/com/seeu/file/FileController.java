@@ -24,8 +24,8 @@ import java.util.Date;
  * <p>
  * mappping 的 /data 表示不同的物理存储仓库，此处为本地 API 服务器，将来扩展仓库的时候，对应 upload 接口 里的仓库名字也应该更改
  */
+@Api(tags = "文件存取", description = "本地服务器存取（非阿里云）")
 @RestController
-@Api(value = "文件上传")
 public class FileController {
     private final StorageService storageService;
 

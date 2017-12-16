@@ -11,10 +11,10 @@ import java.sql.Timestamp;
  * @author zho
  *
  */
-@Entity
-@Table(name = "follow", indexes = {
-		@Index(name = "follow_index1", columnList = "uid")
-})
+//@Entity
+//@Table(name = "follow", indexes = {
+//		@Index(name = "follow_index1", columnList = "uid")
+//})
 public class Follow implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,5 +1,6 @@
 package com.seeu.configurer.httpstatus;
 
+import com.seeu.core.R;
 import com.seeu.file.storage.StorageFileNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StorageFileNotFoundException.class)
 //    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "无此文件")
     public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("[404] No such file");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(R.code(404).message("[404] No such file").build());
     }
 
 //    @ExceptionHandler(NullPointerException.class)
@@ -33,17 +34,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException exc) {
-        return ResponseEntity.badRequest().body("请确认传入参数是否完整 [ " + exc.getMessage() + " ]");
+        return ResponseEntity.badRequest().body(R.code(400).message("请确认传入参数是否完整 [ " + exc.getMessage() + " ]").build());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
-        return ResponseEntity.badRequest().body("请确认传入参数类型是否正确 [ " + exc.getMessage() + " ]");
+        return ResponseEntity.badRequest().body(R.code(400).message("请确认传入参数类型是否正确 [ " + exc.getMessage() + " ]").build());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFoundException(NoHandlerFoundException exc) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("接口 {[" + exc.getHttpMethod() + "]" + exc.getRequestURL() + "} 不存在");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(R.code(404).message("接口 {[" + exc.getHttpMethod() + "]" + exc.getRequestURL() + "} 不存在").build());
     }
 
 //    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -58,6 +59,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<?> handleEmptyResultDataAccessException(HttpServletRequest request, EmptyResultDataAccessException exc) {
-        return ResponseEntity.badRequest().body("no such data found");
+        return ResponseEntity.badRequest().body(R.code(400).message("no such data found").build());
     }
 }
