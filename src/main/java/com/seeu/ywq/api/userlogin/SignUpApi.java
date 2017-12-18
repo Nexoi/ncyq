@@ -1,11 +1,15 @@
 package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
+import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
+import com.seeu.ywq.utils.MD5Service;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +24,8 @@ public class SignUpApi {
     private UserLoginRepository userLoginRepository;
     @Autowired
     private UserSignUpService userSignUpService;
+    @Autowired
+    private MD5Service md5Service;
 
 
     @PostMapping("/signup/sendcode/{phone}")
@@ -80,5 +86,17 @@ public class SignUpApi {
             default:
                 return ResponseEntity.badRequest().body(R.code(4005).message("未知异常，请联系管理员").build());
         }
+    }
+
+    @ApiOperation(value = "修改密码", notes = "传入新密码进行重置")
+    @PutMapping("/reset-password")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity resetPassword(@AuthenticationPrincipal UserLogin authUser, String password) {
+        if (password == null || password.length() < 6)
+            return ResponseEntity.badRequest().body(R.code(400).message("密码长度太短，需大于 6 位").build());
+        UserLogin userLogin = userLoginRepository.findByPhone(authUser.getPhone());
+        userLogin.setPassword(md5Service.encode(password));
+        userLoginRepository.save(userLogin);
+        return ResponseEntity.ok(R.code(200).message("修改密码成功").build());
     }
 }

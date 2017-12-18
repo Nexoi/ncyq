@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * Created by neo on 25/09/2017.
  */
 @Entity
-@Table(name = "user_auth_role")
+@Table(name = "ywq_user_auth_role")
 @DynamicUpdate
 public class UserAuthRole {
 

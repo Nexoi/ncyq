@@ -6,16 +6,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-/**
- * 相册，即照片，分为两种：私密、公开
- */
 @Entity
-@Table(name = "ywq_picture", indexes = {
-        @Index(name = "PICTURE_INDEX1", columnList = "uid"),
-        @Index(name = "PICTURE_INDEX2", columnList = "publish_id")
-})
-public class Picture {
-    public enum ALBUM_TYPE {
+@Table(name = "ywq_publish_video")
+public class PublishVideo {
+    public enum VIDEO_TYPE {
         open,
         close
     }
@@ -35,22 +29,19 @@ public class Picture {
     private Long uid;
 
     @ApiParam(hidden = true)
-    @Enumerated
-    private ALBUM_TYPE albumType;//相册类型(公开、私密)
-
-    @ApiParam(hidden = true)
     @Column(name = "publish_id")
     private Long publishId; //发布动态的 id
 
+
     @ApiParam(hidden = true)
-    @OneToOne(targetEntity = Image.class)
-    @JoinColumn(name = "image_open_id",referencedColumnName = "id")
-    private Image imageOpen;
+    @Enumerated
+    private VIDEO_TYPE videoType;
 
     @ApiParam(hidden = true)
     @OneToOne(targetEntity = Image.class)
-    @JoinColumn(name = "image_close_id",referencedColumnName = "id")
-    private Image imageClose;
+    @JoinColumn(name = "video_id", referencedColumnName = "id")
+    private Video video;
+
 
     @ApiParam(hidden = true)
     private Date createTime;//创建时间
@@ -77,12 +68,28 @@ public class Picture {
         this.uid = uid;
     }
 
-    public ALBUM_TYPE getAlbumType() {
-        return albumType;
+    public Long getPublishId() {
+        return publishId;
     }
 
-    public void setAlbumType(ALBUM_TYPE albumType) {
-        this.albumType = albumType;
+    public void setPublishId(Long publishId) {
+        this.publishId = publishId;
+    }
+
+    public Video getVideo() {
+        return video;
+    }
+
+    public void setVideo(Video video) {
+        this.video = video;
+    }
+
+    public VIDEO_TYPE getVideoType() {
+        return videoType;
+    }
+
+    public void setVideoType(VIDEO_TYPE videoType) {
+        this.videoType = videoType;
     }
 
     public Date getCreateTime() {
@@ -107,29 +114,5 @@ public class Picture {
 
     public void setDeleteFlag(DELETE_FLAG deleteFlag) {
         this.deleteFlag = deleteFlag;
-    }
-
-    public Long getPublishId() {
-        return publishId;
-    }
-
-    public void setPublishId(Long publishId) {
-        this.publishId = publishId;
-    }
-
-    public Image getImageOpen() {
-        return imageOpen;
-    }
-
-    public void setImageOpen(Image imageOpen) {
-        this.imageOpen = imageOpen;
-    }
-
-    public Image getImageClose() {
-        return imageClose;
-    }
-
-    public void setImageClose(Image imageClose) {
-        this.imageClose = imageClose;
     }
 }

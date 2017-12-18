@@ -32,7 +32,6 @@ public class UserPictureServiceImpl implements UserPictureService {
     StorageImageService storageImageService;
 
 
-
     /**
      * 给本人使用的，查看自己的相册时候会使用
      *
@@ -99,16 +98,18 @@ public class UserPictureServiceImpl implements UserPictureService {
         // 一张张存入阿里云或其他服务器
         List<Image> imageList = new ArrayList<>();
         List<Picture> pictures = new ArrayList<>();
-        StorageImageService.Result result = storageImageService.saveImages(images); // 暂时采用的阿里云 OSS
+        StorageImageService.Result result = storageImageService.saveImages(images, albumTypes); // 暂时采用的阿里云 OSS
         if (result != null && result.getStatus() == StorageImageService.Result.STATUS.success) {
             // 拿到返回的图片信息，未持久化
-            List<Image> imageListFromStorage = result.getImageList();
-            for (int i = 0; i < result.getImageNum(); i++) {
-                imageList.add(imageListFromStorage.get(2 * i)); // open 图
-                if (albumTypes[i] == Picture.ALBUM_TYPE.close) {
-                    imageList.add(imageListFromStorage.get(2 * i + 1)); // close 图
-                }
-            }
+            // 逻辑修改了：传回来的每一张图都是可以用的图，不再需要判断是否 close，图片序列如此：open;open,close;open,close;close，依次读取即可
+            imageList = result.getImageList();
+//            List<Image> imageListFromStorage = result.getImageList();
+//            for (int i = 0; i < result.getImageNum(); i++) {
+//                imageList.add(imageListFromStorage.get(2 * i)); // open 图
+//                if (albumTypes[i] == Picture.ALBUM_TYPE.close) {
+//                    imageList.add(imageListFromStorage.get(2 * i + 1)); // close 图
+//                }
+//            }
         }
 
         // 数据持久化到数据库，以后根据此信息进行访问图片

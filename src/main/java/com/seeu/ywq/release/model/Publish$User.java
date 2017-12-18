@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @IdClass(Publish$UserKeys.class)
-@Table(name = "publish_unlock_users")
+@Table(name = "ywq_publish_unlock_users")
 public class Publish$User {
     @Id
     @Column(name = "publish_id")

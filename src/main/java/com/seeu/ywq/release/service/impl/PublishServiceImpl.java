@@ -42,7 +42,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public PublishVO findOneByPublishId(Long publishId, Long uid) {
-        Publish publish = publishRepository.findByIdAndUid(publishId, uid);
+        Publish publish = publishRepository.findByIdAndUidAndStatus(publishId, uid, Publish.STATUS.normal);
         if (publish == null) return null;
         //.. 如果为本人，则不会做权限数据库搜索
         return transferToVO(publish, uid);
@@ -50,7 +50,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public Page findAllByUid(Long uid, Long myUid, Pageable pageable) {
-        Page page = publishRepository.findAllByUid(uid, pageable);
+        Page page = publishRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
         List<Publish> publishes = page.getContent();
         if (publishes == null || publishes.size() == 0)
             return page;
@@ -69,7 +69,7 @@ public class PublishServiceImpl implements PublishService {
     //【匿名】
     @Override
     public Page findAllByUid(Long uid, Pageable pageable) {
-        Page page = publishRepository.findAllByUid(uid, pageable);
+        Page page = publishRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
         List<Publish> publishes = page.getContent();
         if (publishes == null || publishes.size() == 0)
             return page;
@@ -171,7 +171,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public PublishVO viewIt(Long publishId) {
-        Publish publish = publishRepository.findOne(publishId);
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null) return null;
         publishRepository.viewItOnce(publishId);
         return transferToVO(publish);
@@ -179,7 +179,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public PublishVO viewIt(Long publishId, Long uid) {
-        Publish publish = publishRepository.findOne(publishId);
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null) return null;
         publishRepository.viewItOnce(publishId);
         return transferToVO(publish, uid);

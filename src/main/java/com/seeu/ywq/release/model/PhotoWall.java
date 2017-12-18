@@ -10,7 +10,7 @@ import java.util.Date;
  * 照片墙，一个用户最多 5 张
  */
 @Entity
-@Table(name = "photo_wall", indexes = {
+@Table(name = "ywq_photo_wall", indexes = {
         @Index(name = "Photo_wall_index1", columnList = "uid")
 })
 public class PhotoWall {

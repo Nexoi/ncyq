@@ -9,7 +9,7 @@ import java.util.Date;
  * 图片信息，存在云端，用唯一ID进行查询
  */
 @Entity
-@Table(name = "image")
+@Table(name = "ywq_image")
 public class Image {
     @ApiParam(hidden = true)
     @Id

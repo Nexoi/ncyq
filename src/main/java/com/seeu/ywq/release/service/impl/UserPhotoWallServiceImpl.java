@@ -4,6 +4,7 @@ import com.seeu.file.aliyun_storage.StorageImageService;
 import com.seeu.ywq.release.dvo.PhotoWallVO;
 import com.seeu.ywq.release.model.PhotoWall;
 import com.seeu.ywq.release.model.Image;
+import com.seeu.ywq.release.model.Picture;
 import com.seeu.ywq.release.repository.ImageRepository;
 import com.seeu.ywq.release.repository.UserPhotoWallRepository;
 import com.seeu.ywq.release.service.UserPhotoWallService;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -47,13 +49,18 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
         List<Image> imageList = new ArrayList<>();
         List<PhotoWallVO> photoWallVOS = new ArrayList<>();
         List<PhotoWall> photoWalls = new ArrayList<>();
-        StorageImageService.Result result = storageImageService.saveImages(images); // 暂时采用的阿里云 OSS
+        Picture.ALBUM_TYPE[] album_types = new Picture.ALBUM_TYPE[images.length];
+        for (int i = 0; i < images.length; i++) {
+            album_types[i] = Picture.ALBUM_TYPE.open;
+        }
+        StorageImageService.Result result = storageImageService.saveImages(images, album_types); // 暂时采用的阿里云 OSS
         if (result != null && result.getStatus() == StorageImageService.Result.STATUS.success) {
             // 拿到返回的图片信息，未持久化
             // 拿第 2n 号图片信息（非模糊的）
             List<Image> imageListFromStorage = result.getImageList();
             for (int i = 0; i < result.getImageNum(); i++) {
-                imageList.add(imageListFromStorage.get(i * 2));
+//                imageList.add(imageListFromStorage.get(i * 2));
+                imageList.add(imageListFromStorage.get(i)); // 每一张图片都是可用的
             }
         }
 

@@ -1,68 +1,35 @@
-package com.seeu.ywq.release.model;
+package com.seeu.ywq.release.dvo;
 
-import io.swagger.annotations.ApiParam;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.seeu.ywq.release.model.Skill;
+import com.seeu.ywq.release.model.User;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "ywq_user")
-@DynamicUpdate
-@DynamicInsert
-public class User {
-    public enum STAR_SIGN {
-        Aries,      // 白羊座
-        Taurus,     // 金牛座
-        Gemini,     // 双子座
-        Cancer,     //  巨蟹座
-        Leo,        //  狮子座
-        Virgo,      //  处女座
-        Libra,      //  天秤座
-        Scorpio,    //  天蝎座
-        Sagittarius,  //  射手座
-        Capricorn,    //  摩羯座
-        Aquarius,     //  水瓶座
-        Pisces,       //  双鱼座
-    }
+public class UserVO {
 
-    @ApiParam(hidden = true)
-    @Id
     private Long uid;
-    @ApiParam(hidden = true)
     private Long fansNum;   // 粉丝数
-    @ApiParam(hidden = true)
     private Long followNum; // 关注人数
 
     private Date birthDay;  // 出生日期间
     private Integer height; // 身高
-    @Column(precision = 6, scale = 2)
     private BigDecimal weight;  // 体重 Kg
     private Integer bust;       // 胸围
     private Integer waist;      // 腰围
     private Integer hip;        // 臀围
-    @Enumerated
-    private STAR_SIGN starSign; // 星座
+    private User.STAR_SIGN starSign; // 星座
 
-    @Column(length = 400)
     private String introduce;   // 个人简介
 
-    @Column(length = 45)
     private String wechat;
-    @ApiParam(hidden = true)
-    @Column(length = 15)
     private String phone;       // 初始化的时候绑定为注册时使用的那个
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Tag> tags;
-//    删除，独立在新表里
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Identification> identifications;
+    private List<TagVO> tags;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User$IdentificationVO> identifications;
+
     private List<Skill> skills;
 
     public Long getUid() {
@@ -153,12 +120,20 @@ public class User {
         this.phone = phone;
     }
 
-    public STAR_SIGN getStarSign() {
+    public User.STAR_SIGN getStarSign() {
         return starSign;
     }
 
-    public void setStarSign(STAR_SIGN starSign) {
+    public void setStarSign(User.STAR_SIGN starSign) {
         this.starSign = starSign;
+    }
+
+    public List<User$IdentificationVO> getIdentifications() {
+        return identifications;
+    }
+
+    public void setIdentifications(List<User$IdentificationVO> identifications) {
+        this.identifications = identifications;
     }
 
     public List<Skill> getSkills() {
@@ -177,11 +152,11 @@ public class User {
         this.birthDay = birthDay;
     }
 
-    public List<Tag> getTags() {
+    public List<TagVO> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<TagVO> tags) {
         this.tags = tags;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "publish")
+@Table(name = "ywq_publish")
 public class Publish {
 
     public enum PUBLISH_TYPE {
@@ -18,9 +18,15 @@ public class Publish {
         video
     }
 
-    public enum PUBLIC_STATUS {
+    public enum STATUS {
         normal,
-        block
+        block,
+        delete
+    }
+
+    public enum SRC_TYPE {
+        open,
+        close
     }
 
     @ApiParam(hidden = true)
@@ -31,6 +37,7 @@ public class Publish {
     @ApiParam(hidden = true)
     private Long uid;//用户账号
 
+    @ApiParam(hidden = true)
     private Integer weight;// 排序权重，0 时候表示不按此排序
 
     @NotNull
@@ -44,8 +51,9 @@ public class Publish {
     private Date createTime;//创建时间
 
     private BigDecimal unlockPrice;//解锁需要金额
+    @ApiParam(hidden = true)
     @Enumerated
-    private PUBLIC_STATUS state;//状态，正常/封禁
+    private STATUS status;//状态，正常/封禁/已删除
 
     @ApiParam(hidden = true)
     private Integer viewNum; // 浏览次数
@@ -77,9 +85,10 @@ public class Publish {
     @JoinColumn(name = "publish_id")
     private List<Picture> pictures;//图片(不与数据库做交互)
 
-    private String coverVideoUrl;
-
-    private String videoUrls;//
+    @ApiParam(hidden = true)
+    @OneToOne(targetEntity = Image.class)
+    @JoinColumn(name = "video_id", referencedColumnName = "id")
+    private PublishVideo video;
 
     public Long getId() {
         return id;
@@ -137,12 +146,12 @@ public class Publish {
         this.text = text;
     }
 
-    public PUBLIC_STATUS getState() {
-        return state;
+    public STATUS getStatus() {
+        return status;
     }
 
-    public void setState(PUBLIC_STATUS state) {
-        this.state = state;
+    public void setStatus(STATUS status) {
+        this.status = status;
     }
 
     public Integer getViewNum() {
@@ -193,20 +202,12 @@ public class Publish {
         this.pictures = pictures;
     }
 
-    public String getCoverVideoUrl() {
-        return coverVideoUrl;
+    public PublishVideo getVideo() {
+        return video;
     }
 
-    public void setCoverVideoUrl(String coverVideoUrl) {
-        this.coverVideoUrl = coverVideoUrl;
-    }
-
-    public String getVideoUrls() {
-        return videoUrls;
-    }
-
-    public void setVideoUrls(String videoUrls) {
-        this.videoUrls = videoUrls;
+    public void setVideo(PublishVideo video) {
+        this.video = video;
     }
 
     public Integer getWeight() {

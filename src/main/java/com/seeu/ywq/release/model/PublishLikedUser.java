@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 @Entity
 @IdClass(PublishLikedUserPKeys.class)
-@Table(name = "publish_liked_users")
+@Table(name = "ywq_publish_liked_users")
 public class PublishLikedUser implements Serializable {
 
     @ApiParam(hidden = true)
@@ -20,6 +20,7 @@ public class PublishLikedUser implements Serializable {
     @ApiParam(hidden = true)
     private String headIconUrl;// 点赞时候的头像
 
+    @ApiParam(hidden = true)
     @Id
     @Column(name = "publish_id")
     private Long publishId;

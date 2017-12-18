@@ -2,24 +2,25 @@ package com.seeu.ywq.release.model;
 
 import java.io.Serializable;
 
-public class Publish$UserKeys implements Serializable {
-    private Long publishId;
+public class User$TagPKeys implements Serializable {
+    private Long tagId;
     private Long uid;
 
-    public Publish$UserKeys() {
+    public User$TagPKeys() {
     }
 
-    public Publish$UserKeys(Long publishId, Long uid) {
-        this.publishId = publishId;
+    public User$TagPKeys(Long tagId, Long uid) {
+        this.tagId = tagId;
         this.uid = uid;
     }
 
-    public Long getPublishId() {
-        return publishId;
+
+    public Long getTagId() {
+        return tagId;
     }
 
-    public void setPublishId(Long publishId) {
-        this.publishId = publishId;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
     public Long getUid() {
@@ -35,7 +36,7 @@ public class Publish$UserKeys implements Serializable {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
-        result = PRIME * result + ((publishId == null) ? 0 : publishId.hashCode());
+        result = PRIME * result + ((tagId == null) ? 0 : tagId.hashCode());
         return result;
     }
 
@@ -51,7 +52,7 @@ public class Publish$UserKeys implements Serializable {
             return false;
         }
 
-        final Publish$UserKeys other = (Publish$UserKeys) obj;
+        final User$TagPKeys other = (User$TagPKeys) obj;
         if (uid == null) {
             if (other.uid != null) {
                 return false;
@@ -59,11 +60,11 @@ public class Publish$UserKeys implements Serializable {
         } else if (!uid.equals(other.uid)) {
             return false;
         }
-        if (publishId == null) {
-            if (other.publishId != null) {
+        if (tagId == null) {
+            if (other.tagId != null) {
                 return false;
             }
-        } else if (!publishId.equals(other.publishId)) {
+        } else if (!tagId.equals(other.tagId)) {
             return false;
         }
         return true;

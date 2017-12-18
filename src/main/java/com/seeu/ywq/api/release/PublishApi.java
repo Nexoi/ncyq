@@ -4,7 +4,8 @@ import com.seeu.core.R;
 import com.seeu.ywq.release.dvo.PublishVO;
 import com.seeu.ywq.release.model.Picture;
 import com.seeu.ywq.release.model.Publish;
-import com.seeu.ywq.release.repository.PublishLikedUserRepository;
+import com.seeu.ywq.release.model.PublishVideo;
+import com.seeu.ywq.release.model.Video;
 import com.seeu.ywq.release.repository.PublishRepository;
 import com.seeu.ywq.release.service.PublishService;
 import com.seeu.ywq.release.service.UserPictureService;
@@ -53,7 +54,7 @@ public class PublishApi {
      *
      * @param authUser
      * @param publish
-     * @param pictureType
+     * @param srcTypes
      * @param images
      * @return
      */
@@ -67,14 +68,40 @@ public class PublishApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity add(@AuthenticationPrincipal UserLogin authUser,
                               Publish publish,
-                              @ApiParam(value = "照片类型，数组，用逗号隔开，可选值：open、close，分别表示：公开、私密。如：open,close,close", example = "open,close,open")
-                                      Picture.ALBUM_TYPE[] pictureType,// 照片类型（公开1/私密0）
-                              MultipartFile[] images) {
-        if (publish.getType() != null && publish.getType() == Publish.PUBLISH_TYPE.picture) {
+                              @ApiParam(value = "照片/视频类型，数组，用逗号隔开，可选值：open、close，分别表示：公开、私密。如：open,close,close", example = "open,close,open")
+                                      Publish.SRC_TYPE[] srcTypes,// 照片类型（公开1/私密0）
+                              MultipartFile[] images,
+                              @RequestParam(required = false) String videoCoverUrl, // 视频封面
+                              @RequestParam(required = false) String videoUrl//    视频链接
+    ) {
+        if (publish.getType() == null)
+            return ResponseEntity.badRequest().body(R.code(4006).message("请选择一个动态类型").build());
+        if (publish.getType() != Publish.PUBLISH_TYPE.word && srcTypes == null) {
+            return ResponseEntity.badRequest().body(R.code(4007).message("动态类型 [" + publish.getType().name() + "] 需要同时上传对应的资源类型字段：srcTypes").build());
+        }
+        // if picture
+        if (publish.getType() == Publish.PUBLISH_TYPE.picture) {
             if (images == null || images.length == 0)
                 return ResponseEntity.badRequest().body(R.code(4001).message("请传入至少一张图片").build());
-            if (images.length != pictureType.length)
-                return ResponseEntity.badRequest().body(R.code(4002).message("参数错误，pictureType 长度需要和 images 一致").build());
+            if (images.length != srcTypes.length)
+                return ResponseEntity.badRequest().body(R.code(4002).message("参数错误，srcTypes 长度需要和 images 一致").build());
+        }
+        // if video
+        if (publish.getType() == Publish.PUBLISH_TYPE.video) {
+            if (videoCoverUrl == null || videoUrl == null)
+                return ResponseEntity.badRequest().body(R.code(4005).message("视频内容不能为空").build());
+            if (srcTypes.length != 1)
+                return ResponseEntity.badRequest().body(R.code(4006).message("视频类型（公开/私密）数组长度必须为 1").build());
+            Video video = new Video();
+            video.setCoverUrl(videoCoverUrl);
+            video.setSrcUrl(videoUrl);
+            PublishVideo publishVideo = new PublishVideo();
+            publishVideo.setVideo(video);
+            publishVideo.setVideoType(srcTypes[0] == Publish.SRC_TYPE.open ? PublishVideo.VIDEO_TYPE.open : PublishVideo.VIDEO_TYPE.close);
+            publishVideo.setCreateTime(new Date());
+            publishVideo.setDeleteFlag(PublishVideo.DELETE_FLAG.show);
+            publishVideo.setUid(authUser.getUid());
+            publish.setVideo(publishVideo);
         }
         // 初始化判断
         if (publish.getTitle() == null || publish.getTitle().trim().length() == 0)
@@ -89,32 +116,31 @@ public class PublishApi {
         publish.setLikedUsers(null);
         publish.setLikeNum(0);
         publish.setViewNum(0);
-        publish.setState(Publish.PUBLIC_STATUS.normal); // 初始化为正常
+        publish.setStatus(Publish.STATUS.normal); // 初始化为正常
         publish.setUnlockPrice(publish.getUnlockPrice() == null ? BigDecimal.ZERO : publish.getUnlockPrice());
         publish.setCreateTime(new Date());
-        publish.setType(publish.getType() == null ? Publish.PUBLISH_TYPE.word : publish.getType());
+        publish.setType(publish.getType());
         try {
             switch (publish.getType()) {
                 case word:
-                    publish.setPictures(null);
                     publish.setUnlockPrice(BigDecimal.ZERO);
-                    publish.setVideoUrls(null);
-                    publish.setCoverVideoUrl(null);
+                    publish.setPictures(null);
+                    publish.setVideo(null);
                     break;
                 case video:
                     publish.setPictures(null);
                     break;
                 case picture:
-                    publish.setPictures(userPictureService.getPictureWithOutSave(authUser.getUid(), publish.getId(), pictureType, images));  // 图片信息
-                    publish.setVideoUrls(null);
-                    publish.setCoverVideoUrl(null);
-                    break;
-                default:
-                    publish.setPictures(userPictureService.getPictureWithOutSave(authUser.getUid(), publish.getId(), pictureType, images));  // 图片信息
+                    Picture.ALBUM_TYPE[] album_types = new Picture.ALBUM_TYPE[srcTypes.length];
+                    for (int i = 0; i < srcTypes.length; i++) {
+                        album_types[i] = srcTypes[i] == Publish.SRC_TYPE.open ? Picture.ALBUM_TYPE.open : Picture.ALBUM_TYPE.close;
+                    }
+                    publish.setPictures(userPictureService.getPictureWithOutSave(authUser.getUid(), publish.getId(), album_types, images));  // 图片信息
+                    publish.setVideo(null);
                     break;
             }
             // 发布信息持久化
-            return ResponseEntity.status(201).body(publishService.transferToVO(publishRepository.save(publish)));
+            return ResponseEntity.status(201).body(publishService.transferToVO(publishRepository.save(publish), authUser.getUid()));
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.code(500).message("服务器异常，文件传输失败").build());
@@ -126,7 +152,7 @@ public class PublishApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity delete(@AuthenticationPrincipal UserLogin authUser,
                                  @PathVariable("publishId") Long publishId) {
-        Publish publish = publishRepository.findByIdAndUid(publishId, authUser.getUid());
+        Publish publish = publishRepository.findByIdAndUidAndStatus(publishId, authUser.getUid(), Publish.STATUS.normal);
         if (publish == null) {
             return ResponseEntity.status(404).body(R.code(404).message("您无此动态信息").build());
         }

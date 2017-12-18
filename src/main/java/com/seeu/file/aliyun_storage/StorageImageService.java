@@ -1,6 +1,7 @@
 package com.seeu.file.aliyun_storage;
 
 import com.seeu.ywq.release.model.Image;
+import com.seeu.ywq.release.model.Picture;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public interface StorageImageService {
 
 
-    Result saveImages(MultipartFile[] files) throws Exception;
+    Result saveImages(MultipartFile[] files, Picture.ALBUM_TYPE[] albumTypes) throws Exception;
 
 
     public class Result {

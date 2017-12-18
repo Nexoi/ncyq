@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "user_login", indexes = {
+@Table(name = "ywq_user_login", indexes = {
         @Index(name = "USERLOGIN_INDEX1", unique = true, columnList = "uid"),
         @Index(name = "USERLOGIN_INDEX2", unique = true, columnList = "phone"),
         @Index(name = "USERLOGIN_INDEX3", unique = true, columnList = "nickname"),
@@ -26,6 +26,11 @@ import java.util.List;
 })
 @DynamicUpdate
 public class UserLogin implements UserDetails {
+    public enum GENDER {
+        male,
+        female
+    }
+
     @ApiParam(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,6 +44,10 @@ public class UserLogin implements UserDetails {
     @ApiParam(hidden = true)
     @Column(length = 20)
     private String nickname;
+
+    @ApiParam(hidden = true)
+    @Enumerated
+    private GENDER gender;
 
     @ApiParam(hidden = true)
     @Column(length = 400)
@@ -169,7 +178,14 @@ public class UserLogin implements UserDetails {
         this.headIconUrl = headIconUrl;
     }
 
-    // 以下是权限验证块
+    public GENDER getGender() {
+        return gender;
+    }
+
+    public void setGender(GENDER gender) {
+        this.gender = gender;
+    }
+// 以下是权限验证块
 
 
     public List<UserAuthRole> getRoles() {

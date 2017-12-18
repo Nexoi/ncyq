@@ -11,11 +11,12 @@ import org.springframework.data.repository.query.Param;
 import javax.transaction.Transactional;
 
 public interface PublishRepository extends JpaRepository<Publish, Long> {
-    Publish findByIdAndUid(@Param("id") Long id, @Param("uid") Long uid);
 
-    Page findAllByUid(@Param("uid") Long uid, Pageable pageable);
+    Publish findByIdAndStatus(@Param("id") Long id, @Param("status") Publish.STATUS status);
 
-    Page findAllByIdAndUid(@Param("id") Long id, @Param("uid") Long uid, Pageable pageable);
+    Publish findByIdAndUidAndStatus(@Param("id") Long id, @Param("uid") Long uid, @Param("status") Publish.STATUS status);
+
+    Page findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") Publish.STATUS status, Pageable pageable);
 
     // 浏览一次
     @Transactional

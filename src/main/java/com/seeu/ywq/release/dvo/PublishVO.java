@@ -1,7 +1,6 @@
 package com.seeu.ywq.release.dvo;
 
 import com.seeu.ywq.release.model.Publish;
-import com.seeu.ywq.release.model.PublishComment;
 
 import java.util.Date;
 import java.util.List;
@@ -17,8 +16,6 @@ public class PublishVO {
     private String title;//标题
 
     private Date createTime;//创建时间
-
-    private Publish.PUBLIC_STATUS state;//状态，正常/封禁
 
     private Integer viewNum; // 浏览次数
 
@@ -73,14 +70,6 @@ public class PublishVO {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public Publish.PUBLIC_STATUS getState() {
-        return state;
-    }
-
-    public void setState(Publish.PUBLIC_STATUS state) {
-        this.state = state;
     }
 
     public Integer getViewNum() {

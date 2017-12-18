@@ -2,8 +2,10 @@ package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
 import com.seeu.ywq.release.dvo.PhotoWallVO;
+import com.seeu.ywq.release.dvo.UserVO;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.repository.UserRepository;
+import com.seeu.ywq.release.service.UserInfoService;
 import com.seeu.ywq.release.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.*;
@@ -28,7 +30,9 @@ import java.util.Map;
 public class UserInfoApi {
 
     @Resource
-    private UserRepository userRepository;
+    private UserRepository userRepository; // post 方法用到
+    @Autowired
+    private UserInfoService userInfoService;
     @Autowired
     private UserPhotoWallService userPhotoWallService;
 
@@ -47,7 +51,7 @@ public class UserInfoApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getMineAll(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser) {
         Long uid = authUser.getUid();
-        User user = userRepository.findOne(uid);
+        UserVO user = userInfoService.findOne(uid);
         if (user == null)
             return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
         // 其余信息
@@ -71,7 +75,7 @@ public class UserInfoApi {
     })
     @GetMapping("/{uid}/all")
     public ResponseEntity getMineAll(@PathVariable("uid") Long uid) {
-        User user = userRepository.findOne(uid);
+        UserVO user = userInfoService.findOne(uid);
         if (user == null)
             return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
 
@@ -97,7 +101,7 @@ public class UserInfoApi {
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getMine(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser) {
-        User user = userRepository.findOne(authUser.getUid());
+        UserVO user = userInfoService.findOne(authUser.getUid());
         return user == null ? ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + authUser.getUid() + "]").build()) : ResponseEntity.ok(user);
     }
 
@@ -114,7 +118,7 @@ public class UserInfoApi {
     })
     @GetMapping("/{uid}")
     public ResponseEntity get(@PathVariable("uid") Long uid) {
-        User user = userRepository.findOne(uid);
+        UserVO user = userInfoService.findOne(uid);
         return user == null ? ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build()) : ResponseEntity.ok(user);
     }
 
@@ -134,6 +138,8 @@ public class UserInfoApi {
         user.setPhone(null); // 电话号码不可修改
         user.setFansNum(null);
         user.setFollowNum(null);
+        user.setTags(null);
+        user.setSkills(null);
         user.setUid(authUser.getUid());
         BeanUtils.copyProperties(user, sourceUser);
         User savedUser = userRepository.save(sourceUser);

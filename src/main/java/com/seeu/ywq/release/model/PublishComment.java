@@ -1,5 +1,7 @@
 package com.seeu.ywq.release.model;
 
+import io.swagger.annotations.ApiParam;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -8,27 +10,36 @@ import java.util.List;
  * 评论列表
  */
 @Entity
-@Table(name = "publish_comments",indexes = {
-        @Index(name = "COMMENT_INDEX1",columnList = "father_id"),
-        @Index(name = "COMMENT_INDEX2",columnList = "publish_id"),
-        @Index(name = "COMMENT_INDEX3",columnList = "uid")
+@Table(name = "ywq_publish_comments", indexes = {
+        @Index(name = "COMMENT_INDEX1", columnList = "father_id"),
+        @Index(name = "COMMENT_INDEX2", columnList = "publish_id"),
+        @Index(name = "COMMENT_INDEX3", columnList = "uid")
 })
 public class PublishComment {
+    @ApiParam(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @ApiParam(hidden = true)
     @Column(name = "publish_id")
     private Long publishId;
+    @ApiParam(hidden = true)
     private Long uid;
+    @ApiParam(hidden = true)
     private String username;
+    @ApiParam(hidden = true)
     private String headIconUrl;
+    @ApiParam(hidden = true)
     private Date commentDate;
+    @ApiParam(hidden = true)
     @Column(length = 400)
     private String text;
 
+    @ApiParam(hidden = true)
     @Column(name = "father_id")
     private Long fatherId; // 父评论ID
+    @ApiParam(hidden = true)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "father_id")
     private List<PublishComment> childComments;
