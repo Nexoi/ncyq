@@ -6,9 +6,8 @@ import com.seeu.ywq.release.dvo.UserVO;
 import com.seeu.ywq.release.model.Tag;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.model.User$Identification;
-import com.seeu.ywq.release.repository.User$IdentificationRepository;
 import com.seeu.ywq.release.repository.UserRepository;
-import com.seeu.ywq.release.service.User$IdentificationService;
+import com.seeu.ywq.release.service.IdentificationService;
 import com.seeu.ywq.release.service.UserInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +22,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Resource
     private UserRepository userRepository;
     @Autowired
-    private User$IdentificationService user$IdentificationService;
+    private IdentificationService identificationService;
 
     @Override
     public UserVO findOne(Long uid) {
         User user = userRepository.findOne(uid);
         UserVO vo = transferToVO(user);
         if (vo != null) {
-            List<User$Identification> identifications = user$IdentificationService.findAllAccessByUid(user.getUid());
+            List<User$Identification> identifications = identificationService.findAllAccessByUid(user.getUid());
             vo.setIdentifications(transferToVO(identifications));
         }
         return vo;
