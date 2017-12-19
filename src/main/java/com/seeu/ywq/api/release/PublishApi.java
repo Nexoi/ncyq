@@ -7,6 +7,7 @@ import com.seeu.ywq.release.model.Publish;
 import com.seeu.ywq.release.model.PublishVideo;
 import com.seeu.ywq.release.model.Video;
 import com.seeu.ywq.release.repository.PublishRepository;
+import com.seeu.ywq.release.repository.PublishVideoRepository;
 import com.seeu.ywq.release.service.PublishService;
 import com.seeu.ywq.release.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Api(tags = {"动态"}, description = "发布新动态/查看动态")
+@Api(tags = {"动态"}, description = "发布新动态/查看动态", position = 10)
 @RestController
 @RequestMapping("/api/v1/publish")
 public class PublishApi {
@@ -33,6 +34,8 @@ public class PublishApi {
     private PublishService publishService;
     @Resource
     private PublishRepository publishRepository;
+    @Resource
+    private PublishVideoRepository publishVideoRepository;
 
     @ApiOperation(value = "获取某一条动态", notes = "根据发布动态ID获取动态内容")
     @ApiResponse(code = 404, message = "找不到该动态")
@@ -101,6 +104,8 @@ public class PublishApi {
             publishVideo.setCreateTime(new Date());
             publishVideo.setDeleteFlag(PublishVideo.DELETE_FLAG.show);
             publishVideo.setUid(authUser.getUid());
+            // 必须提前持久化？no need
+//            PublishVideo savedPublishVideo = publishVideoRepository.save(publishVideo);
             publish.setVideo(publishVideo);
         }
         // 初始化判断
@@ -140,7 +145,8 @@ public class PublishApi {
                     break;
             }
             // 发布信息持久化
-            return ResponseEntity.status(201).body(publishService.transferToVO(publishRepository.save(publish), authUser.getUid()));
+            Publish p = publishRepository.save(publish);
+            return ResponseEntity.status(201).body(publishService.transferToVO(p, authUser.getUid()));
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.code(500).message("服务器异常，文件传输失败").build());

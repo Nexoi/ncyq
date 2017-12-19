@@ -143,6 +143,7 @@ public class PublishServiceImpl implements PublishService {
                 vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vod.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vod.setComments(publishCommentService.transferToVO(publish.getComments()));
+
                 // TODO video 权限得加
                 return vod;
             case word:

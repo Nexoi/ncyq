@@ -5,6 +5,7 @@ import com.seeu.ywq.release.dvo.PhotoWallVO;
 import com.seeu.ywq.release.dvo.UserVO;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.repository.UserRepository;
+import com.seeu.ywq.release.service.IdentificationService;
 import com.seeu.ywq.release.service.UserInfoService;
 import com.seeu.ywq.release.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -138,6 +139,7 @@ public class UserInfoApi {
         user.setPhone(null); // 电话号码不可修改
         user.setFansNum(null);
         user.setFollowNum(null);
+        user.setLikeNum(null);
         user.setTags(null);
         user.setSkills(null);
         user.setUid(authUser.getUid());

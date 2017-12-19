@@ -38,7 +38,7 @@ public class PublishVideo {
     private VIDEO_TYPE videoType;
 
     @ApiParam(hidden = true)
-    @OneToOne(targetEntity = Image.class)
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = Video.class)
     @JoinColumn(name = "video_id", referencedColumnName = "id")
     private Video video;
 

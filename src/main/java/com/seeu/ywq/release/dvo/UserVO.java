@@ -2,6 +2,7 @@ package com.seeu.ywq.release.dvo;
 
 import com.seeu.ywq.release.model.Skill;
 import com.seeu.ywq.release.model.User;
+import io.swagger.annotations.ApiParam;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,6 +13,7 @@ public class UserVO {
     private Long uid;
     private Long fansNum;   // 粉丝数
     private Long followNum; // 关注人数
+    private Long likeNum;   // 点赞人数
 
     private Date birthDay;  // 出生日期间
     private Integer height; // 身高
@@ -134,6 +136,14 @@ public class UserVO {
 
     public void setIdentifications(List<User$IdentificationVO> identifications) {
         this.identifications = identifications;
+    }
+
+    public Long getLikeNum() {
+        return likeNum;
+    }
+
+    public void setLikeNum(Long likeNum) {
+        this.likeNum = likeNum;
     }
 
     public List<Skill> getSkills() {

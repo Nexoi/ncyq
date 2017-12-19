@@ -3,6 +3,7 @@ package com.seeu.ywq.api.release;
 import com.seeu.core.R;
 import com.seeu.ywq.release.service.FansService;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Api(tags = "粉丝关注", description = "粉丝关注列表查看，关注用户",position = 5)
 @RestController
 @RequestMapping("/api/v1")
 public class FansApi {

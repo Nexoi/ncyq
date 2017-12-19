@@ -86,7 +86,7 @@ public class Publish {
     private List<Picture> pictures;//图片(不与数据库做交互)
 
     @ApiParam(hidden = true)
-    @OneToOne(targetEntity = Image.class)
+    @OneToOne(targetEntity = PublishVideo.class)
     @JoinColumn(name = "video_id", referencedColumnName = "id")
     private PublishVideo video;
 
@@ -224,5 +224,8 @@ public class Publish {
 
     public void setComments(List<PublishComment> comments) {
         this.comments = comments;
+    }
+
+    public Publish() {
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 该 api 登陆/注销功能已由 spring security 自动实现
  */
-@Api(tags = "登录", description = "登录/注销")
+@Api(tags = "登录", description = "登录/注销", position = 0)
 @RestController
 public class SignInOutApi {
 

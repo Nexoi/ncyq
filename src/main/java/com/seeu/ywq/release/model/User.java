@@ -1,5 +1,6 @@
 package com.seeu.ywq.release.model;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -36,6 +37,8 @@ public class User {
     private Long fansNum;   // 粉丝数
     @ApiParam(hidden = true)
     private Long followNum; // 关注人数
+    @ApiParam(hidden = true)
+    private Long likeNum;   // 点赞人数
 
     private Date birthDay;  // 出生日期间
     private Integer height; // 身高
@@ -183,5 +186,13 @@ public class User {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Long getLikeNum() {
+        return likeNum;
+    }
+
+    public void setLikeNum(Long likeNum) {
+        this.likeNum = likeNum;
     }
 }
