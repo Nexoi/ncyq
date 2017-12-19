@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
-@Service 
+@Service
 public class QiniuUploadServiceImpl implements ImageUploadService {
     @Override
     public Image uploadWithGetFullInfo(MultipartFile file) throws IOException {

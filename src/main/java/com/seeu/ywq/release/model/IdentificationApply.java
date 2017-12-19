@@ -3,6 +3,7 @@ package com.seeu.ywq.release.model;
 import io.swagger.annotations.ApiParam;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "ywq_identification_apply")
@@ -22,6 +23,8 @@ public class IdentificationApply {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "back_id", referencedColumnName = "id")
     private Image backIdCardImage;
+
+    private Date createTime;
 
     public Long getUid() {
         return uid;
@@ -85,5 +88,13 @@ public class IdentificationApply {
 
     public void setBackIdCardImage(Image backIdCardImage) {
         this.backIdCardImage = backIdCardImage;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

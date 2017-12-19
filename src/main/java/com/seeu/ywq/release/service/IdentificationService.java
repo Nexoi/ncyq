@@ -16,4 +16,6 @@ public interface IdentificationService {
     List<Identification> findAll(); // 全部在运营的列表
 
     IdentificationApply apply(Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage) throws IOException;
+
+    IdentificationApply findApplyInfo(Long uid); // 一个用户只有一份资料
 }

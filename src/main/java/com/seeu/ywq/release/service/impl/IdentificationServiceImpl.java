@@ -15,10 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class IdentificationServiceImpl implements IdentificationService {
+
+
     @Resource
     private IdentificationRepository identificationRepository;
     @Resource
@@ -47,11 +50,17 @@ public class IdentificationServiceImpl implements IdentificationService {
     public IdentificationApply apply(Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage) throws IOException {
         if (applyData == null) return null;
         applyData.setUid(uid);
+        applyData.setCreateTime(new Date());
         // 上传图片
         Image fImage = imageUploadService.uploadWithGetFullInfo(frontImage);
         Image bImage = imageUploadService.uploadWithGetFullInfo(backImage);
         applyData.setFrontIdCardImage(fImage);
         applyData.setBackIdCardImage(bImage);
         return identificationApplyRepository.save(applyData);
+    }
+
+    @Override
+    public IdentificationApply findApplyInfo(Long uid) {
+        return identificationApplyRepository.findOne(uid);
     }
 }

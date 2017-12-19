@@ -47,7 +47,7 @@ public class UserIdentificationApi {
         return ResponseEntity.ok(list);
     }
 
-    @ApiOperation("查看自己的认证列表信息")
+    @ApiOperation("认证信息上传")
     @PostMapping("/apply")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity apply(@AuthenticationPrincipal UserLogin authUser,
@@ -66,4 +66,11 @@ public class UserIdentificationApi {
         }
     }
 
+    @ApiOperation("认证信息下载")
+    @GetMapping("/apply")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getMyApplyInfo(@AuthenticationPrincipal UserLogin authUser) {
+        IdentificationApply apply = identificationService.findApplyInfo(authUser.getUid());
+        return apply == null ? ResponseEntity.status(404).body(R.code(404).message("您还未上传认证信息，请上传后重试").build()) : ResponseEntity.ok(apply);
+    }
 }
