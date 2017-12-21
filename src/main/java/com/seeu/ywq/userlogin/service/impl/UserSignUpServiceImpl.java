@@ -105,6 +105,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setNickname(name);
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(password));
+        userLogin.setLikeNum(0l);
 
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);

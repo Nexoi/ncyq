@@ -176,8 +176,10 @@ public class UserPictureServiceImpl implements UserPictureService {
             if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
                 if (canVisit(uid, picture.getId())) {
                     vo.setImage(picture.getImageOpen());
+                    picture.setAlbumType(Picture.ALBUM_TYPE.open);
                 } else {
                     vo.setImage(picture.getImageClose());
+                    picture.setAlbumType(Picture.ALBUM_TYPE.close);
                 }
             else {
                 vo.setImage(picture.getImageOpen());
@@ -224,8 +226,10 @@ public class UserPictureServiceImpl implements UserPictureService {
                 if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
                     if (canVisit) {
                         vo.setImage(picture.getImageOpen());
+                        picture.setAlbumType(Picture.ALBUM_TYPE.open);
                     } else {
                         vo.setImage(picture.getImageClose());
+                        picture.setAlbumType(Picture.ALBUM_TYPE.close);
                     }
                 else {
                     vo.setImage(picture.getImageOpen());

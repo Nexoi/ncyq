@@ -1,13 +1,7 @@
 package com.seeu.ywq.release.dvo.apppage;
 
-import com.seeu.ywq.release.dvo.TagVO;
-import com.seeu.ywq.release.dvo.User$IdentificationVO;
 import com.seeu.ywq.release.model.Image;
-import com.seeu.ywq.release.model.Skill;
-import com.seeu.ywq.release.model.User;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 public class HomePageVOUser {
@@ -17,10 +11,9 @@ public class HomePageVOUser {
     //    private Long followNum; // 关注人数
     private Long likeNum;   // 点赞人数
 
-    private List<User$IdentificationVO> identifications;
+    private List<Long> identifications;
 
     private Image coverImage; // 封面图片
-
 
     // 从其他地方注入进来
     private String nickname;  //
@@ -36,11 +29,11 @@ public class HomePageVOUser {
         this.uid = uid;
     }
 
-    public List<User$IdentificationVO> getIdentifications() {
+    public List<Long> getIdentifications() {
         return identifications;
     }
 
-    public void setIdentifications(List<User$IdentificationVO> identifications) {
+    public void setIdentifications(List<Long> identifications) {
         this.identifications = identifications;
     }
 

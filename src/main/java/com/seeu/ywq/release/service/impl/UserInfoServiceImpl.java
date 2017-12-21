@@ -1,17 +1,22 @@
 package com.seeu.ywq.release.service.impl;
 
+import com.seeu.system.qiniu.FileUploadService;
 import com.seeu.ywq.release.dvo.User$IdentificationVO;
 import com.seeu.ywq.release.dvo.TagVO;
 import com.seeu.ywq.release.dvo.UserVO;
+import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Tag;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.model.User$Identification;
 import com.seeu.ywq.release.repository.UserRepository;
 import com.seeu.ywq.release.service.IdentificationService;
 import com.seeu.ywq.release.service.UserInfoService;
+import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -21,8 +26,12 @@ import java.util.List;
 public class UserInfoServiceImpl implements UserInfoService {
     @Resource
     private UserRepository userRepository;
+    @Resource
+    private UserLoginRepository userLoginRepository;
     @Autowired
     private IdentificationService identificationService;
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @Override
     public UserVO findOne(Long uid) {
@@ -33,6 +42,35 @@ public class UserInfoServiceImpl implements UserInfoService {
             vo.setIdentifications(transferToVO(identifications));
         }
         return vo;
+    }
+
+    @Override
+    public String updateHeadIcon(Long uid, MultipartFile image) {
+        UserLogin ul = userLoginRepository.findOne(uid);
+        if (ul == null)
+            return null;
+        try {
+            Image imageModel = fileUploadService.uploadImage(image);
+            String url = imageModel.getImageUrl();
+            ul.setHeadIconUrl(url);
+            userLoginRepository.saveAndFlush(ul);
+            return url;
+        } catch (Exception e) {
+            // ..
+        }
+        return null;
+    }
+
+    @Override
+    public STATUS setGender(Long uid, UserLogin.GENDER gender) {
+        UserLogin ul = userLoginRepository.findOne(uid);
+        if (ul == null)
+            return STATUS.failure;
+        if (ul.getGender() != null)
+            return STATUS.has_set;
+        ul.setGender(gender);
+        userLoginRepository.saveAndFlush(ul);
+        return STATUS.success;
     }
 
     private UserVO transferToVO(User user) {

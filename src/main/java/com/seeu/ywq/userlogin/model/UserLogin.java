@@ -20,9 +20,11 @@ import java.util.List;
 @Table(name = "ywq_user_login", indexes = {
         @Index(name = "USERLOGIN_INDEX1", unique = true, columnList = "uid"),
         @Index(name = "USERLOGIN_INDEX2", unique = true, columnList = "phone"),
-        @Index(name = "USERLOGIN_INDEX3", unique = true, columnList = "nickname"),
-        @Index(name = "USERLOGIN_INDEX4", unique = true, columnList = "longitude"),
-        @Index(name = "USERLOGIN_INDEX5", unique = true, columnList = "latitude")
+        @Index(name = "USERLOGIN_INDEX3", unique = false, columnList = "nickname"),
+        @Index(name = "USERLOGIN_INDEX4", unique = false, columnList = "longitude"),
+        @Index(name = "USERLOGIN_INDEX5", unique = false, columnList = "latitude"),
+        @Index(name = "USERLOGIN_INDEX6", unique = false, columnList = "position_block_y"),
+        @Index(name = "USERLOGIN_INDEX7", unique = false, columnList = "position_block_x")
 })
 @DynamicUpdate
 public class UserLogin implements UserDetails {
@@ -64,6 +66,8 @@ public class UserLogin implements UserDetails {
     @Column(name = "last_login_time")
     private Date lastLoginTime;
 
+    @ApiParam(hidden = true)
+    private Long likeNum;   // 点赞人数
     // 最近登陆坐标
     @ApiParam(hidden = true)
     @Column(name = "longitude", precision = 19, scale = 10)
@@ -71,6 +75,14 @@ public class UserLogin implements UserDetails {
     @ApiParam(hidden = true)
     @Column(name = "latitude", precision = 19, scale = 10)
     private BigDecimal latitude; // 纬度
+
+    @ApiParam(hidden = true)
+    @Column(name = "position_block_y")
+    private Long positionBlockY; // 地区标记，1 km 间距，纬度
+
+    @ApiParam(hidden = true)
+    @Column(name = "position_block_x")
+    private Long positionBlockX; // 地区标记，1 km 间距，经度
 
     @ApiParam(hidden = true)
     @Enumerated
@@ -185,7 +197,31 @@ public class UserLogin implements UserDetails {
     public void setGender(GENDER gender) {
         this.gender = gender;
     }
-// 以下是权限验证块
+
+    public Long getLikeNum() {
+        return likeNum;
+    }
+
+    public void setLikeNum(Long likeNum) {
+        this.likeNum = likeNum;
+    }
+
+    public Long getPositionBlockY() {
+        return positionBlockY;
+    }
+
+    public void setPositionBlockY(Long positionBlockY) {
+        this.positionBlockY = positionBlockY;
+    }
+
+    public Long getPositionBlockX() {
+        return positionBlockX;
+    }
+
+    public void setPositionBlockX(Long positionBlockX) {
+        this.positionBlockX = positionBlockX;
+    }
+    // 以下是权限验证块
 
 
     public List<UserAuthRole> getRoles() {

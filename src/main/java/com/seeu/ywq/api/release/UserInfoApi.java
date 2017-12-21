@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -139,7 +140,6 @@ public class UserInfoApi {
         user.setPhone(null); // 电话号码不可修改
         user.setFansNum(null);
         user.setFollowNum(null);
-        user.setLikeNum(null);
         user.setTags(null);
         user.setSkills(null);
         user.setUid(authUser.getUid());
@@ -147,4 +147,31 @@ public class UserInfoApi {
         User savedUser = userRepository.save(sourceUser);
         return ResponseEntity.ok(savedUser);
     }
+
+    @ApiOperation(value = "上传头像（更新）【本人】", notes = "存储/更新用户头像信息，用户需要处于已登陆状态")
+    @PostMapping("/head-icon")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity uploadHeadIcon(@AuthenticationPrincipal UserLogin authUser, MultipartFile image) {
+        String url = userInfoService.updateHeadIcon(authUser.getUid(), image);
+        return (url == null)
+                ? ResponseEntity.badRequest().body(R.code(400).message("头像更新失败").build())
+                : ResponseEntity.ok(R.code(200).message("头像更新成功！").build());
+    }
+
+    @ApiOperation(value = "设定性别【本人】", notes = "每个用户只能设定一次性别，不可修改，用户需要处于已登陆状态")
+    @PostMapping("/gender")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity setGender(@AuthenticationPrincipal UserLogin authUser, UserLogin.GENDER gender) {
+        UserInfoService.STATUS status = userInfoService.setGender(authUser.getUid(), gender);
+        switch (status) {
+            case success:
+                return ResponseEntity.ok(R.code(200).message("设置成功！").build());
+            case has_set:
+                return ResponseEntity.badRequest().body(R.code(4000).message("性别设定之后不可修改").build());
+            case failure:
+            default:
+                return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，请稍后再试").build());
+        }
+    }
+
 }

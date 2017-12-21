@@ -7,8 +7,9 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
-import com.seeu.system.qiniu.ImageUploadService;
+import com.seeu.system.qiniu.FileUploadService;
 import com.seeu.ywq.release.model.Image;
+import com.seeu.ywq.release.model.Video;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +21,9 @@ import java.util.Date;
 import java.util.UUID;
 
 @Service
-public class QiniuUploadServiceImpl implements ImageUploadService {
+public class QiniuUploadServiceImpl implements FileUploadService {
     @Override
-    public Image uploadWithGetFullInfo(MultipartFile file) throws IOException {
+    public Image uploadImage(MultipartFile file) throws IOException {
         String url = upload(file);
         BufferedImage bufferedImg = ImageIO.read(file.getInputStream());
         int imgWidth = bufferedImg.getWidth();
@@ -37,6 +38,29 @@ public class QiniuUploadServiceImpl implements ImageUploadService {
         image.setThumbImage300pxUrl(url + "?imageView2/2/w/300");
         image.setThumbImage500pxUrl(url + "?imageView2/2/w/500");
         return image;
+    }
+
+    @Override
+    public Video uploadVideo(MultipartFile videoFile, MultipartFile coverImage) throws IOException {
+        String url = upload(videoFile);
+        String coverUrl = upload(coverImage);
+        Video video = new Video();
+        // 封面要用户自己传，不支持截屏取图，此处已经存储至 OSS 上
+        video.setSrcUrl(url);
+        video.setCoverUrl(coverUrl);
+        video.setId(null);
+        return video;
+    }
+
+    @Override
+    public Video uploadVideo(MultipartFile videoFile) throws IOException {
+        String url = upload(videoFile);
+        Video video = new Video();
+        // 封面要用户自己传，不支持截屏取图
+        video.setSrcUrl(url);
+        video.setCoverUrl(null);
+        video.setId(null);
+        return video;
     }
 
     @Override

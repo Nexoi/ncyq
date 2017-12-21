@@ -22,7 +22,7 @@ import java.util.List;
  * <p>
  * 标签信息只能查看
  */
-@Api(tags = "标签", description = "查看标签、添加自己的关注标签、设定自己的标签等")
+@Api(tags = "用户标签", description = "查看标签、添加自己的关注标签、设定自己的标签等")
 @RestController
 @RequestMapping("/api/v1/tag")
 public class TagApi {

@@ -1,23 +1,51 @@
-package com.seeu.ywq.release.dvo.apppage;
+package com.seeu.ywq.release.model.apppage;
 
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Video;
-import com.seeu.ywq.release.model.apppage.HomePageVideo;
 
 import javax.persistence.*;
 import java.util.Date;
 
-public class HomePageVOVideo {
+@Entity
+@Table(name = "ywq_page_video")
+public class HomePageVideo {
+    public enum CATEGORY {
+        hd,
+        vr
+    }
+
+    public enum DELETE_FLAG {
+        show,
+        delete
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private HomePageVideo.CATEGORY category;
+    private CATEGORY category;
     private String title;
     private Long uid;
-    private String nickname;
-    private String headIconUrl;
     private Long viewNum;
-    private Date createTime;
+
+    @OneToOne(targetEntity = Image.class)
+    @JoinColumn(name = "cover_image_id", referencedColumnName = "id")
     private Image coverImage;
+
+    @OneToOne(targetEntity = Video.class)
+    @JoinColumn(name = "video_id", referencedColumnName = "id")
     private Video video;
+
+    private DELETE_FLAG deleteFlag;
+
+    private Date createTime;
+
+    public DELETE_FLAG getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(DELETE_FLAG deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
     public Long getId() {
         return id;
@@ -27,11 +55,11 @@ public class HomePageVOVideo {
         this.id = id;
     }
 
-    public HomePageVideo.CATEGORY getCategory() {
+    public CATEGORY getCategory() {
         return category;
     }
 
-    public void setCategory(HomePageVideo.CATEGORY category) {
+    public void setCategory(CATEGORY category) {
         this.category = category;
     }
 
@@ -65,22 +93,6 @@ public class HomePageVOVideo {
 
     public void setVideo(Video video) {
         this.video = video;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getHeadIconUrl() {
-        return headIconUrl;
-    }
-
-    public void setHeadIconUrl(String headIconUrl) {
-        this.headIconUrl = headIconUrl;
     }
 
     public Image getCoverImage() {

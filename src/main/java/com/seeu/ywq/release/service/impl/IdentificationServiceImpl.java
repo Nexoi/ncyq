@@ -1,6 +1,6 @@
 package com.seeu.ywq.release.service.impl;
 
-import com.seeu.system.qiniu.ImageUploadService;
+import com.seeu.system.qiniu.FileUploadService;
 import com.seeu.ywq.release.model.Identification;
 import com.seeu.ywq.release.model.IdentificationApply;
 import com.seeu.ywq.release.model.Image;
@@ -29,7 +29,7 @@ public class IdentificationServiceImpl implements IdentificationService {
     @Resource
     private IdentificationApplyRepository identificationApplyRepository;
     @Autowired
-    private ImageUploadService imageUploadService;
+    private FileUploadService fileUploadService;
 
     @Override
     public List<User$Identification> findAllAccessByUid(Long uid) {
@@ -52,8 +52,8 @@ public class IdentificationServiceImpl implements IdentificationService {
         applyData.setUid(uid);
         applyData.setCreateTime(new Date());
         // 上传图片
-        Image fImage = imageUploadService.uploadWithGetFullInfo(frontImage);
-        Image bImage = imageUploadService.uploadWithGetFullInfo(backImage);
+        Image fImage = fileUploadService.uploadImage(frontImage);
+        Image bImage = fileUploadService.uploadImage(backImage);
         applyData.setFrontIdCardImage(fImage);
         applyData.setBackIdCardImage(bImage);
         return identificationApplyRepository.save(applyData);

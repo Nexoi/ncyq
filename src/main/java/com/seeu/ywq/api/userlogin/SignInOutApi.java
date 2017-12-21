@@ -1,27 +1,43 @@
 package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
+import com.seeu.ywq.release.service.UserPositionService;
+import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 /**
  * 该 api 登陆/注销功能已由 spring security 自动实现
  */
-@Api(tags = "登录", description = "登录/注销", position = 0)
+@Api(tags = "用户登录", description = "登录/注销", position = 0)
 @RestController
 public class SignInOutApi {
+
+    @Autowired
+    private UserPositionService userPositionService;
 
     @ApiResponse(code = 200, message = "登陆成功")
     @ApiOperation(value = "登录账号", notes = "登陆成功只会返回 200 状态码，token 信息会自动写入 cookie，客户端需要支持 cookie；如需要退出账号，请使用 /api/v1/signout 清除 cookie 信息")
     @PostMapping("/api/v1/signin")
-    public void signIn(@RequestParam String phone,
-                       @RequestParam String password) {
+    public void signIn(@AuthenticationPrincipal UserLogin authUser,
+                       @RequestParam String phone,
+                       @RequestParam String password,
+                       @RequestParam(required = false) BigDecimal longitude,
+                       @RequestParam(required = false) BigDecimal latitude) {
+        // 更新登陆信息
+        if (latitude != null && longitude != null && authUser != null) {
+            userPositionService.updatePosition(authUser.getUid(), longitude, latitude);
+        }
         return;
     }
 

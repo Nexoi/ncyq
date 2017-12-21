@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-@Api(tags = "注册账号", description = "短信验证码发送/账号注册", position = 1)
+@Api(tags = "用户注册账号", description = "短信验证码发送/账号注册", position = 1)
 @RestController
 @RequestMapping("/api/v1")
 public class SignUpApi {

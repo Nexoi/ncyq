@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-@Api(tags = "个人认证", description = "个人认证列表查询，个人认证信息查询，申请")
+@Api(tags = "用户个人认证", description = "个人认证列表查询，个人认证信息查询，申请")
 @RestController
 @RequestMapping("/api/v1/identification")
 public class UserIdentificationApi {

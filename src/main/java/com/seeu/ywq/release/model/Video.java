@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiParam;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ywq_vedio")
+@Table(name = "ywq_video")
 public class Video {
     @ApiParam(hidden = true)
     @Id

@@ -17,6 +17,7 @@ public class IdentificationApply {
     private String wechat;
     private String email;
     private String idCardNum;
+    private String notes;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "front_id", referencedColumnName = "id")
     private Image frontIdCardImage;
@@ -96,5 +97,13 @@ public class IdentificationApply {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

@@ -45,7 +45,7 @@ public class QiNiuStorgeServiceImpl implements StorageImageService {
             imagePXList.add(new int[]{imgWidth, imgHeight});
 
             // 上传QiNiu
-            List<String> urls = uploadAndExecuteToHazy(bufferedImg, albumTypes[i]);
+            List<String> urls = uploadAndMayExecuteToHazy(bufferedImg, albumTypes[i]);
             urlList.add(urls);
         }
         // 存储图片 URL 等基本信息到数据库
@@ -89,6 +89,7 @@ public class QiNiuStorgeServiceImpl implements StorageImageService {
         return result;
     }
 
+
     private String uploadOne(ByteArrayInputStream byteInputStream) throws Exception {
         String key = "ywq" + UUID.randomUUID();
         //构造一个带指定Zone对象的配置类
@@ -115,7 +116,7 @@ public class QiNiuStorgeServiceImpl implements StorageImageService {
      * @return
      * @throws Exception
      */
-    private List<String> uploadAndExecuteToHazy(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws Exception {
+    private List<String> uploadAndMayExecuteToHazy(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws Exception {
         List<String> urls = new ArrayList<>();
         // upload src picture
         ByteArrayOutputStream os = new ByteArrayOutputStream();

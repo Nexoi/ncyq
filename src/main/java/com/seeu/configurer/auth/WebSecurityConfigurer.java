@@ -27,6 +27,9 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private YWQAuthenticationProvider ywqAuthenticationProvider;
 
+    @Autowired
+    private LoginSuccessHandle loginSuccessHandle;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(authUserService()); // 只配置了一个数据源，建议用 provider 配置多个，如 CAS、QQ、Weibo 等
@@ -50,7 +53,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 //设置默认登录成功跳转页面
                 .defaultSuccessUrl("/signin-success")
                 .failureUrl("/signin-failure")
-                .successHandler(new LoginSuccessHandle())
+                .successHandler(loginSuccessHandle)
                 .permitAll()
 
                 .and()

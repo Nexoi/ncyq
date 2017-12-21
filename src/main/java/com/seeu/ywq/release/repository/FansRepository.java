@@ -27,4 +27,5 @@ public interface FansRepository extends JpaRepository<Fans, FansPKeys> {
             countQuery = "select count(*) from ywq_fans fans where fans.followed_uid = :followedUid",
             nativeQuery = true)
     Page<Object[]> findItByFollowedUid(@Param("followedUid") Long followedUid, Pageable pageable);
+
 }
