@@ -5,10 +5,11 @@ import com.seeu.ywq.release.dvo.PublishPictureVO;
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Picture;
 import com.seeu.ywq.release.repository.ImageRepository;
-import com.seeu.ywq.release.repository.Publish$UserRepository;
 import com.seeu.ywq.release.repository.UserPictureRepository;
+import com.seeu.ywq.release.service.ResourceAuthService;
 import com.seeu.ywq.release.service.UserPictureService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +28,9 @@ public class UserPictureServiceImpl implements UserPictureService {
     @Resource
     ImageRepository imageRepository;
     @Resource
-    Publish$UserRepository publish$UserRepository;
-    @Resource
     StorageImageService storageImageService;
+    @Autowired
+    private ResourceAuthService resourceAuthService;
 
 
     /**
@@ -133,9 +134,8 @@ public class UserPictureServiceImpl implements UserPictureService {
         return pictures;
     }
 
-    @Override
-    public boolean canVisit(Long uid, Long publishId) {
-        return 0 != publish$UserRepository.countAllByUidAndPublishId(uid, publishId);
+    public boolean canVisit(Long uid, Long publishId, Date currentTime) {
+        return resourceAuthService.canVisit(uid, publishId, currentTime);
     }
 
     /**
@@ -174,7 +174,7 @@ public class UserPictureServiceImpl implements UserPictureService {
             vo.setImage(picture.getImageOpen());
         } else {
             if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
-                if (canVisit(uid, picture.getId())) {
+                if (canVisit(uid, picture.getId(), new Date())) {
                     vo.setImage(picture.getImageOpen());
                     picture.setAlbumType(Picture.ALBUM_TYPE.open);
                 } else {
@@ -214,7 +214,7 @@ public class UserPictureServiceImpl implements UserPictureService {
     @Override
     public List<PublishPictureVO> transferToVO(List<Picture> pictures, Long uid) {
         if (pictures == null || pictures.size() == 0) return new ArrayList<>();
-        boolean canVisit = canVisit(uid, pictures.get(0).getPublishId());
+        boolean canVisit = canVisit(uid, pictures.get(0).getPublishId(), new Date());
         List<PublishPictureVO> vos = new ArrayList<>();
         for (Picture picture : pictures) {
             PublishPictureVO vo = new PublishPictureVO();

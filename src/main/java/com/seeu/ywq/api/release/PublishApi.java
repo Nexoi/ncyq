@@ -7,7 +7,6 @@ import com.seeu.ywq.release.model.Publish;
 import com.seeu.ywq.release.model.PublishVideo;
 import com.seeu.ywq.release.model.Video;
 import com.seeu.ywq.release.repository.PublishRepository;
-import com.seeu.ywq.release.repository.PublishVideoRepository;
 import com.seeu.ywq.release.service.PublishService;
 import com.seeu.ywq.release.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -34,8 +33,6 @@ public class PublishApi {
     private PublishService publishService;
     @Resource
     private PublishRepository publishRepository;
-    @Resource
-    private PublishVideoRepository publishVideoRepository;
 
     @ApiOperation(value = "获取某一条动态", notes = "根据发布动态ID获取动态内容")
     @ApiResponse(code = 404, message = "找不到该动态")
@@ -122,13 +119,13 @@ public class PublishApi {
         publish.setLikeNum(0);
         publish.setViewNum(0);
         publish.setStatus(Publish.STATUS.normal); // 初始化为正常
-        publish.setUnlockPrice(publish.getUnlockPrice() == null ? BigDecimal.ZERO : publish.getUnlockPrice());
+        publish.setUnlockPrice(publish.getUnlockPrice() == null ? 0l : publish.getUnlockPrice());
         publish.setCreateTime(new Date());
         publish.setType(publish.getType());
         try {
             switch (publish.getType()) {
                 case word:
-                    publish.setUnlockPrice(BigDecimal.ZERO);
+                    publish.setUnlockPrice(0l);
                     publish.setPictures(null);
                     publish.setVideo(null);
                     break;
@@ -169,4 +166,7 @@ public class PublishApi {
         publishService.deletePublish(publishId);
         return ResponseEntity.ok().build();
     }
+
+
+
 }

@@ -50,7 +50,7 @@ public class Publish {
     @ApiParam(hidden = true)
     private Date createTime;//创建时间
 
-    private BigDecimal unlockPrice;//解锁需要金额
+    private Long unlockPrice;//解锁需要金额
     @ApiParam(hidden = true)
     @Enumerated
     private STATUS status;//状态，正常/封禁/已删除
@@ -130,11 +130,11 @@ public class Publish {
         this.createTime = createTime;
     }
 
-    public BigDecimal getUnlockPrice() {
+    public Long getUnlockPrice() {
         return unlockPrice;
     }
 
-    public void setUnlockPrice(BigDecimal unlockPrice) {
+    public void setUnlockPrice(Long unlockPrice) {
         this.unlockPrice = unlockPrice;
     }
 

@@ -1,6 +1,8 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.system.sms.service.ISmsSV;
+import com.seeu.ywq.pay.model.Balance;
+import com.seeu.ywq.pay.repository.PayBalanceRepository;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.repository.UserRepository;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -28,6 +31,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     UserAuthRoleRepository userAuthRoleRepository;
     @Resource
     UserRepository userRepository;
+    @Resource
+    PayBalanceRepository payBalanceRepository;
     @Autowired
     JwtUtil jwtUtil;
     @Autowired
@@ -109,17 +114,23 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);
-        // 添加权限
+        // 添加权限 //
         List<UserAuthRole> roles = new ArrayList<>();
         UserAuthRole userAuthRole = userAuthRoleRepository.findByName("ROLE_USER");
         roles.add(userAuthRole);
         userLogin.setRoles(roles);
         UserLogin savedUserLogin = userLoginRepository.save(userLogin);
-        // 添加用户基本信息
+        // 添加用户基本信息 //
         User user = new User();
         user.setUid(savedUserLogin.getUid());
         user.setPhone(phone);
         userRepository.saveAndFlush(user);
+        // 添加用户余额系统 //
+        Balance balance = new Balance();
+        balance.setUid(savedUserLogin.getUid());
+        balance.setBalance(0l);
+        balance.setUpdateTime(new Date());
+        payBalanceRepository.save(balance);
         return UserSignUpService.SIGN_STATUS.signup_success;
     }
 

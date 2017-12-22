@@ -41,8 +41,6 @@ public interface UserPictureService {
      */
     List<Picture> getPictureWithOutSave(Long uid, Long publishId, Picture.ALBUM_TYPE[] albumTypes, MultipartFile[] images) throws Exception;
 
-    boolean canVisit(Long uid, Long pictureId);
-
     /**
      * 匿名访问时
      *

@@ -49,6 +49,11 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
+    public Publish findOne(Long publishId) {
+        return publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
+    }
+
+    @Override
     public Page findAllByUid(Long uid, Long myUid, Pageable pageable) {
         Page page = publishRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
         List<Publish> publishes = page.getContent();

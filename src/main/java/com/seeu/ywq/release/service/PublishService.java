@@ -10,6 +10,12 @@ import java.util.List;
 
 public interface PublishService {
 
+    ///////////////////////////////////////////************** basic query operations ***************////////////////////////////////////////////////////
+
+    Publish findOne(Long publishId);
+
+    ///////////////////////////////////////////************** vo query operations ***************////////////////////////////////////////////////////
+
     Page findAllByUid(Long uid, Long myUid, Pageable pageable);
 
     Page findAllByUid(Long uid, Pageable pageable);

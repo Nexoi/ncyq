@@ -2,24 +2,16 @@ package com.seeu.ywq.release.model;
 
 import java.io.Serializable;
 
-public class Publish$UserKeys implements Serializable {
-    private Long publishId;
+public class ResourceAuthPKeys implements Serializable {
+    private Long resourceId;
     private Long uid;
 
-    public Publish$UserKeys() {
+    public ResourceAuthPKeys() {
     }
 
-    public Publish$UserKeys(Long publishId, Long uid) {
-        this.publishId = publishId;
+    public ResourceAuthPKeys(Long uid, Long resourceId) {
         this.uid = uid;
-    }
-
-    public Long getPublishId() {
-        return publishId;
-    }
-
-    public void setPublishId(Long publishId) {
-        this.publishId = publishId;
+        this.resourceId = resourceId;
     }
 
     public Long getUid() {
@@ -35,7 +27,7 @@ public class Publish$UserKeys implements Serializable {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
-        result = PRIME * result + ((publishId == null) ? 0 : publishId.hashCode());
+        result = PRIME * result + ((resourceId == null) ? 0 : resourceId.hashCode());
         return result;
     }
 
@@ -51,7 +43,7 @@ public class Publish$UserKeys implements Serializable {
             return false;
         }
 
-        final Publish$UserKeys other = (Publish$UserKeys) obj;
+        final ResourceAuthPKeys other = (ResourceAuthPKeys) obj;
         if (uid == null) {
             if (other.uid != null) {
                 return false;
@@ -59,11 +51,11 @@ public class Publish$UserKeys implements Serializable {
         } else if (!uid.equals(other.uid)) {
             return false;
         }
-        if (publishId == null) {
-            if (other.publishId != null) {
+        if (resourceId == null) {
+            if (other.resourceId != null) {
                 return false;
             }
-        } else if (!publishId.equals(other.publishId)) {
+        } else if (!resourceId.equals(other.resourceId)) {
             return false;
         }
         return true;

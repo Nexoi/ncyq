@@ -252,6 +252,14 @@
             <version>[7.2.0, 7.2.99]</version>
         </dependency>
 
+        <!-- AliPay 引用第三方库，记得验证 -->
+        <!-- https://mvnrepository.com/artifact/com.github.1991wangliang/alipay-sdk -->
+        <dependency>
+            <groupId>com.github.1991wangliang</groupId>
+            <artifactId>alipay-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -293,6 +301,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArguments>
+                        <extdirs>${project.basedir}/lib</extdirs>
+                    </compilerArguments>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -311,6 +326,15 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <targetPath>/lib/</targetPath>
+                <includes>
+                    <include>*.jar</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
     <repositories>
