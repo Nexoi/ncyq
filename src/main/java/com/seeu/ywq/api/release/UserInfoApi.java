@@ -138,7 +138,7 @@ public class UserInfoApi {
         user.setFansNum(null);
         user.setFollowNum(null);
         user.setTags(null);
-        user.setSkills(null);
+//        user.setSkills(null);
         user.setUid(authUser.getUid());
         BeanUtils.copyProperties(user, sourceUser);
         User savedUser = userInfoService.saveInfo(sourceUser);

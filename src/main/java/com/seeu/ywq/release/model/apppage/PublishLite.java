@@ -1,33 +1,21 @@
-package com.seeu.ywq.release.model;
+package com.seeu.ywq.release.model.apppage;
 
+import com.seeu.ywq.release.model.Picture;
+import com.seeu.ywq.release.model.Publish;
+import com.seeu.ywq.release.model.PublishVideo;
 import io.swagger.annotations.ApiParam;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 简化版本entity，用于列表展示，表依然对应于 ywq_publish
+ */
 @Entity
 @Table(name = "ywq_publish")
-public class Publish {
-
-    public enum PUBLISH_TYPE {
-        word,
-        picture,
-        video
-    }
-
-    public enum STATUS {
-        normal,
-        block,
-        delete
-    }
-
-    public enum SRC_TYPE {
-        open,
-        close
-    }
+public class PublishLite {
 
     @ApiParam(hidden = true)
     @Id
@@ -42,7 +30,7 @@ public class Publish {
 
     @NotNull
     @Enumerated
-    private PUBLISH_TYPE type;//发布类型，1表示文字，2表示图片，3表示视屏，4表示拍摄
+    private Publish.PUBLISH_TYPE type;//发布类型，1表示文字，2表示图片，3表示视屏，4表示拍摄
 
     @NotNull
     private String title;//标题
@@ -53,7 +41,7 @@ public class Publish {
     private Long unlockPrice;//解锁需要金额
     @ApiParam(hidden = true)
     @Enumerated
-    private STATUS status;//状态，正常/封禁/已删除
+    private Publish.STATUS status;//状态，正常/封禁/已删除
 
     @ApiParam(hidden = true)
     private Integer viewNum; // 浏览次数
@@ -62,18 +50,7 @@ public class Publish {
     private Integer commentNum;//留言数(不与数据库做交互)
 
     @ApiParam(hidden = true)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "publish_id")
-    private List<PublishComment> comments; // 评论列表
-
-    @ApiParam(hidden = true)
     private Integer likeNum;//点赞数(不与数据库做交互)
-
-    @ApiParam(hidden = true)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "publish_id")
-    private List<PublishLikedUser> likedUsers; // 点赞人列表
-
 
     private String labels;//标签（逗号隔开）
 
@@ -106,11 +83,11 @@ public class Publish {
         this.uid = uid;
     }
 
-    public PUBLISH_TYPE getType() {
+    public Publish.PUBLISH_TYPE getType() {
         return type;
     }
 
-    public void setType(PUBLISH_TYPE type) {
+    public void setType(Publish.PUBLISH_TYPE type) {
         this.type = type;
     }
 
@@ -146,11 +123,11 @@ public class Publish {
         this.text = text;
     }
 
-    public STATUS getStatus() {
+    public Publish.STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(STATUS status) {
+    public void setStatus(Publish.STATUS status) {
         this.status = status;
     }
 
@@ -176,14 +153,6 @@ public class Publish {
 
     public void setLikeNum(Integer likeNum) {
         this.likeNum = likeNum;
-    }
-
-    public List<PublishLikedUser> getLikedUsers() {
-        return likedUsers;
-    }
-
-    public void setLikedUsers(List<PublishLikedUser> likedUsers) {
-        this.likedUsers = likedUsers;
     }
 
     public String getLabels() {
@@ -218,14 +187,6 @@ public class Publish {
         this.weight = weight;
     }
 
-    public List<PublishComment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<PublishComment> comments) {
-        this.comments = comments;
-    }
-
-    public Publish() {
+    public PublishLite() {
     }
 }

@@ -1,8 +1,6 @@
 package com.seeu.ywq.release.dvo;
 
-import com.seeu.ywq.release.model.Skill;
 import com.seeu.ywq.release.model.User;
-import io.swagger.annotations.ApiParam;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -31,8 +29,8 @@ public class UserVO {
     private List<TagVO> tags;
 
     private List<User$IdentificationVO> identifications;
-
-    private List<Skill> skills;
+//
+//    private List<Skill> skills;
 
     public Long getUid() {
         return uid;
@@ -144,14 +142,6 @@ public class UserVO {
 
     public void setLikeNum(Long likeNum) {
         this.likeNum = likeNum;
-    }
-
-    public List<Skill> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<Skill> skills) {
-        this.skills = skills;
     }
 
     public Date getBirthDay() {

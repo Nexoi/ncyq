@@ -1,7 +1,7 @@
 //package com.seeu.ywq.api.release;
 //
 //import com.seeu.ywq.release.model.apppage.HomePageUser;
-//import com.seeu.ywq.release.service.AppPageService;
+//import com.seeu.ywq.release.service.apppage.AppHomePageService;
 //import com.seeu.ywq.release.service.FansService;
 //import com.seeu.ywq.release.service.UserPositionService;
 //import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@
 //    private FansService fansService;
 //
 //    @Resource
-//    private AppPageService appPageService;
+//    private AppHomePageService appPageService;
 //
 //    @Resource
 //    private UserPositionService userPositionService;

@@ -9,8 +9,9 @@ import java.util.Date;
 @Table(name = "ywq_page_advertisement")
 public class Advertisement {
     public enum CATEGORY {
-        homepage,
-        videopage
+        HomePage,
+        VideoPage,
+        PublishPage
     }
 
     @Id

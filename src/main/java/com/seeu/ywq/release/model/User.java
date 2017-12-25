@@ -63,8 +63,9 @@ public class User {
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<Identification> identifications;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Skill> skills;
+//    删除，废弃该表
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Skill> skills;
 
     public Long getUid() {
         return uid;
@@ -160,14 +161,6 @@ public class User {
 
     public void setStarSign(STAR_SIGN starSign) {
         this.starSign = starSign;
-    }
-
-    public List<Skill> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<Skill> skills) {
-        this.skills = skills;
     }
 
     public Date getBirthDay() {

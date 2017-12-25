@@ -103,6 +103,11 @@ public class FansServiceImpl implements FansService {
         return new PageImpl(fansVOS, pageable, page.getTotalElements());
     }
 
+    @Override
+    public List<Fans> findAllByFansUid(Long uid) {
+        return fansRepository.findAllByFansUid(uid);
+    }
+
     private List<Long> parseBytesToLongList(Object object) {
         if (object == null) return new ArrayList<>();
         byte[] bytes = (byte[]) object;

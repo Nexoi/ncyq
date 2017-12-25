@@ -1,6 +1,6 @@
 package com.seeu.ywq.api.release;
 
-import com.seeu.ywq.release.service.AppPageService;
+import com.seeu.ywq.release.service.apppage.AppHomePageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,34 +12,34 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "APP页面数据查询接口", description = "首页四栏")
+@Api(tags = "APP页面数据主页接口", description = "首页四栏")
 @RestController
 @RequestMapping("/api/v1/page")
 public class HomePageApi {
     @Autowired
-    private AppPageService appPageService;
+    private AppHomePageService appHomePageService;
 
     @ApiOperation(value = "首页", notes = "字段：newHotPerson 表示“新晋网红”；字段：newActor 表示“新晋演员”")
     @GetMapping("/homepage")
     public ResponseEntity homePage() {
         Map map = new HashMap();
-        map.put("newHotPerson", appPageService.getHomePage_NewHotsPerson());
-        map.put("newActor", appPageService.getHomePage_NewActors());
+        map.put("newHotPerson", appHomePageService.getHomePage_NewHotsPerson());
+        map.put("newActor", appHomePageService.getHomePage_NewActors());
         return ResponseEntity.ok(map);
     }
 
     @ApiOperation(value = "首页广告")
     @GetMapping("/homepage/advertisements")
     public ResponseEntity homePageAdvertisements() {
-        return ResponseEntity.ok(appPageService.getHomePage_Advertisements());
+        return ResponseEntity.ok(appHomePageService.getHomePage_Advertisements());
     }
 
     @ApiOperation(value = "网红", notes = "字段：news 表示“新晋”；字段：suggestion 表示“推荐”")
     @GetMapping("/hot-person")
     public ResponseEntity hotPerson() {
         Map map = new HashMap();
-        map.put("news", appPageService.getHotsPerson_New());
-        map.put("suggestion", appPageService.getHotsPerson_Suggestion());
+        map.put("news", appHomePageService.getHotsPerson_New());
+        map.put("suggestion", appHomePageService.getHotsPerson_Suggestion());
         return ResponseEntity.ok(map);
     }
 
@@ -47,8 +47,8 @@ public class HomePageApi {
     @GetMapping("/youwu")
     public ResponseEntity youwu() {
         Map map = new HashMap();
-        map.put("news", appPageService.getYouWuPage_New());
-        map.put("suggestion", appPageService.getYouWuPage_Suggestion());
+        map.put("news", appHomePageService.getYouWuPage_New());
+        map.put("suggestion", appHomePageService.getYouWuPage_Suggestion());
         return ResponseEntity.ok(map);
     }
 
@@ -56,14 +56,14 @@ public class HomePageApi {
     @GetMapping("/video")
     public ResponseEntity video() {
         Map map = new HashMap();
-        map.put("hd", appPageService.getVideo_HD());
-        map.put("vr", appPageService.getVideo_VR());
+        map.put("hd", appHomePageService.getVideo_HD());
+        map.put("vr", appHomePageService.getVideo_VR());
         return ResponseEntity.ok(map);
     }
 
     @ApiOperation(value = "视频页广告")
     @GetMapping("/video/advertisements")
     public ResponseEntity videoAdvertisements() {
-        return ResponseEntity.ok(appPageService.getVideo_Advertisements());
+        return ResponseEntity.ok(appHomePageService.getVideo_Advertisements());
     }
 }

@@ -1,9 +1,9 @@
-package com.seeu.ywq.release.service;
+package com.seeu.ywq.release.service.apppage;
 
 import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
 import com.seeu.ywq.release.dvo.apppage.HomePageVOVideo;
 import com.seeu.ywq.release.dvo.apppage.PositionUserVO;
-import com.seeu.ywq.release.model.apppage.HomePageVideo;
+import com.seeu.ywq.release.model.apppage.PublishLite;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,4 +31,9 @@ public interface AppVOService {
     PositionUserVO formPositionDistanceUserVO(Object[] objects);
 
     List<PositionUserVO> formPositionDistanceUserVO(List<Object[]> objects);
+
+    // vo for publish
+    PublishLite formPublishLite(Object[] objects);
+
+    List<PublishLite> formPublishLite(List<Object[]> objects);
 }

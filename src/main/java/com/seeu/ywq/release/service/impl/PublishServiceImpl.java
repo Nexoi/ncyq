@@ -79,7 +79,6 @@ public class PublishServiceImpl implements PublishService {
     @Override
     public PublishVO transferToVO(Publish publish, boolean canVisitClosedResource) {
         if (publish == null) return null;
-        boolean canVisit = false;
         switch (publish.getType()) {
             case picture:
                 PublishVOPicture vop = new PublishVOPicture();
@@ -87,8 +86,8 @@ public class PublishServiceImpl implements PublishService {
                 vop.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vop.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vop.setComments(publishCommentService.transferToVO(publish.getComments()));
-                vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), canVisit));
-                vop.setPictures(userPictureService.transferToVO(publish.getPictures(), canVisit));
+                vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), canVisitClosedResource));
+                vop.setPictures(userPictureService.transferToVO(publish.getPictures(), canVisitClosedResource));
                 return vop;
             case video:
                 PublishVOVideo vod = new PublishVOVideo();

@@ -1,4 +1,4 @@
-package com.seeu.ywq.release.service;
+package com.seeu.ywq.release.service.apppage;
 
 import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
 import com.seeu.ywq.release.dvo.apppage.HomePageVOVideo;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * APP 首页搜索、列表
  */
-public interface AppPageService {
+public interface AppHomePageService {
 
     STATUS addAdvertisement(MultipartFile image, Advertisement.CATEGORY category, String url, Integer order);
 

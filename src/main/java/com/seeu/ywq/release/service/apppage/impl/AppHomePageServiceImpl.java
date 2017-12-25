@@ -1,4 +1,4 @@
-package com.seeu.ywq.release.service.impl;
+package com.seeu.ywq.release.service.apppage.impl;
 
 import com.seeu.third.qiniu.FileUploadService;
 import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
@@ -11,11 +11,11 @@ import com.seeu.ywq.release.model.apppage.HomePageUserPKeys;
 import com.seeu.ywq.release.model.apppage.HomePageVideo;
 import com.seeu.ywq.release.repository.ImageRepository;
 import com.seeu.ywq.release.repository.VideoRepository;
+import com.seeu.ywq.release.repository.apppage.HomePageUserRepository;
 import com.seeu.ywq.release.repository.apppage.HomePageVideoRepository;
 import com.seeu.ywq.release.repository.apppage.PageAdvertisementRepository;
-import com.seeu.ywq.release.repository.apppage.HomePageUserRepository;
-import com.seeu.ywq.release.service.AppPageService;
-import com.seeu.ywq.release.service.AppVOService;
+import com.seeu.ywq.release.service.apppage.AppHomePageService;
+import com.seeu.ywq.release.service.apppage.AppVOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class AppPageServiceImpl implements AppPageService {
+public class AppHomePageServiceImpl implements AppHomePageService {
 
     @Resource
     private PageAdvertisementRepository pageAdvertisementRepository;
@@ -131,12 +131,12 @@ public class AppPageServiceImpl implements AppPageService {
 
     @Override
     public List<Advertisement> getHomePage_Advertisements() {
-        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.homepage);
+        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.HomePage);
     }
 
     @Override
     public List<Advertisement> getVideo_Advertisements() {
-        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.videopage);
+        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.VideoPage);
     }
 
     @Override

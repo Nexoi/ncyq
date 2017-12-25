@@ -319,15 +319,15 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>${project.basedir}</directory>
-                <targetPath>/src/main/resources</targetPath>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>${project.basedir}</directory>-->
+                <!--<targetPath>/src/main/resources</targetPath>-->
+                <!--<includes>-->
+                    <!--<include>**/*.properties</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
+        <!--</resources>-->
     </build>
 
     <repositories>

@@ -1,17 +1,21 @@
-package com.seeu.ywq.release.service.impl;
+package com.seeu.ywq.release.service.apppage.impl;
 
 import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
 import com.seeu.ywq.release.dvo.apppage.HomePageVOVideo;
 import com.seeu.ywq.release.dvo.apppage.PositionUserVO;
+import com.seeu.ywq.release.dvo.apppage.PublishLiteVO;
 import com.seeu.ywq.release.model.Image;
+import com.seeu.ywq.release.model.Publish;
+import com.seeu.ywq.release.model.PublishVideo;
 import com.seeu.ywq.release.model.Video;
 import com.seeu.ywq.release.model.apppage.HomePageVideo;
-import com.seeu.ywq.release.service.AppVOService;
+import com.seeu.ywq.release.model.apppage.PublishLite;
+import com.seeu.ywq.release.service.apppage.AppVOService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -142,6 +146,43 @@ public class AppVOServiceImpl implements AppVOService {
         return vos;
     }
 
+    @Override
+    public PublishLite formPublishLite(Object[] objects) {
+        if (objects == null || objects.length != 15) return null;// 长度必须是 15 个
+        PublishLite vo = new PublishLite();
+        vo.setId(parseLong(objects[0]));
+        vo.setUid(parseLong(objects[1]));
+        vo.setWeight(parseInt(objects[2]));
+        vo.setType(paresPUBLISH_TYPE(objects[3]));
+        vo.setTitle(parseString(objects[4]));
+        vo.setCreateTime(parseDate(objects[5]));
+        vo.setUnlockPrice((parseDouble(objects[6])).longValue());
+        vo.setViewNum(parseInt(objects[7]));
+        vo.setCommentNum(parseInt(objects[8]));
+        vo.setLikeNum(parseInt(objects[9]));
+        vo.setLabels(parseString(objects[10]));
+        vo.setText(parseString(objects[11]));
+        // 视频更多详情信息可在此补足
+        Video video = new Video();
+        video.setId(parseLong(objects[12]));
+        video.setCoverUrl(parseString(objects[13]));
+        video.setSrcUrl(parseString(objects[14]));
+        PublishVideo publishVideo = new PublishVideo();
+        publishVideo.setVideo(video);
+        vo.setVideo(publishVideo);
+        return vo;
+    }
+
+    @Override
+    public List<PublishLite> formPublishLite(List<Object[]> objects) {
+        if (objects == null || objects.size() == 0) return new ArrayList<>();
+        List<PublishLite> list = new ArrayList();
+        for (Object[] object : objects) {
+            list.add(formPublishLite(object));
+        }
+        return list;
+    }
+
     private List<Long> parseBytesToLongList(Object object) {
         if (object == null) return new ArrayList<>();
         byte[] bytes = (byte[]) object;
@@ -198,5 +239,21 @@ public class AppVOServiceImpl implements AppVOService {
         if (object == null) return null;
         int categoryIndex = Integer.parseInt(object.toString());
         return (categoryIndex == 0) ? HomePageVideo.CATEGORY.hd : HomePageVideo.CATEGORY.vr;
+    }
+
+
+    private Publish.PUBLISH_TYPE paresPUBLISH_TYPE(Object object) {
+        if (object == null) return null;
+        int categoryIndex = Integer.parseInt(object.toString());
+        switch (categoryIndex) {
+            case 0:
+                return Publish.PUBLISH_TYPE.word;
+            case 1:
+                return Publish.PUBLISH_TYPE.picture;
+            case 2:
+                return Publish.PUBLISH_TYPE.video;
+            default:
+                return Publish.PUBLISH_TYPE.word;
+        }
     }
 }

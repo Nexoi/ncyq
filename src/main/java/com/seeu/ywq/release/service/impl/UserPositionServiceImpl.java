@@ -2,7 +2,7 @@ package com.seeu.ywq.release.service.impl;
 
 import com.seeu.ywq.release.dvo.apppage.PositionUserVO;
 import com.seeu.ywq.release.repository.apppage.PagePositionUserRepository;
-import com.seeu.ywq.release.service.AppVOService;
+import com.seeu.ywq.release.service.apppage.AppVOService;
 import com.seeu.ywq.release.service.UserPositionService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
