@@ -1,16 +1,19 @@
 package com.seeu.ywq.pay.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "ywq_pay_balance")
+@Table(name = "ywq_pay_balance", indexes = {
+        @Index(name = "PAY_BALANCE_INDEX1", columnList = "bind_uid")
+})
 public class Balance {
     @Id
     private Long uid;
+
+    @Column(name = "bind_uid")
+    private Long bindUid;
+
     @Column(name = "balance")
     private Long balance;
 
@@ -38,5 +41,13 @@ public class Balance {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getBindUid() {
+        return bindUid;
+    }
+
+    public void setBindUid(Long bindUid) {
+        this.bindUid = bindUid;
     }
 }

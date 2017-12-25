@@ -4,8 +4,7 @@ import com.seeu.core.R;
 import com.seeu.ywq.release.dvo.PhotoWallVO;
 import com.seeu.ywq.release.dvo.UserVO;
 import com.seeu.ywq.release.model.User;
-import com.seeu.ywq.release.repository.UserRepository;
-import com.seeu.ywq.release.service.IdentificationService;
+import com.seeu.ywq.release.repository.UserInfoRepository;
 import com.seeu.ywq.release.service.UserInfoService;
 import com.seeu.ywq.release.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -31,8 +30,6 @@ import java.util.Map;
 @RequestMapping("/api/v1/user")
 public class UserInfoApi {
 
-    @Resource
-    private UserRepository userRepository; // post 方法用到
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
@@ -136,7 +133,7 @@ public class UserInfoApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity saveOrUpdate(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser,
                                        User user) {
-        User sourceUser = userRepository.findOne(authUser.getUid());
+        User sourceUser = userInfoService.findOneInfo(authUser.getUid());
         user.setPhone(null); // 电话号码不可修改
         user.setFansNum(null);
         user.setFollowNum(null);
@@ -144,7 +141,7 @@ public class UserInfoApi {
         user.setSkills(null);
         user.setUid(authUser.getUid());
         BeanUtils.copyProperties(user, sourceUser);
-        User savedUser = userRepository.save(sourceUser);
+        User savedUser = userInfoService.saveInfo(sourceUser);
         return ResponseEntity.ok(savedUser);
     }
 

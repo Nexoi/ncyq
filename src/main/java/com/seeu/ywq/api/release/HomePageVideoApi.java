@@ -2,16 +2,15 @@ package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
 import com.seeu.ywq.release.dvo.apppage.SimpleUserVO;
-import com.seeu.ywq.release.model.FansPKeys;
 import com.seeu.ywq.release.model.apppage.HomePageVideo;
 import com.seeu.ywq.release.model.apppage.HomePageVideoComment;
-import com.seeu.ywq.release.repository.FansRepository;
 import com.seeu.ywq.release.repository.apppage.HomePageVideoCommentRepository;
-import com.seeu.ywq.release.repository.apppage.HomePageVideoRepository;
+import com.seeu.ywq.release.service.FansService;
+import com.seeu.ywq.release.service.apppage.HomePageVideoCommentService;
+import com.seeu.ywq.release.service.apppage.HomePageVideoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.*;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,13 +29,13 @@ import java.util.Map;
 public class HomePageVideoApi {
 
     @Resource
-    private HomePageVideoRepository homePageVideoRepository;
+    private HomePageVideoService homePageVideoService;
     @Resource
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
     @Resource
-    private FansRepository fansRepository;
+    private FansService fansService;
     @Resource
-    private HomePageVideoCommentRepository homePageVideoCommentRepository;
+    private HomePageVideoCommentService homePageVideoCommentService;
 
     @ApiOperation(value = "查看视频详情", notes = "推荐视频列表按时间最新排序；评论列表按时间最新排序")
     @ApiResponses({
@@ -54,25 +53,21 @@ public class HomePageVideoApi {
                               @ApiParam(value = "详情页评论每页数量，默认 10 条")
                               @RequestParam(defaultValue = "6") Integer commentSize
     ) {
-        HomePageVideo video = homePageVideoRepository.findOne(videoId);
+        HomePageVideo video = homePageVideoService.findOne(videoId); // 已经保护浏览次数 +1 操作
         if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
             return ResponseEntity.status(404).body(R.code(404).message("找不到该视频").build());
-        // 浏览一次
-        homePageVideoRepository.viewItOnce(videoId);
         // 注入发布者用户信息
         Long uid = video.getUid();
-        UserLogin ul = userLoginRepository.findOne(uid);
-        SimpleUserVO userVO = new SimpleUserVO();
-        BeanUtils.copyProperties(ul, userVO);   // if ul==null，则默认设定为空
+        SimpleUserVO userVO = userReactService.findOneAndTransferToVO(uid);
         userVO.setFollowed(false); // 默认关注为 false
         // 检查关注情况
         if (authUser != null) {
-            userVO.setFollowed(fansRepository.exists(new FansPKeys(authUser.getUid(), uid)));
+            userVO.setFollowed(fansService.hasFollowedHer(authUser.getUid(), uid));
         }
         // 查看发布者最近发布的视频信息（按时间最新排序）
-        Page page = homePageVideoRepository.findAllByUid(uid, new PageRequest(suggestPage, suggestSize, new Sort(Sort.Direction.DESC, "createTime")));
+        Page page = homePageVideoService.findAllByUid(uid, new PageRequest(suggestPage, suggestSize, new Sort(Sort.Direction.DESC, "createTime")));
         // 评论信息（按时间最新排序）
-        Page comment_page = homePageVideoCommentRepository.findAllByVideoIdAndDeleteFlagAndFatherIdIsNull(videoId, HomePageVideoComment.DELETE_FLAG.show, new PageRequest(commentPage, commentSize, new Sort(Sort.Direction.DESC, "commentDate")));
+        Page comment_page = homePageVideoCommentService.findAllByVideoId(videoId, new PageRequest(commentPage, commentSize, new Sort(Sort.Direction.DESC, "commentDate")));
         Map map = new HashMap();
         map.put("video", video);
         map.put("user", userVO);
@@ -89,7 +84,7 @@ public class HomePageVideoApi {
                                       @RequestParam(defaultValue = "0") Integer page,
                                       @ApiParam(value = "详情页评论每页数量，默认 6 条")
                                       @RequestParam(defaultValue = "6") Integer size) {
-        Page comment_page = homePageVideoCommentRepository.findAllByVideoIdAndDeleteFlagAndFatherIdIsNull(videoId, HomePageVideoComment.DELETE_FLAG.show, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "commentDate")));
+        Page comment_page = homePageVideoCommentService.findAllByVideoId(videoId, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "commentDate")));
         return ResponseEntity.ok(comment_page);
     }
 
@@ -103,7 +98,7 @@ public class HomePageVideoApi {
         comment.setUid(authUser.getUid());
         comment.setUsername(authUser.getNickname());
         comment.setVideoId(videoId);
-        comment = homePageVideoCommentRepository.save(comment);
+        comment = homePageVideoCommentService.save(comment);
         return ResponseEntity.status(201).body(comment);
     }
 
@@ -122,7 +117,7 @@ public class HomePageVideoApi {
         comment.setUsername(authUser.getNickname());
         comment.setVideoId(videoId);
         comment.setFatherId(fatherId);
-        comment = homePageVideoCommentRepository.save(comment);
+        comment = homePageVideoCommentService.save(comment);
         return ResponseEntity.status(201).body(comment);
     }
 
@@ -131,8 +126,8 @@ public class HomePageVideoApi {
     public ResponseEntity deleteComment(@AuthenticationPrincipal UserLogin authUser,
                                         @PathVariable Long videoId,
                                         @PathVariable Long commentId) {
-        HomePageVideoComment comment = homePageVideoCommentRepository.findOne(commentId);
-        if (comment == null || comment.getDeleteFlag() != HomePageVideoComment.DELETE_FLAG.show)
+        HomePageVideoComment comment = homePageVideoCommentService.findOne(commentId);
+        if (comment == null)
             return ResponseEntity.status(404).body(R.code(404).message("找不到该评论").build());
         if (!authUser.getUid().equals(comment.getUid()))
             return ResponseEntity.badRequest().body(R.code(4000).message("不可以删除非自己评论的内容").build());
@@ -140,7 +135,7 @@ public class HomePageVideoApi {
 //            return ResponseEntity.badRequest().body(R.code(4001).message("该评论信息和视频不对应，无法删除").build());
         // 软删除（deleteFlag）
         comment.setDeleteFlag(HomePageVideoComment.DELETE_FLAG.delete);
-        homePageVideoCommentRepository.save(comment);
+        homePageVideoCommentService.save(comment);
         return ResponseEntity.ok().body(R.code(200).message("删除成功！").build());
     }
 }

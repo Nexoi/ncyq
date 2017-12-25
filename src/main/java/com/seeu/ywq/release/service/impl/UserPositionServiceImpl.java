@@ -5,7 +5,7 @@ import com.seeu.ywq.release.repository.apppage.PagePositionUserRepository;
 import com.seeu.ywq.release.service.AppVOService;
 import com.seeu.ywq.release.service.UserPositionService;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class UserPositionServiceImpl implements UserPositionService {
     @Resource
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
     @Resource
     private PagePositionUserRepository pagePositionUserRepository;
     @Autowired
@@ -30,30 +30,36 @@ public class UserPositionServiceImpl implements UserPositionService {
      */
     @Override
     public void updatePosition(Long uid, BigDecimal longitude, BigDecimal latitude) {
-        UserLogin userLogin = userLoginRepository.findOne(uid);
+        UserLogin userLogin = userReactService.findOne(uid);
         if (userLogin != null) {
             userLogin.setLongitude(longitude);
             userLogin.setLatitude(latitude);
             userLogin.setPositionBlockY(convertPositionToBlock(latitude));
             userLogin.setPositionBlockX(convertPositionToBlock(longitude));
-            userLoginRepository.save(userLogin);
+            userReactService.save(userLogin);
         }
     }
 
     @Override
-    public Page<PositionUserVO> findNear(Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable) {
-        Page page = pagePositionUserRepository.findAllByPositionBolck(convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pageable);
-        List<Object[]> list = page.getContent();
-        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
-        return new PageImpl<PositionUserVO>(voList, new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), new Sort(Sort.Direction.ASC, "distance")), page.getTotalElements());
+    public Page<PositionUserVO> findNear(Long uid, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable) {
+//        Page page = pagePositionUserRepository.findAllByPositionBolck(uid, convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pb);
+//        List<Object[]> list = page.getContent();
+//        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
+        List list = pagePositionUserRepository.findAllWithDistanceByPositionBlock(uid, (latitude), (longitude), distance, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
+        Integer totalSize = pagePositionUserRepository.countWithDistancePositionBlock(uid, latitude, longitude, distance);
+        List<PositionUserVO> voList = appVOService.formPositionDistanceUserVO(list);
+        return new PageImpl<PositionUserVO>(voList, new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), new Sort(Sort.Direction.ASC, "distance")), totalSize);
     }
 
     @Override
-    public Page<PositionUserVO> findNear(UserLogin.GENDER gender, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable) {
-        Page page = pagePositionUserRepository.findAllByPositionBolckAndGender(gender.ordinal(), convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pageable);
-        List<Object[]> list = page.getContent();
-        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
-        return new PageImpl<PositionUserVO>(voList, new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), new Sort(Sort.Direction.ASC, "distance")), page.getTotalElements());
+    public Page<PositionUserVO> findNear(Long uid, UserLogin.GENDER gender, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable) {
+//        Page page = pagePositionUserRepository.findAllByPositionBolckAndGender(uid, gender.ordinal(), convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pb);
+//        List<Object[]> list = page.getContent();
+//        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
+        List list = pagePositionUserRepository.findAllWithDistanceByPositionBlockAndGender(uid, gender.ordinal(), (latitude), (longitude), distance, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
+        Integer totalSize = pagePositionUserRepository.countWithDistancePositionBlockGender(uid, gender.ordinal(), latitude, longitude, distance);
+        List<PositionUserVO> voList = appVOService.formPositionDistanceUserVO(list);
+        return new PageImpl<PositionUserVO>(voList, new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), new Sort(Sort.Direction.ASC, "distance")), totalSize);
     }
 
     @Override

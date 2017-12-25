@@ -1,4 +1,4 @@
-package com.seeu.system.payment.impl;
+package com.seeu.third.payment.impl;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;

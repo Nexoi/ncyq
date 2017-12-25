@@ -1,7 +1,10 @@
 package com.seeu.configurer.auth;
 
+import com.seeu.ywq.userlogin.service.impl.TokenPersistentServiceImpl;
+import com.seeu.ywq.userlogin.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -11,7 +14,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import javax.sql.DataSource;
 
 /**
  * Created by neo on 25/09/2017.
@@ -30,11 +37,18 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private LoginSuccessHandle loginSuccessHandle;
 
+    @Autowired
+    private TokenPersistentServiceImpl tokenPersistentService;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(authUserService()); // 只配置了一个数据源，建议用 provider 配置多个，如 CAS、QQ、Weibo 等
         auth.authenticationProvider(ywqAuthenticationProvider);
     }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -59,8 +73,12 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 //开启cookie保存用户数据
                 .rememberMe()
+                // token 持久化
+                .tokenRepository(tokenPersistentService)
+                .userDetailsService(userDetailsService)
                 //设置cookie有效期
                 .tokenValiditySeconds(tokenInterval)
+                .rememberMeParameter("remember-me")
                 //设置cookie的私钥
                 .key("privateKeyxx")
 

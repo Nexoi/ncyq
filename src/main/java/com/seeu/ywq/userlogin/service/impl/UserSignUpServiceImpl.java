@@ -1,15 +1,14 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.system.sms.service.ISmsSV;
-import com.seeu.ywq.pay.model.Balance;
-import com.seeu.ywq.pay.repository.PayBalanceRepository;
+import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.release.model.User;
-import com.seeu.ywq.release.repository.UserRepository;
+import com.seeu.ywq.release.repository.UserInfoRepository;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserAuthRoleRepository;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
 import com.seeu.ywq.utils.jwt.JwtConstant;
@@ -20,19 +19,18 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class UserSignUpServiceImpl implements UserSignUpService {
     @Resource
-    UserLoginRepository userLoginRepository;
+    UserReactService userReactService;
     @Resource
     UserAuthRoleRepository userAuthRoleRepository;
     @Resource
-    UserRepository userRepository;
+    UserInfoRepository userInfoRepository;
     @Resource
-    PayBalanceRepository payBalanceRepository;
+    BalanceService balanceService;
     @Autowired
     JwtUtil jwtUtil;
     @Autowired
@@ -110,7 +108,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setNickname(name);
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(password));
-        userLogin.setLikeNum(0l);
+        userLogin.setLikeNum(0L);
 
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);
@@ -119,18 +117,14 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         UserAuthRole userAuthRole = userAuthRoleRepository.findByName("ROLE_USER");
         roles.add(userAuthRole);
         userLogin.setRoles(roles);
-        UserLogin savedUserLogin = userLoginRepository.save(userLogin);
+        UserLogin savedUserLogin = userReactService.save(userLogin);
         // 添加用户基本信息 //
         User user = new User();
         user.setUid(savedUserLogin.getUid());
         user.setPhone(phone);
-        userRepository.saveAndFlush(user);
-        // 添加用户余额系统 //
-        Balance balance = new Balance();
-        balance.setUid(savedUserLogin.getUid());
-        balance.setBalance(0l);
-        balance.setUpdateTime(new Date());
-        payBalanceRepository.save(balance);
+        userInfoRepository.saveAndFlush(user);
+        // 初始化用户余额系统 //
+        balanceService.initAccount(savedUserLogin.getUid(),null);
         return UserSignUpService.SIGN_STATUS.signup_success;
     }
 
@@ -141,12 +135,12 @@ public class UserSignUpServiceImpl implements UserSignUpService {
      * @return
      */
     public UserSignUpService.SIGN_STATUS writtenOff(Long uid) {
-        if (!userLoginRepository.exists(uid))
+        if (!userReactService.exists(uid))
             return UserSignUpService.SIGN_STATUS.written_off_failure;
         UserLogin user = new UserLogin();
         user.setUid(uid);
         user.setMemberStatus(USER_STATUS.DISTORY);
-        userLoginRepository.save(user);
+        userReactService.save(user);
         return UserSignUpService.SIGN_STATUS.written_off_success;
     }
 

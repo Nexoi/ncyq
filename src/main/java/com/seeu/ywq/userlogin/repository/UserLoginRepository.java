@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import javax.transaction.Transactional;
 
 public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
+
     UserLogin findByPhone(@Param("phone") String phone);
 
     @Transactional

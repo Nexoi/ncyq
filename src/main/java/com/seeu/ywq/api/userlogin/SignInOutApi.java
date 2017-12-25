@@ -32,6 +32,7 @@ public class SignInOutApi {
     public void signIn(@AuthenticationPrincipal UserLogin authUser,
                        @RequestParam String phone,
                        @RequestParam String password,
+                       @RequestParam(value = "remember-me", required = false) Boolean rememberMe,
                        @RequestParam(required = false) BigDecimal longitude,
                        @RequestParam(required = false) BigDecimal latitude) {
         // 更新登陆信息

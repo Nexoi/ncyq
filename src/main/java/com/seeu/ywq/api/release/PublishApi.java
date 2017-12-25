@@ -6,7 +6,6 @@ import com.seeu.ywq.release.model.Picture;
 import com.seeu.ywq.release.model.Publish;
 import com.seeu.ywq.release.model.PublishVideo;
 import com.seeu.ywq.release.model.Video;
-import com.seeu.ywq.release.repository.PublishRepository;
 import com.seeu.ywq.release.service.PublishService;
 import com.seeu.ywq.release.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Api(tags = {"动态"}, description = "发布新动态/查看动态", position = 10)
@@ -31,8 +29,6 @@ public class PublishApi {
     private UserPictureService userPictureService;
     @Autowired
     private PublishService publishService;
-    @Resource
-    private PublishRepository publishRepository;
 
     @ApiOperation(value = "获取某一条动态", notes = "根据发布动态ID获取动态内容")
     @ApiResponse(code = 404, message = "找不到该动态")
@@ -142,8 +138,8 @@ public class PublishApi {
                     break;
             }
             // 发布信息持久化
-            Publish p = publishRepository.save(publish);
-            return ResponseEntity.status(201).body(publishService.transferToVO(p, authUser.getUid()));
+            Publish p = publishService.save(publish);
+            return ResponseEntity.status(201).body(publishService.transferToVO(p, true));
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.code(500).message("服务器异常，文件传输失败").build());
@@ -155,7 +151,7 @@ public class PublishApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity delete(@AuthenticationPrincipal UserLogin authUser,
                                  @PathVariable("publishId") Long publishId) {
-        Publish publish = publishRepository.findByIdAndUidAndStatus(publishId, authUser.getUid(), Publish.STATUS.normal);
+        Publish publish = publishService.findOne(authUser.getUid(), publishId);
         if (publish == null) {
             return ResponseEntity.status(404).body(R.code(404).message("您无此动态信息").build());
         }
@@ -166,7 +162,6 @@ public class PublishApi {
         publishService.deletePublish(publishId);
         return ResponseEntity.ok().build();
     }
-
 
 
 }

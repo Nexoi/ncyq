@@ -20,6 +20,11 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
     }
 
     @Override
+    public boolean canVisit(Long uid, Long resourceId) {
+        return canVisit(uid, resourceId, new Date());
+    }
+
+    @Override
     public void activeResource(Long uid, Long resourceId, Integer day) {
         if (day == null || day <= 0) return;
         ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, resourceId));

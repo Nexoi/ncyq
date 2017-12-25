@@ -1,6 +1,6 @@
 package com.seeu.ywq.release.service.impl;
 
-import com.seeu.system.qiniu.FileUploadService;
+import com.seeu.third.qiniu.FileUploadService;
 import com.seeu.ywq.release.model.Identification;
 import com.seeu.ywq.release.model.IdentificationApply;
 import com.seeu.ywq.release.model.Image;

@@ -41,37 +41,18 @@ public interface UserPictureService {
      */
     List<Picture> getPictureWithOutSave(Long uid, Long publishId, Picture.ALBUM_TYPE[] albumTypes, MultipartFile[] images) throws Exception;
 
+
     /**
-     * 匿名访问时
-     *
      * @param picture
+     * @param canVisitClosedResource
      * @return
      */
-    PublishPictureVO transferToVO(Picture picture);
+    PublishPictureVO transferToVO(Picture picture, boolean canVisitClosedResource);
 
     /**
-     * 实名访问时，包括【本人】访问
-     *
-     * @param picture
-     * @param uid
-     * @return
-     */
-    PublishPictureVO transferToVO(Picture picture, Long uid);
-
-    /**
-     * 匿名访问时
-     *
      * @param pictures
+     * @param canVisitClosedResource
      * @return
      */
-    List<PublishPictureVO> transferToVO(List<Picture> pictures);
-
-    /**
-     * 实名访问时，包括【本人】访问
-     *
-     * @param pictures
-     * @param uid
-     * @return
-     */
-    List<PublishPictureVO> transferToVO(List<Picture> pictures, Long uid);
+    List<PublishPictureVO> transferToVO(List<Picture> pictures, boolean canVisitClosedResource);
 }

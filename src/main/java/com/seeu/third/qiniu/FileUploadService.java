@@ -1,4 +1,4 @@
-package com.seeu.system.qiniu;
+package com.seeu.third.qiniu;
 
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Video;

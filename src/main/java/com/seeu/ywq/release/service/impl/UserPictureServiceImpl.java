@@ -138,51 +138,45 @@ public class UserPictureServiceImpl implements UserPictureService {
         return resourceAuthService.canVisit(uid, publishId, currentTime);
     }
 
-    /**
-     * 匿名
-     *
-     * @param picture
-     * @return
-     */
-    @Override
-    public PublishPictureVO transferToVO(Picture picture) {
-        if (picture == null) return null;
-        PublishPictureVO vo = new PublishPictureVO();
-        BeanUtils.copyProperties(picture, vo);
-        if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
-            vo.setImage(picture.getImageClose());
-        else {
-            vo.setImage(picture.getImageOpen());
-        }
-        return vo;
-    }
+//    /**
+//     * 匿名
+//     *
+//     * @param picture
+//     * @return
+//     */
+//    @Override
+//    public PublishPictureVO transferToVO(Picture picture) {
+//        if (picture == null) return null;
+//        PublishPictureVO vo = new PublishPictureVO();
+//        BeanUtils.copyProperties(picture, vo);
+//        if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
+//            vo.setImage(picture.getImageClose());
+//        else {
+//            vo.setImage(picture.getImageOpen());
+//        }
+//        return vo;
+//    }
 
     /**
-     * 实名或【本人】
-     *
      * @param picture
-     * @param uid
+     * @param canVisitClosedResource
      * @return
      */
     @Override
-    public PublishPictureVO transferToVO(Picture picture, Long uid) {
+    public PublishPictureVO transferToVO(Picture picture, boolean canVisitClosedResource) {
         if (picture == null) return null;
         PublishPictureVO vo = new PublishPictureVO();
         BeanUtils.copyProperties(picture, vo);
-        if (picture.getUid().equals(uid)) {
-            // 由于此处是存储操作，用户自己可见，所以返回信息为清晰图片地址即可
+        if (Picture.ALBUM_TYPE.open == picture.getAlbumType()) {
             vo.setImage(picture.getImageOpen());
+            vo.setAlbumType(Picture.ALBUM_TYPE.open);
         } else {
-            if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
-                if (canVisit(uid, picture.getId(), new Date())) {
-                    vo.setImage(picture.getImageOpen());
-                    picture.setAlbumType(Picture.ALBUM_TYPE.open);
-                } else {
-                    vo.setImage(picture.getImageClose());
-                    picture.setAlbumType(Picture.ALBUM_TYPE.close);
-                }
-            else {
+            if (canVisitClosedResource) {
                 vo.setImage(picture.getImageOpen());
+                vo.setAlbumType(Picture.ALBUM_TYPE.open);
+            } else {
+                vo.setImage(picture.getImageClose());
+                vo.setAlbumType(Picture.ALBUM_TYPE.close);
             }
         }
         return vo;
@@ -195,49 +189,50 @@ public class UserPictureServiceImpl implements UserPictureService {
      * @return
      */
     @Override
-    public List<PublishPictureVO> transferToVO(List<Picture> pictures) {
+    public List<PublishPictureVO> transferToVO(List<Picture> pictures, boolean canVisitClosedResource) {
         if (pictures == null || pictures.size() == 0) return new ArrayList<>();
         List<PublishPictureVO> vos = new ArrayList<>();
         for (Picture picture : pictures) {
-            vos.add(transferToVO(picture));
+            vos.add(transferToVO(picture, canVisitClosedResource));
         }
         return vos;
     }
 
-    /**
-     * 实名或【本人】
-     *
-     * @param pictures
-     * @param uid
-     * @return
-     */
-    @Override
-    public List<PublishPictureVO> transferToVO(List<Picture> pictures, Long uid) {
-        if (pictures == null || pictures.size() == 0) return new ArrayList<>();
-        boolean canVisit = canVisit(uid, pictures.get(0).getPublishId(), new Date());
-        List<PublishPictureVO> vos = new ArrayList<>();
-        for (Picture picture : pictures) {
-            PublishPictureVO vo = new PublishPictureVO();
-            BeanUtils.copyProperties(picture, vo);
-            if (picture.getUid().equals(uid)) {
-                // 由于此处是存储操作，用户自己可见，所以返回信息为清晰图片地址即可
-                vo.setImage(picture.getImageOpen());
-            } else {
-                if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
-                    if (canVisit) {
-                        vo.setImage(picture.getImageOpen());
-                        picture.setAlbumType(Picture.ALBUM_TYPE.open);
-                    } else {
-                        vo.setImage(picture.getImageClose());
-                        picture.setAlbumType(Picture.ALBUM_TYPE.close);
-                    }
-                else {
-                    vo.setImage(picture.getImageOpen());
-                }
-            }
-            vos.add(vo);
-        }
-        return vos;
-    }
+//    /**
+//     * 实名或【本人】
+//     *
+//     * @param pictures
+//     * @param uid
+//     * @return
+//     */
+//    @Override
+//    public List<PublishPictureVO> transferToVO(List<Picture> pictures, Long uid) {
+//        if (pictures == null || pictures.size() == 0) return new ArrayList<>();
+//        boolean canVisit = canVisit(uid, pictures.get(0).getPublishId(), new Date());
+//        List<PublishPictureVO> vos = new ArrayList<>();
+//        for (Picture picture : pictures) {
+//            PublishPictureVO vo = new PublishPictureVO();
+//            BeanUtils.copyProperties(picture, vo);
+//            if (picture.getUid().equals(uid)) {
+//                // 由于此处是存储操作，用户自己可见，所以返回信息为清晰图片地址即可
+//                vo.setImage(picture.getImageOpen());
+//                vo.setAlbumType(Picture.ALBUM_TYPE.open);
+//            } else {
+//                if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
+//                    if (canVisit) {
+//                        vo.setImage(picture.getImageOpen());
+//                        vo.setAlbumType(Picture.ALBUM_TYPE.open);
+//                    } else {
+//                        vo.setImage(picture.getImageClose());
+//                        vo.setAlbumType(Picture.ALBUM_TYPE.close);
+//                    }
+//                else {
+//                    vo.setImage(picture.getImageOpen());
+//                }
+//            }
+//            vos.add(vo);
+//        }
+//        return vos;
+//    }
 
 }

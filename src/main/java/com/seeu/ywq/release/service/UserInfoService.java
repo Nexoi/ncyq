@@ -1,10 +1,16 @@
 package com.seeu.ywq.release.service;
 
 import com.seeu.ywq.release.dvo.UserVO;
+import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserInfoService {
+
+    User findOneInfo(Long uid);
+
+    User saveInfo(User user);
+
     UserVO findOne(Long uid);
 
     /**

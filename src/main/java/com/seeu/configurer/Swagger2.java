@@ -25,17 +25,25 @@ public class Swagger2 {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("APP接口")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.seeu"))
                 .paths(PathSelectors.ant("/api/v1/**"))
                 .build();
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.any())
-//                .paths(PathSelectors.ant("/api/**"))
-//                .build();
     }
+
+    @Bean
+    public Docket adminApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("管理员平台")
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.seeu"))
+                .paths(PathSelectors.ant("/api/admin/v1/**"))
+                .build();
+    }
+
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()

@@ -5,8 +5,7 @@ import com.seeu.ywq.release.model.Fans;
 import com.seeu.ywq.release.model.FansPKeys;
 import com.seeu.ywq.release.repository.FansRepository;
 import com.seeu.ywq.release.service.FansService;
-import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,12 @@ public class FansServiceImpl implements FansService {
     @Resource
     private FansRepository fansRepository;
     @Resource
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
+
+    @Override
+    public boolean hasFollowedHer(Long myUid, Long herUid) {
+        return fansRepository.exists(new FansPKeys(myUid, herUid));
+    }
 
     @Override
     public Page findPageByFansUid(Long fansUid, Pageable pageable) {
@@ -47,7 +51,7 @@ public class FansServiceImpl implements FansService {
     @Override
     public STATUS followSomeone(Long myUid, Long hisUid) {
         // 有这个人？
-        if (!userLoginRepository.exists(hisUid))
+        if (!userReactService.exists(hisUid))
             return STATUS.not_such_person;
         // 先查看自己是否已经关注过对方
         Fans fans = fansRepository.findOne(new FansPKeys(myUid, hisUid));

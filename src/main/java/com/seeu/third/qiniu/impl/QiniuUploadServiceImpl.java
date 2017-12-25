@@ -1,4 +1,4 @@
-package com.seeu.system.qiniu.impl;
+package com.seeu.third.qiniu.impl;
 
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
@@ -7,7 +7,7 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
-import com.seeu.system.qiniu.FileUploadService;
+import com.seeu.third.qiniu.FileUploadService;
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Video;
 import org.springframework.stereotype.Service;

@@ -22,7 +22,13 @@ public interface AppVOService {
 
     List<HomePageVOVideo> formVideoVO(List<Object[]> objects);
 
+    // select 不带 distance，需要 java 计算
     PositionUserVO formPositionUserVO(Object[] objects, BigDecimal longitude, BigDecimal latitude);
 
     List<PositionUserVO> formPositionUserVO(List<Object[]> objects, BigDecimal longitude, BigDecimal latitude);
+
+    // select 自带 distance
+    PositionUserVO formPositionDistanceUserVO(Object[] objects);
+
+    List<PositionUserVO> formPositionDistanceUserVO(List<Object[]> objects);
 }

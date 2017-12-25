@@ -1,4 +1,4 @@
-package com.seeu.system.payment;
+package com.seeu.third.payment;
 
 /**
  * 第三方充值/提现接口

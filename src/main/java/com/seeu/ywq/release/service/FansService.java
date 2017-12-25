@@ -5,13 +5,15 @@ import org.springframework.data.domain.Pageable;
 
 public interface FansService {
 
+    boolean hasFollowedHer(Long myUid, Long herUid);
+
     Page findPageByFansUid(Long fansUid, Pageable pageable);
 
     Page findPageByFollowedUid(Long followedUid, Pageable pageable);
 
     STATUS followSomeone(Long myUid, Long hisUid);
 
-    public enum STATUS{
+    public enum STATUS {
         not_such_person,
         have_followed,
         success,

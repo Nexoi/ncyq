@@ -1,11 +1,6 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.model.Publish;
-import com.seeu.ywq.release.model.PublishLikedUser;
-import com.seeu.ywq.release.model.PublishLikedUserPKeys;
-import com.seeu.ywq.release.repository.PublishLikedUserRepository;
-import com.seeu.ywq.release.repository.PublishRepository;
 import com.seeu.ywq.release.service.PublishService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
@@ -17,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * 动态内容交互API

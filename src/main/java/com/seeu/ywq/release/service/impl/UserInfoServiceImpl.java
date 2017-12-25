@@ -1,18 +1,18 @@
 package com.seeu.ywq.release.service.impl;
 
-import com.seeu.system.qiniu.FileUploadService;
-import com.seeu.ywq.release.dvo.User$IdentificationVO;
+import com.seeu.third.qiniu.FileUploadService;
 import com.seeu.ywq.release.dvo.TagVO;
+import com.seeu.ywq.release.dvo.User$IdentificationVO;
 import com.seeu.ywq.release.dvo.UserVO;
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Tag;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.model.User$Identification;
-import com.seeu.ywq.release.repository.UserRepository;
+import com.seeu.ywq.release.repository.UserInfoRepository;
 import com.seeu.ywq.release.service.IdentificationService;
 import com.seeu.ywq.release.service.UserInfoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,17 +25,27 @@ import java.util.List;
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
     @Resource
-    private UserRepository userRepository;
+    private UserInfoRepository userInfoRepository;
     @Resource
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
     @Autowired
     private IdentificationService identificationService;
     @Autowired
     private FileUploadService fileUploadService;
 
     @Override
+    public User findOneInfo(Long uid) {
+        return userInfoRepository.findOne(uid);
+    }
+
+    @Override
+    public User saveInfo(User user) {
+        return userInfoRepository.save(user);
+    }
+
+    @Override
     public UserVO findOne(Long uid) {
-        User user = userRepository.findOne(uid);
+        User user = userInfoRepository.findOne(uid);
         UserVO vo = transferToVO(user);
         if (vo != null) {
             List<User$Identification> identifications = identificationService.findAllAccessByUid(user.getUid());
@@ -46,14 +56,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public String updateHeadIcon(Long uid, MultipartFile image) {
-        UserLogin ul = userLoginRepository.findOne(uid);
+        UserLogin ul = userReactService.findOne(uid);
         if (ul == null)
             return null;
         try {
             Image imageModel = fileUploadService.uploadImage(image);
             String url = imageModel.getImageUrl();
             ul.setHeadIconUrl(url);
-            userLoginRepository.saveAndFlush(ul);
+            userReactService.save(ul);
             return url;
         } catch (Exception e) {
             // ..
@@ -63,13 +73,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public STATUS setGender(Long uid, UserLogin.GENDER gender) {
-        UserLogin ul = userLoginRepository.findOne(uid);
+        UserLogin ul = userReactService.findOne(uid);
         if (ul == null)
             return STATUS.failure;
         if (ul.getGender() != null)
             return STATUS.has_set;
         ul.setGender(gender);
-        userLoginRepository.saveAndFlush(ul);
+        userReactService.save(ul);
         return STATUS.success;
     }
 

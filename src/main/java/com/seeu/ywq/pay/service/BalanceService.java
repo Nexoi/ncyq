@@ -15,4 +15,7 @@ public interface BalanceService {
     void plus(Long uid, Long diamonds);
 
     void minus(Long uid, Long diamonds) throws BalanceNotEnoughException;
+
+    // 初始化一个账户，如果该账户存在，则不初始化
+    void initAccount(Long uid, Long bindUid);
 }

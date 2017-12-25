@@ -1,11 +1,11 @@
-package com.seeu.system.gaussion;
+package com.seeu.third.gaussion;
 /*
  ** Copyright 2005 Huxtable.com. All rights reserved.
  */
 
-import com.seeu.system.gaussion.utils.ConvolveFilter;
-import com.seeu.system.gaussion.utils.ImageMath;
-import com.seeu.system.gaussion.utils.PixelUtils;
+import com.seeu.third.gaussion.utils.ConvolveFilter;
+import com.seeu.third.gaussion.utils.ImageMath;
+import com.seeu.third.gaussion.utils.PixelUtils;
 
 import java.awt.image.*;
 

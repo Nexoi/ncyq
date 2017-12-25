@@ -10,32 +10,25 @@ import java.util.List;
 
 public interface PublishService {
 
-    ///////////////////////////////////////////************** basic query operations ***************////////////////////////////////////////////////////
+    ///////////////////////////////////////////************** basic curd operations ***************////////////////////////////////////////////////////
 
     Publish findOne(Long publishId);
 
+    Publish findOne(Long uid, Long publishId);
+
+    Publish save(Publish publish);
+
     ///////////////////////////////////////////************** vo query operations ***************////////////////////////////////////////////////////
 
-    Page findAllByUid(Long uid, Long myUid, Pageable pageable);
+    Page findAllByUid(Long uid, boolean canVisitClosedResource, Pageable pageable);
 
-    Page findAllByUid(Long uid, Pageable pageable);
-
-    PublishVO findOneByPublishId(Long publishId);
-
-    PublishVO findOneByPublishId(Long publishId, Long uid);
+    PublishVO findOneByPublishId(Long publishId, boolean canVisitClosedResource);
 
     ///////////////////////////////////////////************** transfer operations ***************////////////////////////////////////////////////////
 
-    PublishVO transferToVO(Publish publish, Long uid);
+    PublishVO transferToVO(Publish publish, boolean canVisitClosedResource);
 
-    List<PublishVO> transferToVO(List<Publish> publishs, Long uid);
-
-    //【匿名】
-    PublishVO transferToVO(Publish publish);
-
-    //【匿名】
-    List<PublishVO> transferToVO(List<Publish> publishs);
-
+    List<PublishVO> transferToVO(List<Publish> publishs, boolean canVisitClosedResource);
 
     ///////////////////////////////////////////************** other operations ***************////////////////////////////////////////////////////
 

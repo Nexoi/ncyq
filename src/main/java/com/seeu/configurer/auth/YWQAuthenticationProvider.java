@@ -2,7 +2,7 @@ package com.seeu.configurer.auth;
 
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class YWQAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -27,7 +27,7 @@ public class YWQAuthenticationProvider implements AuthenticationProvider {
 
         // 普通 账号／密码 验证
         // 用户必须为【正常状态】用户
-        UserLogin user = userLoginRepository.findByPhone(phone);
+        UserLogin user = userReactService.findByPhone(phone);
         if (user != null
                 && user.getPassword().equals(password)
                 && user.getMemberStatus() != null

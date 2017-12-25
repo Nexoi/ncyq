@@ -2,7 +2,7 @@ package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
 import io.swagger.annotations.*;
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/api/v1")
 public class SignUpApi {
     @Resource
-    private UserLoginRepository userLoginRepository;
+    private UserReactService userReactService;
     @Autowired
     private UserSignUpService userSignUpService;
     @Autowired
@@ -63,7 +63,7 @@ public class SignUpApi {
                                  @ApiParam(name = "注册码校验签名，存在 cookie 中，不需要手动传入")
                                  @CookieValue(required = false) String signCheck) {
         // 检查手机号码是否被注册
-        if (userLoginRepository.findByPhone(phone) != null) {
+        if (userReactService.findByPhone(phone) != null) {
             return ResponseEntity.badRequest().body(R.code(4006).message("该手机号码已被注册").build());
         }
         if (signCheck == null || signCheck.trim().length() < 10)
@@ -94,9 +94,9 @@ public class SignUpApi {
     public ResponseEntity resetPassword(@AuthenticationPrincipal UserLogin authUser, String password) {
         if (password == null || password.length() < 6)
             return ResponseEntity.badRequest().body(R.code(400).message("密码长度太短，需大于 6 位").build());
-        UserLogin userLogin = userLoginRepository.findByPhone(authUser.getPhone());
+        UserLogin userLogin = userReactService.findByPhone(authUser.getPhone());
         userLogin.setPassword(md5Service.encode(password));
-        userLoginRepository.save(userLogin);
+        userReactService.save(userLogin);
         return ResponseEntity.ok(R.code(200).message("修改密码成功").build());
     }
 }

@@ -12,6 +12,8 @@ import java.util.Date;
         @Index(name = "ORDER_LOG_INDEX2", columnList = "event")
 })
 public class OrderLog {
+
+
     public enum EVENT {
         REWARD,
         RECEIVE_REWARD,
@@ -39,6 +41,18 @@ public class OrderLog {
     private Long diamonds;
 
     private Date createTime;        // 订单创建时间（创建即视作完成交易）
+
+    public OrderLog() {
+    }
+
+    public OrderLog(String orderId, Long uid, EVENT event, TYPE type, Long diamonds, Date createTime) {
+        this.orderId = orderId;
+        this.uid = uid;
+        this.event = event;
+        this.type = type;
+        this.diamonds = diamonds;
+        this.createTime = createTime;
+    }
 
     public String getOrderId() {
         return orderId;

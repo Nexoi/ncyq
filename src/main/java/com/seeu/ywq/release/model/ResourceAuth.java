@@ -8,7 +8,7 @@ import java.util.Date;
  */
 @Entity
 @IdClass(ResourceAuthPKeys.class)
-@Table(name = "ywq_publish_unlock_resources")
+@Table(name = "ywq_resources_unlock")
 public class ResourceAuth {
     @Id
     @Column(name = "resource_id")

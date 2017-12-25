@@ -1,11 +1,9 @@
 package com.seeu.ywq.userlogin.service;
 
 import com.seeu.ywq.userlogin.model.USER_STATUS;
-import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 /**
  * Created by neo on 25/11/2017.
@@ -27,8 +25,8 @@ public class UserSignInService {
         sign_exception
     }
 
-    @Resource
-    UserLoginRepository userLoginRepository;
+    @Autowired
+    private UserReactService userReactService;
 
     /**
      * 邮箱登录
@@ -41,7 +39,7 @@ public class UserSignInService {
         if (email == null || password == null)
             return SIGN_STATUS.signin_error_no_such_user;
         email = email.trim();
-        UserLogin user = userLoginRepository.findByPhone(email);
+        UserLogin user = userReactService.findByPhone(email);
         if (user == null)
             return SIGN_STATUS.signin_error_no_such_user;
         if (!user.getPassword().equals(password))

@@ -7,10 +7,7 @@ import com.seeu.ywq.release.model.*;
 import com.seeu.ywq.release.repository.PublishCommentRepository;
 import com.seeu.ywq.release.repository.PublishLikedUserRepository;
 import com.seeu.ywq.release.repository.PublishRepository;
-import com.seeu.ywq.release.service.PublishCommentService;
-import com.seeu.ywq.release.service.PublishLikedUserService;
-import com.seeu.ywq.release.service.PublishService;
-import com.seeu.ywq.release.service.UserPictureService;
+import com.seeu.ywq.release.service.*;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +32,14 @@ public class PublishServiceImpl implements PublishService {
     private PublishLikedUserService publishLikedUserService;
     @Autowired
     private PublishCommentService publishCommentService;
+    @Autowired
+    private ResourceAuthService resourceAuthService;
+
+    /* 以下两个数据源只在此类使用 **/
     @Resource
     private PublishLikedUserRepository publishLikedUserRepository;
     @Resource
     private PublishCommentRepository publishCommentRepository;
-
-    @Override
-    public PublishVO findOneByPublishId(Long publishId, Long uid) {
-        Publish publish = publishRepository.findByIdAndUidAndStatus(publishId, uid, Publish.STATUS.normal);
-        if (publish == null) return null;
-        //.. 如果为本人，则不会做权限数据库搜索
-        return transferToVO(publish, uid);
-    }
 
     @Override
     public Publish findOne(Long publishId) {
@@ -54,40 +47,39 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
-    public Page findAllByUid(Long uid, Long myUid, Pageable pageable) {
+    public Publish findOne(Long uid, Long publishId) {
+        return publishRepository.findByIdAndUidAndStatus(publishId, uid, Publish.STATUS.normal);
+    }
+
+    @Override
+    public Publish save(Publish publish) {
+        return publishRepository.save(publish);
+    }
+
+    @Override
+    public Page findAllByUid(Long uid, boolean canVisitClosedResource, Pageable pageable) {
         Page page = publishRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
         List<Publish> publishes = page.getContent();
         if (publishes == null || publishes.size() == 0)
             return page;
-        List<PublishVO> vos = transferToVO(publishes, myUid);
+        List<PublishVO> vos = transferToVO(publishes, canVisitClosedResource);
         return new PageImpl(vos, pageable, page.getTotalElements());
     }
 
-    //【匿名】
+
     @Override
-    public PublishVO findOneByPublishId(Long publishId) {
-        Publish publish = publishRepository.findOne(publishId);
+    public PublishVO findOneByPublishId(Long publishId, boolean canVisitClosedResource) {
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null) return null;
-        return transferToVO(publish);
-    }
-
-    //【匿名】
-    @Override
-    public Page findAllByUid(Long uid, Pageable pageable) {
-        Page page = publishRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
-        List<Publish> publishes = page.getContent();
-        if (publishes == null || publishes.size() == 0)
-            return page;
-        List<PublishVO> vos = transferToVO(publishes);
-        return new PageImpl(vos, pageable, page.getTotalElements());
+        return transferToVO(publish, canVisitClosedResource);
     }
 
     ///////////////////////////////////////////************** transfer operations ***************////////////////////////////////////////////////////
 
     @Override
-    public PublishVO transferToVO(Publish publish, Long uid) {
+    public PublishVO transferToVO(Publish publish, boolean canVisitClosedResource) {
         if (publish == null) return null;
-
+        boolean canVisit = false;
         switch (publish.getType()) {
             case picture:
                 PublishVOPicture vop = new PublishVOPicture();
@@ -95,8 +87,8 @@ public class PublishServiceImpl implements PublishService {
                 vop.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vop.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vop.setComments(publishCommentService.transferToVO(publish.getComments()));
-                vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), uid));
-                vop.setPictures(userPictureService.transferToVO(publish.getPictures(), uid));
+                vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), canVisit));
+                vop.setPictures(userPictureService.transferToVO(publish.getPictures(), canVisit));
                 return vop;
             case video:
                 PublishVOVideo vod = new PublishVOVideo();
@@ -118,57 +110,11 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
-    public List<PublishVO> transferToVO(List<Publish> publishs, Long uid) {
+    public List<PublishVO> transferToVO(List<Publish> publishs, boolean canVisitClosedResource) {
         List<PublishVO> vos = new ArrayList<>();
         for (Publish publish : publishs) {
             if (publish == null) continue;
-            vos.add(transferToVO(publish, uid));
-        }
-        return vos;
-    }
-
-    //【匿名】
-    @Override
-    public PublishVO transferToVO(Publish publish) {
-        if (publish == null) return null;
-
-        switch (publish.getType()) {
-            case picture:
-                PublishVOPicture vop = new PublishVOPicture();
-                BeanUtils.copyProperties(publish, vop);
-                vop.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
-                vop.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
-                vop.setComments(publishCommentService.transferToVO(publish.getComments()));
-                vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0)));
-                vop.setPictures(userPictureService.transferToVO(publish.getPictures()));
-                return vop;
-            case video:
-                PublishVOVideo vod = new PublishVOVideo();
-                BeanUtils.copyProperties(publish, vod);
-                vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
-                vod.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
-                vod.setComments(publishCommentService.transferToVO(publish.getComments()));
-
-                // TODO video 权限得加
-                return vod;
-            case word:
-            default:
-                PublishVO vo = new PublishVO();
-                BeanUtils.copyProperties(publish, vo);
-                vo.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
-                vo.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
-                vo.setComments(publishCommentService.transferToVO(publish.getComments()));
-                return vo;
-        }
-    }
-
-    //【匿名】
-    @Override
-    public List<PublishVO> transferToVO(List<Publish> publishs) {
-        List<PublishVO> vos = new ArrayList<>();
-        for (Publish publish : publishs) {
-            if (publish == null) continue;
-            vos.add(transferToVO(publish));
+            vos.add(transferToVO(publish, canVisitClosedResource));
         }
         return vos;
     }
@@ -180,7 +126,7 @@ public class PublishServiceImpl implements PublishService {
         Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null) return null;
         publishRepository.viewItOnce(publishId);
-        return transferToVO(publish);
+        return transferToVO(publish, false);
     }
 
     @Override
@@ -188,7 +134,7 @@ public class PublishServiceImpl implements PublishService {
         Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null) return null;
         publishRepository.viewItOnce(publishId);
-        return transferToVO(publish, uid);
+        return transferToVO(publish, resourceAuthService.canVisit(uid, publishId));
     }
 
     @Override

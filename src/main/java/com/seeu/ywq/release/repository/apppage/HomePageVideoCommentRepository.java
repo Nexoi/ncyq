@@ -8,9 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface HomePageVideoCommentRepository extends JpaRepository<HomePageVideoComment, Long> {
-    Page<HomePageVideoComment> findAllByVideoIdAndDeleteFlag(@Param("videoId") Long videoId,
-                                                                        @Param("deleteFlag") HomePageVideoComment.DELETE_FLAG deleteFlag,
-                                                                        Pageable pageable);
+    HomePageVideoComment findByVideoIdAndDeleteFlag(@Param("videoId") Long videoId,
+                                                    @Param("deleteFlag") HomePageVideoComment.DELETE_FLAG deleteFlag);
 
     Page<HomePageVideoComment> findAllByVideoIdAndDeleteFlagAndFatherIdIsNull(@Param("videoId") Long videoId,
                                                                               @Param("deleteFlag") HomePageVideoComment.DELETE_FLAG deleteFlag,

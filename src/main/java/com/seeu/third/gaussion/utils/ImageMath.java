@@ -1,4 +1,4 @@
-package com.seeu.system.gaussion.utils;
+package com.seeu.third.gaussion.utils;
 
 /*
  ** Copyright 2005 Huxtable.com. All rights reserved.

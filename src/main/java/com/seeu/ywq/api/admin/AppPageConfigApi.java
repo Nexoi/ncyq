@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Api(tags = "【管理员】APP 页面配置/广告配置", description = "APP 首页四个页面内容")
 @RestController("adminAppPageConfigApi")
-@RequestMapping("/api/v1/admin/app")
+@RequestMapping("/api/admin/v1/app/page")
 //@PreAuthorize("hasRole('ADMIN')")
 public class AppPageConfigApi {
 

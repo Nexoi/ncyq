@@ -104,7 +104,7 @@ public class AppVOServiceImpl implements AppVOService {
         Double longitudeDlt = parseDouble(objects[4]) - longitude.doubleValue();
         Double latitudeDlt = parseDouble(objects[5]) - latitude.doubleValue();
         Double radius = Math.sqrt(longitudeDlt * longitudeDlt + latitudeDlt * latitudeDlt);
-        vo.setDistance(BigDecimal.valueOf(radius * 100000)); // 转换成米
+        vo.setDistance(BigDecimal.valueOf(radius * 100000).setScale(2, BigDecimal.ROUND_UP)); // 转换成米
         return vo;
     }
 
@@ -114,6 +114,30 @@ public class AppVOServiceImpl implements AppVOService {
         List<PositionUserVO> vos = new ArrayList<>();
         for (Object[] object : objects) {
             vos.add(formPositionUserVO(object, longitude, latitude));
+        }
+        return vos;
+    }
+
+    @Override
+    public PositionUserVO formPositionDistanceUserVO(Object[] objects) {
+        if (objects == null || objects.length != 5) return null;// 长度必须是 5 个
+        PositionUserVO vo = new PositionUserVO();
+        vo.setUid(parseLong(objects[0]));
+        vo.setNickname(parseString(objects[1]));
+        vo.setHeadIconUrl(parseString(objects[2]));
+        vo.setIdentifications(parseBytesToLongList(objects[3]));
+        if (objects[4] == null)
+            return vo;
+        vo.setDistance(BigDecimal.valueOf(parseDouble(objects[4])).setScale(2, BigDecimal.ROUND_UP)); // 千米
+        return vo;
+    }
+
+    @Override
+    public List<PositionUserVO> formPositionDistanceUserVO(List<Object[]> objects) {
+        if (objects == null || objects.size() == 0) return new ArrayList<>();
+        List<PositionUserVO> vos = new ArrayList<>();
+        for (Object[] object : objects) {
+            vos.add(formPositionDistanceUserVO(object));
         }
         return vos;
     }

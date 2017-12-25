@@ -24,9 +24,9 @@ public interface UserPositionService {
      * @param pageable
      * @return
      */
-    Page<PositionUserVO> findNear(Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable);
+    Page<PositionUserVO> findNear(Long uid, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable);
 
-    Page<PositionUserVO> findNear(UserLogin.GENDER gender, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable);
+    Page<PositionUserVO> findNear(Long uid, UserLogin.GENDER gender, Long distance, BigDecimal longitude, BigDecimal latitude, Pageable pageable);
 
     // 工具，经纬度 -> block 转换
     Long convertPositionToBlock(BigDecimal mapPosition);
