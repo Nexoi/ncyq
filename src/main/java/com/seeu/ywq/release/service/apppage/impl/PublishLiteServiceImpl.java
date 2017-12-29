@@ -3,6 +3,7 @@ package com.seeu.ywq.release.service.apppage.impl;
 import com.seeu.ywq.release.dvo.apppage.PublishLiteVO;
 import com.seeu.ywq.release.dvo.apppage.PublishLiteVOPicture;
 import com.seeu.ywq.release.dvo.apppage.PublishLiteVOVideo;
+import com.seeu.ywq.release.model.Picture;
 import com.seeu.ywq.release.model.apppage.PublishLite;
 import com.seeu.ywq.release.repository.apppage.PublishLiteRepository;
 import com.seeu.ywq.release.service.ResourceAuthService;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -38,6 +40,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         List list = publishLiteRepository.queryItUseMyTags(Arrays.asList(ids), pageable);
         Integer totalSize = publishLiteRepository.countItUseMyTags(Arrays.asList(ids));
         list = appVOService.formPublishLite(list);
+        completePictures(list); // 加载图片
         List transferList = transferToVO(list, visitorUid);
         return new PageImpl<>(transferList, pageable, totalSize);
     }
@@ -52,6 +55,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         List list = publishLiteRepository.queryItUseFollowedUids(Arrays.asList(uids), pageable);
         Integer totalSize = publishLiteRepository.countItUseFollowedUids(Arrays.asList(uids));
         list = appVOService.formPublishLite(list);
+        completePictures(list); // 加载图片
         List transferList = transferToVO(list, visitorUid);
         return new PageImpl<>(transferList, pageable, totalSize);
     }
@@ -61,13 +65,29 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         Page page = publishLiteRepository.findAllByUid(uid, pageable);
         List<PublishLite> list = page.getContent();
         if (list.size() == 0) return page;
-        List<PublishLiteVO> vos = new ArrayList<>();
-        for (PublishLite publishLite : list) {
-            PublishLiteVO vo = new PublishLiteVO();
-            BeanUtils.copyProperties(publishLite, vo);
-            vos.add(vo);
+        List transferList = transferToVO(list, uid);
+        return new PageImpl<>(transferList, pageable, page.getTotalElements());
+    }
+
+    // 将图片加载进 vo
+    private void completePictures(List<PublishLite> vos) {
+        if (vos == null || vos.size() == 0) return;
+        // hash
+        HashMap<Long, PublishLite> map = new HashMap<>();
+        List<Long> ids = new ArrayList<>();
+        for (PublishLite vo : vos) {
+            ids.add(vo.getId());
+            map.put(vo.getId(), vo);
         }
-        return new PageImpl<>(vos, pageable, page.getTotalElements());
+        List<Picture> pictures = userPictureService.findAllByPublishIds(ids);
+        if (pictures == null || pictures.size() == 0)
+            return;
+        for (Picture picture : pictures) {
+            if (picture == null) continue;
+            List pictureList = map.get(picture.getPublishId()).getPictures();
+            if (pictureList == null) map.get(picture.getPublishId()).setPictures(pictureList = new ArrayList<>());
+            pictureList.add(picture);
+        }
     }
 
     private PublishLiteVO transferToVO(PublishLite publish, boolean canVisitClosedResource) {

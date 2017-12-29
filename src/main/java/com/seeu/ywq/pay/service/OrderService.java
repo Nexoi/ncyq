@@ -25,4 +25,6 @@ public interface OrderService {
     OrderLog createUnlockPublish(Long uid, Long publishId) throws PublishNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException;
 
     OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException;
+
+    OrderLog createBindShare(Long bindUid, Long diamonds);
 }

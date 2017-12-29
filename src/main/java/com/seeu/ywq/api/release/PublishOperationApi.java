@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,14 @@ public class PublishOperationApi {
 
     @Autowired
     private PublishService publishService;
+
+    @ApiOperation(value = "点赞列表", notes = "获取点赞信息")
+    @GetMapping("/{publishId}/like")
+    public ResponseEntity listLikes(@PathVariable("publishId") Long publishId,
+                                    @RequestParam(defaultValue = "0") Integer page,
+                                    @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(publishService.listLikedUser(publishId, new PageRequest(page, size)));
+    }
 
     @ApiOperation(value = "点赞【登录】", notes = "对某一条动态进行点赞")
     @ApiResponses({
@@ -69,6 +78,14 @@ public class PublishOperationApi {
             default:
                 return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
         }
+    }
+
+    @ApiOperation(value = "评论列表", notes = "获取评论信息")
+    @GetMapping("/{publishId}/comment")
+    public ResponseEntity listComments(@PathVariable("publishId") Long publishId,
+                                       @RequestParam(defaultValue = "0") Integer page,
+                                       @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(publishService.listComments(publishId, new PageRequest(page, size)));
     }
 
     @ApiOperation(value = "评论【登录】", notes = "对某一条动态进行评论，必须是已登陆用户")

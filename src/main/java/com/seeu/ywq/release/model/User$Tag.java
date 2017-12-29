@@ -8,7 +8,10 @@ import java.util.Date;
  */
 @Entity
 @IdClass(User$TagPKeys.class)
-@Table(name = "ywq_user_tags")
+@Table(name = "ywq_user_tags", indexes = {
+        @Index(name = "user_tags_index1", columnList = "tags_id"),
+        @Index(name = "user_tags_index2", columnList = "user_uid")
+})
 public class User$Tag {
     @Id
     @Column(name = "tags_id")

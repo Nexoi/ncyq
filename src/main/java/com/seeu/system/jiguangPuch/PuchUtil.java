@@ -20,53 +20,54 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 极光推送工具类
- * @author Scary
  *
+ * @author Scary
  */
 public class PuchUtil {
 
-	private static final Logger log = Logger.getLogger(PuchUtil.class);
-	
-	/**
-	 * 极光推送APP_KEY
-	 */
-	@Value("jiguang.app.key")
-	private   String JG_APP_KEY;
-	
-	/**
-	 * 极光推送MASTER_SECRET
-	 */
-	@Value("jiguang.master.secret")
-	private   String JG_MASTER_SECRET;
-	
-	/**
-	 * true-推送生产环境 false-推送开发环境（测试使用参数）
-	 */
-	@Value("jiguang.push.test")
-	private   String JG_PUSH_TEST;
-	
-	/**
-	 * 消息在JPush服务器的失效时间（测试使用参数）
-	 */
-	@Value("jiguang.time.live")
-	private   String JG_TIME_LIVE;
-	
-	
-	/**
-	 * 生成极光推送对象PushPayload（采用java SDK）
-	 * @param userNoA 被通知用户的用户号
-	 * @param userNoB 互动用户的用户号(若没有则传null)
-	 * @param msg1 通知内容(通知-apns)
-	 * @param msg2 通知内容(自定义消息-jpush)
-	 * @return
-	 */
-    public  PushPayload buildPushObject_android_ios_alias_alert(String userNoA, String userNoB, String msg1, String msg2){
-    	
-    	boolean flag = false;
-    	if("true".equals(JG_PUSH_TEST)){
-    		flag = true;
-    	}
-    	
+    private static final Logger log = Logger.getLogger(PuchUtil.class);
+
+    /**
+     * 极光推送APP_KEY
+     */
+    @Value("push.app.key")
+    private String JG_APP_KEY;
+
+    /**
+     * 极光推送MASTER_SECRET
+     */
+    @Value("push.master.secret")
+    private String JG_MASTER_SECRET;
+
+    /**
+     * true-推送生产环境 false-推送开发环境（测试使用参数）
+     */
+    @Value("push.push.test")
+    private String JG_PUSH_TEST;
+
+    /**
+     * 消息在JPush服务器的失效时间（测试使用参数）
+     */
+    @Value("push.time.live")
+    private String JG_TIME_LIVE;
+
+
+    /**
+     * 生成极光推送对象PushPayload（采用java SDK）
+     *
+     * @param userNoA 被通知用户的用户号
+     * @param userNoB 互动用户的用户号(若没有则传null)
+     * @param msg1    通知内容(通知-apns)
+     * @param msg2    通知内容(自定义消息-jpush)
+     * @return
+     */
+    public PushPayload buildPushObject_android_ios_alias_alert(String userNoA, String userNoB, String msg1, String msg2) {
+
+        boolean flag = false;
+        if ("true".equals(JG_PUSH_TEST)) {
+            flag = true;
+        }
+
         return PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(userNoA))
@@ -86,22 +87,23 @@ public class PuchUtil {
                         .build())
                 .setMessage(Message.newBuilder()
                         .setMsgContent(msg2)
-                        .addExtra("type","infomation")
+                        .addExtra("type", "infomation")
                         .build())
                 .build();
     }
-	
-	
-	/**
-	 * 极光推送方法(采用java SDK)
-	 * @param userNoA 被通知用户的用户号
-	 * @param userNoB 互动用户的用户号(若没有则传null)
-	 * @param msg1 通知内容(通知-apns)
-	 * @param msg2 通知内容(自定义消息-jpush)
-	 * @return
-	 */
-    public  PushResult push(String userNoA, String userNoB, String msg1, String msg2){
-    	
+
+
+    /**
+     * 极光推送方法(采用java SDK)
+     *
+     * @param userNoA 被通知用户的用户号
+     * @param userNoB 互动用户的用户号(若没有则传null)
+     * @param msg1    通知内容(通知-apns)
+     * @param msg2    通知内容(自定义消息-jpush)
+     * @return
+     */
+    public PushResult push(String userNoA, String userNoB, String msg1, String msg2) {
+
         ClientConfig clientConfig = ClientConfig.getInstance();
         JPushClient jpushClient = new JPushClient(JG_MASTER_SECRET, JG_APP_KEY, null, clientConfig);
         PushPayload payload = buildPushObject_android_ios_alias_alert(userNoA, userNoB, msg1, msg2);
@@ -117,7 +119,7 @@ public class PuchUtil {
             log.info("Error Comment: " + e.getErrorMessage());
             log.info("Msg ID: " + e.getMsgId());
             return null;
-        }    
+        }
     }
-	
+
 }

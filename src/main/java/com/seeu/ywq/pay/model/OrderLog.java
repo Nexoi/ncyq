@@ -20,7 +20,8 @@ public class OrderLog {
         RECHARGE,
         WITHDRAW,
         UNLOCK_PUBLISH,
-        UNLOCK_WECHAT
+        UNLOCK_WECHAT,
+        BIND_SHARE
     }
 
     public enum TYPE {

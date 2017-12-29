@@ -2,6 +2,8 @@ package com.seeu.ywq.release.service;
 
 import com.seeu.ywq.release.dvo.PublishVO;
 import com.seeu.ywq.release.model.Publish;
+import com.seeu.ywq.release.model.PublishComment;
+import com.seeu.ywq.release.model.PublishLikedUser;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +42,15 @@ public interface PublishService {
 
     STATUS deletePublish(Long publishId);
 
+    Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable);
+
     STATUS likeIt(Long publishId, UserLogin user);
 
     STATUS dislikeIt(Long publishId, Long uid);
+
+    PublishComment getComment(Long commentId);
+
+    Page<PublishComment> listComments(Long publishId, Pageable pageable);
 
     STATUS commentIt(Long publishId, Long fatherId, UserLogin user, String text);
 

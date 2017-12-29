@@ -17,6 +17,20 @@ public class Balance {
     @Column(name = "balance")
     private Long balance;
 
+    private Long recharge; // 充值额总计
+
+    private Long withdraw;  // 提现额总计
+
+    private Long reward;    // 打赏额总计
+
+    private Long rewardReceive;// 被打赏总计
+
+    private Long publishReceive; // 相册收入
+
+    private Long wechatReceive; // 微信解锁收入
+
+    private Long sharedReceive; // 分红收入（用户一对一绑定，10 % 提成）
+
     private Date updateTime = new Date();
 
     public Long getUid() {
@@ -49,5 +63,61 @@ public class Balance {
 
     public void setBindUid(Long bindUid) {
         this.bindUid = bindUid;
+    }
+
+    public Long getRecharge() {
+        return recharge;
+    }
+
+    public void setRecharge(Long recharge) {
+        this.recharge = recharge;
+    }
+
+    public Long getWithdraw() {
+        return withdraw;
+    }
+
+    public void setWithdraw(Long withdraw) {
+        this.withdraw = withdraw;
+    }
+
+    public Long getReward() {
+        return reward;
+    }
+
+    public void setReward(Long reward) {
+        this.reward = reward;
+    }
+
+    public Long getRewardReceive() {
+        return rewardReceive;
+    }
+
+    public void setRewardReceive(Long rewardReceive) {
+        this.rewardReceive = rewardReceive;
+    }
+
+    public Long getPublishReceive() {
+        return publishReceive;
+    }
+
+    public void setPublishReceive(Long publishReceive) {
+        this.publishReceive = publishReceive;
+    }
+
+    public Long getWechatReceive() {
+        return wechatReceive;
+    }
+
+    public void setWechatReceive(Long wechatReceive) {
+        this.wechatReceive = wechatReceive;
+    }
+
+    public Long getSharedReceive() {
+        return sharedReceive;
+    }
+
+    public void setSharedReceive(Long sharedReceive) {
+        this.sharedReceive = sharedReceive;
     }
 }

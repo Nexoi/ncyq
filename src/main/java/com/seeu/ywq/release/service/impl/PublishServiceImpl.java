@@ -1,8 +1,8 @@
 package com.seeu.ywq.release.service.impl;
 
-import com.seeu.ywq.release.dvo.PublishVOPicture;
-import com.seeu.ywq.release.dvo.PublishVO;
-import com.seeu.ywq.release.dvo.PublishVOVideo;
+import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
+import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
+import com.seeu.ywq.release.dvo.*;
 import com.seeu.ywq.release.model.*;
 import com.seeu.ywq.release.repository.PublishCommentRepository;
 import com.seeu.ywq.release.repository.PublishLikedUserRepository;
@@ -11,6 +11,7 @@ import com.seeu.ywq.release.service.*;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,8 @@ public class PublishServiceImpl implements PublishService {
     private PublishLikedUserRepository publishLikedUserRepository;
     @Resource
     private PublishCommentRepository publishCommentRepository;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public Publish findOne(Long publishId) {
@@ -148,8 +151,14 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
+    public Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable) {
+        return publishLikedUserRepository.findAllByPublishId(publishId, pageable);
+    }
+
+    @Override
     public STATUS likeIt(Long publishId, UserLogin user) {
-        if (!publishRepository.exists(publishId))
+        Publish publish = publishRepository.findOne(publishId);
+        if (publish == null)
             return STATUS.not_found_publish;
         // 是否点赞过
         if (publishLikedUserRepository.exists(new PublishLikedUserPKeys(publishId, user.getUid())))
@@ -160,6 +169,13 @@ public class PublishServiceImpl implements PublishService {
         like.setPublishId(publishId);
         publishLikedUserRepository.save(like);
         publishRepository.likeItOnce(publishId);
+        // 通知
+        String imgUrl = null;
+        if (publish.getPictures() != null && publish.getPictures().size() > 0) {
+            Image image = publish.getPictures().get(0).getImageOpen(); // 用户自己收到点赞事件
+            imgUrl = image.getThumbImage200pxUrl();
+        }
+        applicationContext.publishEvent(new ClickLikeEvent(this, publish.getUid(), user.getUid(), user.getNickname(), user.getHeadIconUrl(), publishId, imgUrl));
         return STATUS.success;
     }
 
@@ -177,8 +193,20 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
+    public PublishComment getComment(Long commentId) {
+        PublishComment comment = publishCommentRepository.findOne(commentId);
+        return comment;
+    }
+
+    @Override
+    public Page<PublishComment> listComments(Long publishId, Pageable pageable) {
+        return publishCommentRepository.findAllByPublishIdAndFatherIdIsNull(publishId, pageable);
+    }
+
+    @Override
     public STATUS commentIt(Long publishId, Long fatherId, UserLogin user, String text) {
-        if (!publishRepository.exists(publishId))
+        Publish publish = publishRepository.findOne(publishId);
+        if (publish == null)
             return STATUS.not_found_publish;
         if (fatherId != null && !publishCommentRepository.exists(fatherId))
             return STATUS.not_existed;
@@ -192,6 +220,13 @@ public class PublishServiceImpl implements PublishService {
         comment.setCommentDate(new Date());
         publishCommentRepository.save(comment);
         publishRepository.commentItOnce(publishId);
+        // 通知
+        String imgUrl = null;
+        if (publish.getPictures() != null && publish.getPictures().size() > 0) {
+            Image image = publish.getPictures().get(0).getImageOpen(); // 用户自己收到点赞事件
+            imgUrl = image.getThumbImage200pxUrl();
+        }
+        applicationContext.publishEvent(new PublishCommentEvent(this, publish.getUid(), user.getUid(), user.getNickname(), user.getHeadIconUrl(), publishId, text, imgUrl));
         return STATUS.success;
     }
 

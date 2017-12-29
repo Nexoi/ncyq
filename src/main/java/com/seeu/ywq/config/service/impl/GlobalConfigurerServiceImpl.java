@@ -12,7 +12,7 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
 
     private static final String KEY_UNLOCK_WECHAT = "unlock.wechat";
     private static final String KEY_BIND_USER_DIAMOND_PERCENT = "binduser.diamond.percent";
-
+    private static final String KEY_USER_REWARD_DIAMOND_PERCENT = "user.reward.diamond.percent";
 
     @Resource
     private GlobalConfigurerRepository repository;
@@ -58,6 +58,26 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
     @Override
     public float getBindUserShareDiamondsPercent() {
         String percent = findOne(KEY_BIND_USER_DIAMOND_PERCENT);
+        return percent == null ? 0.00f : Float.parseFloat(percent);
+    }
+
+    @Override
+    public void setUserRewardDiamondsPercent(float percent) {
+        if (percent < 0 || percent > 1)
+            return;
+        GlobalConfigurer configurer = repository.findOne(KEY_USER_REWARD_DIAMOND_PERCENT);
+        if (configurer == null) {
+            configurer = new GlobalConfigurer();
+            configurer.setAttrKey(KEY_USER_REWARD_DIAMOND_PERCENT);
+            configurer.setAttrValue("0.00");
+        }
+        configurer.setAttrKey(String.valueOf(percent));
+        repository.save(configurer);
+    }
+
+    @Override
+    public float getUserRewardDiamondsPercent() {
+        String percent = findOne(KEY_USER_REWARD_DIAMOND_PERCENT);
         return percent == null ? 0.00f : Float.parseFloat(percent);
     }
 }

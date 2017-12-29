@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.userlogin.exception.NoSuchUserException;
@@ -49,7 +50,7 @@ public class UserBalanceApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity recharge(@AuthenticationPrincipal UserLogin authUser,
                                    Long diamonds) {
-        balanceService.plus(authUser.getUid(), diamonds);
+        balanceService.plus(authUser.getUid(), diamonds, OrderLog.EVENT.RECHARGE);
         return ResponseEntity.ok(R.code(200).message("充值成功！"));
     }
 

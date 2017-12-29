@@ -17,7 +17,8 @@ import java.util.Date;
 public class Picture {
     public enum ALBUM_TYPE {
         open,
-        close
+        close,
+        photography // 摄影作品，不常用
     }
 
     public enum DELETE_FLAG {
@@ -44,12 +45,12 @@ public class Picture {
 
     @ApiParam(hidden = true)
     @OneToOne(targetEntity = Image.class)
-    @JoinColumn(name = "image_open_id",referencedColumnName = "id")
+    @JoinColumn(name = "image_open_id", referencedColumnName = "id")
     private Image imageOpen;
 
     @ApiParam(hidden = true)
     @OneToOne(targetEntity = Image.class)
-    @JoinColumn(name = "image_close_id",referencedColumnName = "id")
+    @JoinColumn(name = "image_close_id", referencedColumnName = "id")
     private Image imageClose;
 
     @ApiParam(hidden = true)

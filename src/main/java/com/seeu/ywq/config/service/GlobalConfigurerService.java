@@ -11,4 +11,8 @@ public interface GlobalConfigurerService {
     void setBindUserShareDiamondsPercent(float percent);
 
     float getBindUserShareDiamondsPercent();
+
+    void setUserRewardDiamondsPercent(float percent);
+
+    float getUserRewardDiamondsPercent();
 }

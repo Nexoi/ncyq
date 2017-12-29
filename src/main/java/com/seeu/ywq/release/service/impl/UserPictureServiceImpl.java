@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +56,11 @@ public class UserPictureServiceImpl implements UserPictureService {
         }
         Page voPage = new PageImpl(publishPictureVOS, pageRequest, page.getTotalElements());
         return voPage;
+    }
+
+    @Override
+    public List<Picture> findAllByPublishIds(Collection<Long> publishIds) {
+        return userPictureRepository.findAllByPublishIdInAndDeleteFlag(publishIds, Picture.DELETE_FLAG.show);
     }
 
 

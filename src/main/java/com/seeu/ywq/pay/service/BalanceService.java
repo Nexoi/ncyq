@@ -1,6 +1,7 @@
 package com.seeu.ywq.pay.service;
 
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 
 /**
@@ -12,7 +13,7 @@ public interface BalanceService {
 
     Long query(Long uid) throws NoSuchUserException;
 
-    void plus(Long uid, Long diamonds);
+    void plus(Long uid, Long diamonds, OrderLog.EVENT event);
 
     void minus(Long uid, Long diamonds) throws BalanceNotEnoughException;
 

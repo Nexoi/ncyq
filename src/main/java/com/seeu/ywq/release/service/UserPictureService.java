@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface UserPictureService {
@@ -15,6 +16,9 @@ public interface UserPictureService {
      * @return
      */
     Page findAllMine(Long targetUid, Picture.ALBUM_TYPE albumType, PageRequest pageRequest);
+
+
+    List<Picture> findAllByPublishIds(Collection<Long> publishIds);
 
 
     /**

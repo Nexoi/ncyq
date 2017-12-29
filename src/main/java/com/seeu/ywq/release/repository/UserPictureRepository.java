@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface UserPictureRepository extends JpaRepository<Picture, Long> {
@@ -21,4 +22,7 @@ public interface UserPictureRepository extends JpaRepository<Picture, Long> {
 
     // 找到当前发布内容里的所有图片
     List<Picture> findAllByPublishIdAndDeleteFlag(@Param("publishId") Long publishId, @Param("deleteFlag") Picture.DELETE_FLAG delete_flag);
+
+    // 找到当前 n 条发布内容里的所有图片
+    List<Picture> findAllByPublishIdInAndDeleteFlag(@Param("publishId") Collection<Long> publishId, @Param("deleteFlag") Picture.DELETE_FLAG delete_flag);
 }

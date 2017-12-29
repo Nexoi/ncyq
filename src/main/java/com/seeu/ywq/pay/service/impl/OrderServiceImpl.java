@@ -77,11 +77,12 @@ public class OrderServiceImpl implements OrderService {
         Publish publish = publishService.findOne(publishId);
         if (publish == null)
             throw new PublishNotFoundException("动态不存在！");
+        Long herUid = publish.getUid();
         // 查看是否在激活状态
         if (resourceAuthService.canVisit(uid, publishId))
             throw new ResourceAlreadyActivedException();
         Long diamonds = publish.getUnlockPrice().longValue();
-        // 扣钱
+        // 观看者用户扣钱
         balanceService.minus(uid, diamonds);
         // 记录订单
         OrderLog log = new OrderLog();
@@ -92,6 +93,18 @@ public class OrderServiceImpl implements OrderService {
         log.setType(OrderLog.TYPE.OUT);
         log.setUid(uid);
         log = orderLogRepository.save(log);
+        // 发布者用户收钱 （百分比配）
+        diamonds = (long) (diamonds * globalConfigurerService.getUserRewardDiamondsPercent());
+        balanceService.plus(herUid, diamonds, OrderLog.EVENT.UNLOCK_PUBLISH);
+        // 记录订单
+        OrderLog log2 = new OrderLog();
+        log2.setOrderId(genOrderID());
+        log2.setCreateTime(new Date());
+        log2.setDiamonds(diamonds);
+        log2.setEvent(OrderLog.EVENT.UNLOCK_PUBLISH);
+        log2.setType(OrderLog.TYPE.IN);
+        log2.setUid(herUid);
+        log2 = orderLogRepository.save(log2);
         // 激活权限
         resourceAuthService.activeResource(uid, publishId, timeInterval_Publish); // 默认一天
         return log;
@@ -110,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
         // 发送短信
         smsService.send(myPhone, ("" + unlockWeChatSMSText).replace("%wechat%", wechat));
         Long diamonds = globalConfigurerService.getUnlockWeChat();
-        // 扣钱
+        // 观看者用户扣钱
         balanceService.minus(uid, diamonds);
         // 记录订单
         OrderLog log = new OrderLog();
@@ -120,6 +133,35 @@ public class OrderServiceImpl implements OrderService {
         log.setEvent(OrderLog.EVENT.UNLOCK_WECHAT);
         log.setType(OrderLog.TYPE.OUT);
         log.setUid(uid);
+        log = orderLogRepository.save(log);
+        // 发布者用户收钱 （百分比配）
+        diamonds = (long) (diamonds * globalConfigurerService.getUserRewardDiamondsPercent());
+        balanceService.plus(herUid, diamonds, OrderLog.EVENT.UNLOCK_WECHAT);
+        // 记录订单
+        OrderLog log2 = new OrderLog();
+        log2.setOrderId(genOrderID());
+        log2.setCreateTime(new Date());
+        log2.setDiamonds(diamonds);
+        log2.setEvent(OrderLog.EVENT.UNLOCK_WECHAT);
+        log2.setType(OrderLog.TYPE.IN);
+        log2.setUid(herUid);
+        log2 = orderLogRepository.save(log2);
+        return log;
+    }
+
+    @Override
+    public OrderLog createBindShare(Long bindUid, Long diamonds) {
+        diamonds = (long) (diamonds * globalConfigurerService.getBindUserShareDiamondsPercent());
+        // 加钱
+        balanceService.plus(bindUid, diamonds, OrderLog.EVENT.BIND_SHARE);
+        // 日志
+        OrderLog log = new OrderLog();
+        log.setOrderId(genOrderID());
+        log.setCreateTime(new Date());
+        log.setDiamonds(diamonds);
+        log.setEvent(OrderLog.EVENT.BIND_SHARE);
+        log.setType(OrderLog.TYPE.IN);
+        log.setUid(bindUid);
         log = orderLogRepository.save(log);
         return log;
     }

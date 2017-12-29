@@ -2,6 +2,7 @@ package com.seeu.ywq.release.service.apppage;
 
 import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
 import com.seeu.ywq.release.dvo.apppage.HomePageVOVideo;
+import com.seeu.ywq.release.dvo.apppage.PageBalance;
 import com.seeu.ywq.release.dvo.apppage.PositionUserVO;
 import com.seeu.ywq.release.model.apppage.PublishLite;
 
@@ -36,4 +37,9 @@ public interface AppVOService {
     PublishLite formPublishLite(Object[] objects);
 
     List<PublishLite> formPublishLite(List<Object[]> objects);
+
+    // vo for BalanceRanking
+    PageBalance formPageBalance(Object[] objects);
+
+    List<PageBalance> formPageBalance(List<Object[]> objects);
 }

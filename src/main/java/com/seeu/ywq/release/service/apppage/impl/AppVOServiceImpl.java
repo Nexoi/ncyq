@@ -1,9 +1,6 @@
 package com.seeu.ywq.release.service.apppage.impl;
 
-import com.seeu.ywq.release.dvo.apppage.HomePageVOUser;
-import com.seeu.ywq.release.dvo.apppage.HomePageVOVideo;
-import com.seeu.ywq.release.dvo.apppage.PositionUserVO;
-import com.seeu.ywq.release.dvo.apppage.PublishLiteVO;
+import com.seeu.ywq.release.dvo.apppage.*;
 import com.seeu.ywq.release.model.Image;
 import com.seeu.ywq.release.model.Publish;
 import com.seeu.ywq.release.model.PublishVideo;
@@ -170,6 +167,7 @@ public class AppVOServiceImpl implements AppVOService {
         PublishVideo publishVideo = new PublishVideo();
         publishVideo.setVideo(video);
         vo.setVideo(publishVideo);
+        vo.setPictures(new ArrayList<>());
         return vo;
     }
 
@@ -179,6 +177,27 @@ public class AppVOServiceImpl implements AppVOService {
         List<PublishLite> list = new ArrayList();
         for (Object[] object : objects) {
             list.add(formPublishLite(object));
+        }
+        return list;
+    }
+
+    @Override
+    public PageBalance formPageBalance(Object[] objects) {
+        if (objects == null || objects.length != 4) return null;// 长度必须是 4 个
+        PageBalance pb = new PageBalance();
+        pb.setUid(parseLong(objects[0]));
+        pb.setBalance(parseLong(objects[1]));
+        pb.setNickname(parseString(objects[2]));
+        pb.setHeadIconUrl(parseString(objects[3]));
+        return pb;
+    }
+
+    @Override
+    public List<PageBalance> formPageBalance(List<Object[]> objects) {
+        if (objects == null || objects.size() == 0) return new ArrayList<>();
+        List<PageBalance> list = new ArrayList();
+        for (Object[] object : objects) {
+            list.add(formPageBalance(object));
         }
         return list;
     }
