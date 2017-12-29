@@ -18,6 +18,8 @@ import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -164,6 +166,11 @@ public class OrderServiceImpl implements OrderService {
         log.setUid(bindUid);
         log = orderLogRepository.save(log);
         return log;
+    }
+
+    @Override
+    public Page<OrderLog> queryAll(Long uid, Pageable pageable) {
+        return orderLogRepository.findAllByUid(uid, pageable);
     }
 
     private String genOrderID() {

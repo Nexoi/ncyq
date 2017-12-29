@@ -12,12 +12,14 @@ import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.alibaba.fastjson.JSON;
+import com.seeu.third.exception.PushException;
 import com.seeu.third.push.PushService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -40,21 +42,23 @@ public class JiGuangPush implements PushService {
 
     private Logger logger = LoggerFactory.getLogger(JiGuangPush.class);
 
-    public void push(PushPayload pushPayload) {
+    public void push(PushPayload pushPayload) throws PushException {
         try {
             PushResult pushResult = jPushClient.sendPush(pushPayload);
             System.out.println("code:::::" + pushResult.statusCode);
         } catch (APIConnectionException e) {
 //            e.printStackTrace();
             logger.warn("JiGuang Exception" + e.getMessage());
+            throw new PushException(e.getMessage());
         } catch (APIRequestException e) {
 //            e.printStackTrace();
             logger.warn("JiGuang Exception" + e.getMessage());
+            throw new PushException(e.getMessage());
         }
     }
 
     @Override
-    public void sysPush(String text, String linkUrl, Map extra) {
+    public void sysPush(String text, String linkUrl, Map extra) throws PushException  {
         if (extra == null) extra = new HashMap();
         extra.put("linkUrl", linkUrl);
         extra.put("text", text);
@@ -81,15 +85,16 @@ public class JiGuangPush implements PushService {
         push(pushPayload);
     }
 
+    @Async
     @Override
-    public void singlePush(Long uid, String text, String linkUrl, Map extra) {
+    public void singlePush(Long uid, String text, String linkUrl, Map extra) throws PushException  {
         if (extra == null) extra = new HashMap();
         extra.put("linkUrl", linkUrl);
         extra.put("text", text);
 
         PushPayload pushPayload = PushPayload.newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(String.valueOf(uid)))
+                .setAudience(Audience.alias(String.valueOf(uid)))
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .setAlert("通知")
@@ -109,8 +114,9 @@ public class JiGuangPush implements PushService {
         push(pushPayload);
     }
 
+    @Async
     @Override
-    public void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl) {
+    public void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl) throws PushException  {
         Map extra = new HashMap();
         extra.put("uid", String.valueOf(uid));
         extra.put("nickname", nickname);
@@ -120,7 +126,7 @@ public class JiGuangPush implements PushService {
 
         PushPayload pushPayload = PushPayload.newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(String.valueOf(herUid)))
+                .setAudience(Audience.alias(String.valueOf(herUid)))
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .setAlert(nickname + "点赞了你的动态")
@@ -140,8 +146,9 @@ public class JiGuangPush implements PushService {
         push(pushPayload);
     }
 
+    @Async
     @Override
-    public void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl) {
+    public void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl) throws PushException  {
         Map extra = new HashMap();
         extra.put("uid", String.valueOf(uid));
         extra.put("nickname", nickname);
@@ -152,7 +159,7 @@ public class JiGuangPush implements PushService {
 
         PushPayload pushPayload = PushPayload.newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(String.valueOf(herUid)))
+                .setAudience(Audience.alias(String.valueOf(herUid)))
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .setAlert(nickname + "评论了你的动态")

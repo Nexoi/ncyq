@@ -1,5 +1,7 @@
 package com.seeu.third.push;
 
+import com.seeu.third.exception.PushException;
+
 import java.util.Map;
 
 public interface PushService {
@@ -10,10 +12,10 @@ public interface PushService {
      * @param text    描述内容
      * @param linkUrl 跳转的链接
      */
-    void sysPush(String text, String linkUrl, Map extra);
+    void sysPush(String text, String linkUrl, Map extra) throws PushException;
 
 
-    void singlePush(Long uid, String text, String linkUrl, Map extra);
+    void singlePush(Long uid, String text, String linkUrl, Map extra) throws PushException ;
 
     /**
      * 点赞
@@ -25,7 +27,7 @@ public interface PushService {
      * @param imgUrl
      * @param publishId
      */
-    void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl);
+    void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl) throws PushException ;
 
     /**
      * 评论
@@ -37,5 +39,5 @@ public interface PushService {
      * @param text        评论内容（前 n 个字）
      * @param imgUrl      样例图片
      */
-    void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl);
+    void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl) throws PushException ;
 }

@@ -1,6 +1,5 @@
 package com.seeu.ywq.pay.service.impl;
 
-import com.seeu.ywq.config.service.GlobalConfigurerService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.Balance;
 import com.seeu.ywq.pay.model.OrderLog;

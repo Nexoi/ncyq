@@ -1,5 +1,6 @@
 package com.seeu.ywq.event_listener;
 
+import com.seeu.third.exception.PushException;
 import com.seeu.third.push.PushService;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
@@ -17,29 +18,39 @@ public class EventListenerController {
 
     @EventListener
     public void clickMe(ClickLikeEvent event) {
-        logger.info("点赞了！");
         // 推送
-        pushService.likePublish(
-                event.getHerUid(),
-                event.getUid(),
-                event.getNickname(),
-                event.getHeadIconUrl(),
-                event.getPublishId(),
-                event.getImgUrl()
-        );
+        try {
+            pushService.likePublish(
+                    event.getHerUid(),
+                    event.getUid(),
+                    event.getNickname(),
+                    event.getHeadIconUrl(),
+                    event.getPublishId(),
+                    event.getImgUrl()
+            );
+            logger.info("点赞成功！");
+        } catch (PushException e) {
+            e.printStackTrace();
+            logger.warn("点赞失败！");
+        }
     }
 
     @EventListener
     public void commentPublish(PublishCommentEvent event) {
-        logger.info("评论了！");
-        pushService.commentPublish(
-                event.getHerUid(),
-                event.getUid(),
-                event.getNickname(),
-                event.getHeadIconUrl(),
-                event.getPublishId(),
-                event.getText(),
-                event.getImgUrl()
-        );
+        try {
+            pushService.commentPublish(
+                    event.getHerUid(),
+                    event.getUid(),
+                    event.getNickname(),
+                    event.getHeadIconUrl(),
+                    event.getPublishId(),
+                    event.getText(),
+                    event.getImgUrl()
+            );
+            logger.info("评论成功！");
+        } catch (PushException e) {
+            e.printStackTrace();
+            logger.warn("评论失败！");
+        }
     }
 }

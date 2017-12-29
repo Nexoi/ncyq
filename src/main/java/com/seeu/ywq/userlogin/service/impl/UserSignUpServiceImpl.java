@@ -1,6 +1,8 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.system.sms.service.ISmsSV;
+import com.seeu.third.exception.SMSSendFailureException;
+import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.release.model.User;
 import com.seeu.ywq.release.repository.UserInfoRepository;
@@ -15,11 +17,13 @@ import com.seeu.ywq.utils.jwt.JwtConstant;
 import com.seeu.ywq.utils.jwt.JwtUtil;
 import com.seeu.ywq.utils.jwt.PhoneCodeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class UserSignUpServiceImpl implements UserSignUpService {
@@ -38,18 +42,19 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     @Autowired
     MD5Service md5Service;
     @Autowired
-    private ISmsSV iSmsSV;
-
+    private SMSService smsService;
+    @Value("${ywq.sms.regist_sendcode}")
+    private String message;
 
     public UserSignUpService.SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
-        String code = null;
-        // 开始发送，这里使用的网易云信，貌似可以自动随机数验证码
+        String code = String.valueOf(100000 + new Random().nextInt(899999));
         UserSignUpService.SIGN_PHONE_SEND status = null;
         try {
-            code = iSmsSV.sendSMS(phone);
-            status = code != null ? UserSignUpService.SIGN_PHONE_SEND.success : UserSignUpService.SIGN_PHONE_SEND.failure;
-        } catch (Exception e) {
+//            code = iSmsSV.sendSMS(phone);
+            smsService.send(phone, message.replace("%code%", code));
+            status = UserSignUpService.SIGN_PHONE_SEND.success;
+        } catch (SMSSendFailureException e) {
             code = null;
             status = UserSignUpService.SIGN_PHONE_SEND.failure;
         }
@@ -124,7 +129,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         user.setPhone(phone);
         userInfoRepository.saveAndFlush(user);
         // 初始化用户余额系统 //
-        balanceService.initAccount(savedUserLogin.getUid(),null);
+        balanceService.initAccount(savedUserLogin.getUid(), null);
         return UserSignUpService.SIGN_STATUS.signup_success;
     }
 
