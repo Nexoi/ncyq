@@ -1,12 +1,10 @@
 package com.seeu.configurer.auth;
 
 import com.seeu.core.Util4IP;
-import com.seeu.ywq.release.service.UserPositionService;
-import com.seeu.ywq.release.service.impl.UserPositionServiceImpl;
+import com.seeu.ywq.user.service.UserPositionService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserLoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

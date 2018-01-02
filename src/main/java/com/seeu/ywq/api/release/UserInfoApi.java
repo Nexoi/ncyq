@@ -1,12 +1,11 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.dvo.PhotoWallVO;
-import com.seeu.ywq.release.dvo.UserVO;
-import com.seeu.ywq.release.model.User;
-import com.seeu.ywq.release.repository.UserInfoRepository;
-import com.seeu.ywq.release.service.UserInfoService;
-import com.seeu.ywq.release.service.UserPhotoWallService;
+import com.seeu.ywq.user.dvo.PhotoWallVO;
+import com.seeu.ywq.user.dvo.UserVO;
+import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.service.UserInfoService;
+import com.seeu.ywq.user.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

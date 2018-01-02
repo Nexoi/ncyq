@@ -1,7 +1,7 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.service.FansService;
+import com.seeu.ywq.user.service.FansService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.Api;

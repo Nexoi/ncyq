@@ -8,9 +8,9 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.seeu.file.aliyun_storage.StorageImageService;
-import com.seeu.third.gaussion.GaussianFilter;
-import com.seeu.ywq.release.model.Image;
-import com.seeu.ywq.release.model.Picture;
+import com.seeu.third.util.gaussion.GaussianFilter;
+import com.seeu.ywq.resource.model.Image;
+import com.seeu.ywq.trend.model.Picture;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

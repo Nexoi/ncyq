@@ -1,9 +1,9 @@
 //package com.seeu.ywq.api.release;
 //
-//import com.seeu.ywq.release.model.apppage.HomePageUser;
-//import com.seeu.ywq.release.service.apppage.AppHomePageService;
-//import com.seeu.ywq.release.service.FansService;
-//import com.seeu.ywq.release.service.UserPositionService;
+//import com.seeu.ywq.page.model.HomePageUser;
+//import com.seeu.ywq.page.service.AppHomePageService;
+//import com.seeu.ywq.user.service.FansService;
+//import com.seeu.ywq.user.service.UserPositionService;
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Sort;

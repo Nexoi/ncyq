@@ -1,11 +1,10 @@
 package com.seeu.ywq.userlogin.service.impl;
 
-import com.seeu.system.sms.service.ISmsSV;
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.pay.service.BalanceService;
-import com.seeu.ywq.release.model.User;
-import com.seeu.ywq.release.repository.UserInfoRepository;
+import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.repository.UserInfoRepository;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
 import com.seeu.ywq.userlogin.model.UserLogin;

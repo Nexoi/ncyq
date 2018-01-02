@@ -1,10 +1,10 @@
 package com.seeu.ywq.api.admin;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.model.apppage.Advertisement;
-import com.seeu.ywq.release.model.apppage.HomePageUser;
-import com.seeu.ywq.release.model.apppage.HomePageVideo;
-import com.seeu.ywq.release.service.apppage.AppHomePageService;
+import com.seeu.ywq.page.model.Advertisement;
+import com.seeu.ywq.page.model.HomePageUser;
+import com.seeu.ywq.page.model.HomePageVideo;
+import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

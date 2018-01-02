@@ -17,6 +17,10 @@ import java.util.Date;
 
 @Service
 public class SMSMaiXunTongServiceImpl implements SMSService {
+
+    @Value("${sms.url}")
+    private String url;
+
     @Value("${sms.userId}")
     private String userId;
 
@@ -29,13 +33,12 @@ public class SMSMaiXunTongServiceImpl implements SMSService {
 
     @Override
     public void send(String phone, String message) throws SMSSendFailureException {
-        String url = "http://113.106.16.55:8080/GateWay/Services.asmx/DirectSend?";
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
         PostMethod getMethod = new PostMethod(url);
         String Content = null;
         try {
-            Content = java.net.URLEncoder.encode(message, "UTF-8");
+            Content = java.net.URLEncoder.encode(message, "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

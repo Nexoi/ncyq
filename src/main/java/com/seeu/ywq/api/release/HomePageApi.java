@@ -1,6 +1,6 @@
 package com.seeu.ywq.api.release;
 
-import com.seeu.ywq.release.service.apppage.AppHomePageService;
+import com.seeu.ywq.page.service.AppHomePageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

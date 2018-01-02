@@ -1,11 +1,11 @@
 package com.seeu.ywq.userlogin.service.impl;
 
-import com.seeu.ywq.release.dvo.apppage.SimpleUserVO;
-import com.seeu.ywq.release.model.User;
-import com.seeu.ywq.release.model.UserLike;
-import com.seeu.ywq.release.model.UserLikePKeys;
-import com.seeu.ywq.release.repository.UserLikeRepository;
-import com.seeu.ywq.release.repository.UserInfoRepository;
+import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.model.UserLike;
+import com.seeu.ywq.user.model.UserLikePKeys;
+import com.seeu.ywq.user.repository.UserLikeRepository;
+import com.seeu.ywq.user.repository.UserInfoRepository;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;

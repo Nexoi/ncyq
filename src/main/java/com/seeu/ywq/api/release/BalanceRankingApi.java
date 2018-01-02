@@ -1,6 +1,6 @@
 package com.seeu.ywq.api.release;
 
-import com.seeu.ywq.release.service.apppage.PageBalanceRankingService;
+import com.seeu.ywq.page.service.PageBalanceRankingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

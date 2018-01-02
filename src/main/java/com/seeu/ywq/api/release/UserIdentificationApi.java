@@ -1,9 +1,8 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.model.Identification;
-import com.seeu.ywq.release.model.IdentificationApply;
-import com.seeu.ywq.release.service.IdentificationService;
+import com.seeu.ywq.user.model.IdentificationApply;
+import com.seeu.ywq.user.service.IdentificationService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

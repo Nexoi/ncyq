@@ -1,13 +1,13 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.dvo.PublishVO;
-import com.seeu.ywq.release.model.Picture;
-import com.seeu.ywq.release.model.Publish;
-import com.seeu.ywq.release.model.PublishVideo;
-import com.seeu.ywq.release.model.Video;
-import com.seeu.ywq.release.service.PublishService;
-import com.seeu.ywq.release.service.UserPictureService;
+import com.seeu.ywq.trend.dvo.PublishVO;
+import com.seeu.ywq.trend.model.Picture;
+import com.seeu.ywq.trend.model.Publish;
+import com.seeu.ywq.trend.model.PublishVideo;
+import com.seeu.ywq.resource.model.Video;
+import com.seeu.ywq.trend.service.PublishService;
+import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;

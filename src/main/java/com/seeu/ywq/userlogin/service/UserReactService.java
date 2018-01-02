@@ -1,6 +1,6 @@
 package com.seeu.ywq.userlogin.service;
 
-import com.seeu.ywq.release.dvo.apppage.SimpleUserVO;
+import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
 public interface UserReactService {

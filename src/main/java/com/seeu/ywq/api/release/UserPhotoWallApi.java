@@ -1,8 +1,8 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.dvo.PhotoWallVO;
-import com.seeu.ywq.release.service.UserPhotoWallService;
+import com.seeu.ywq.user.dvo.PhotoWallVO;
+import com.seeu.ywq.user.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

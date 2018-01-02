@@ -1,8 +1,8 @@
 package com.seeu.ywq.api.admin;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.model.apppage.Photography;
-import com.seeu.ywq.release.service.apppage.PhotographyService;
+import com.seeu.ywq.page.model.Photography;
+import com.seeu.ywq.page.service.PhotographyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,12 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.dvo.apppage.SimpleUserVO;
-import com.seeu.ywq.release.model.apppage.HomePageVideo;
-import com.seeu.ywq.release.model.apppage.HomePageVideoComment;
-import com.seeu.ywq.release.repository.apppage.HomePageVideoCommentRepository;
-import com.seeu.ywq.release.service.FansService;
-import com.seeu.ywq.release.service.apppage.HomePageVideoCommentService;
-import com.seeu.ywq.release.service.apppage.HomePageVideoService;
+import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.page.model.HomePageVideo;
+import com.seeu.ywq.page.model.HomePageVideoComment;
+import com.seeu.ywq.user.service.FansService;
+import com.seeu.ywq.page.service.HomePageVideoCommentService;
+import com.seeu.ywq.page.service.HomePageVideoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.*;

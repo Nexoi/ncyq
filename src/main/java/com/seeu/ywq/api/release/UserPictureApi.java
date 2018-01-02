@@ -1,7 +1,7 @@
 package com.seeu.ywq.api.release;
 
-import com.seeu.ywq.release.model.Picture;
-import com.seeu.ywq.release.service.UserPictureService;
+import com.seeu.ywq.trend.model.Picture;
+import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

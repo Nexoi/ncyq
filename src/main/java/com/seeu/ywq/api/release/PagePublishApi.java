@@ -1,7 +1,7 @@
 package com.seeu.ywq.api.release;
 
 import com.seeu.core.R;
-import com.seeu.ywq.release.service.apppage.AppPublishPageService;
+import com.seeu.ywq.page.service.AppPublishPageService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
