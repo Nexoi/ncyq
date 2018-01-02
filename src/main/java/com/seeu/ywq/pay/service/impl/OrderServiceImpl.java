@@ -2,7 +2,7 @@ package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.sms.SMSService;
-import com.seeu.ywq.config.service.GlobalConfigurerService;
+import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
@@ -11,7 +11,7 @@ import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.exception.PublishNotFoundException;
 import com.seeu.ywq.exception.ResourceAlreadyActivedException;
 import com.seeu.ywq.trend.model.Publish;
-import com.seeu.ywq.resource.repository.OrderLogRepository;
+import com.seeu.ywq.pay.repository.OrderLogRepository;
 import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
