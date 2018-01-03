@@ -5,7 +5,9 @@ import com.seeu.ywq.user.model.Fans;
 import com.seeu.ywq.user.model.FansPKeys;
 import com.seeu.ywq.user.repository.FansRepository;
 import com.seeu.ywq.user.service.FansService;
+import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.userlogin.service.UserReactService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,8 @@ public class FansServiceImpl implements FansService {
     private FansRepository fansRepository;
     @Resource
     private UserReactService userReactService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Override
     public boolean hasFollowedHer(Long myUid, Long herUid) {
@@ -70,6 +74,8 @@ public class FansServiceImpl implements FansService {
             fansRepository.save(f);
             fans.setFollowEach(Fans.FOLLOW_EACH.each);
             fansRepository.save(fans);
+            userInfoService.followPlusOne(myUid); // 自己的关注人数 +1
+            userInfoService.fansPlusOne(hisUid);    // 他的粉丝数 +1
             return STATUS.success;
         } else {
             Fans f = new Fans();
@@ -79,6 +85,8 @@ public class FansServiceImpl implements FansService {
             f.setFollowedUid(hisUid);
             f.setFollowEach(Fans.FOLLOW_EACH.single);
             fansRepository.save(f);
+            userInfoService.followPlusOne(myUid); // 自己的关注人数 +1
+            userInfoService.fansPlusOne(hisUid);    // 他的粉丝数 +1
             return STATUS.success;
         }
     }

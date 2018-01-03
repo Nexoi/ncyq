@@ -236,6 +236,7 @@ public class UserLogin implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
         List<UserAuthRole> roles = this.getRoles();
+        if (roles == null) return auths;
         for (UserAuthRole role : roles) {
             auths.add(new SimpleGrantedAuthority(role.getName()));
         }

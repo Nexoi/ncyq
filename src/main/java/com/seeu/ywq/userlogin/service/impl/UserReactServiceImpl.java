@@ -6,6 +6,7 @@ import com.seeu.ywq.user.model.UserLike;
 import com.seeu.ywq.user.model.UserLikePKeys;
 import com.seeu.ywq.user.repository.UserLikeRepository;
 import com.seeu.ywq.user.repository.UserInfoRepository;
+import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
@@ -63,6 +64,14 @@ public class UserReactServiceImpl implements UserReactService {
     }
 
     @Override
+    public UserLoginVO findOneWithSafety(Long uid) {
+        UserLogin ul = userLoginRepository.findOne(uid);
+        UserLoginVO vo = new UserLoginVO();
+        BeanUtils.copyProperties(ul, vo);
+        return vo;
+    }
+
+    @Override
     public UserLogin findByPhone(String phone) {
         return userLoginRepository.findByPhone(phone);
     }
@@ -91,5 +100,15 @@ public class UserReactServiceImpl implements UserReactService {
     @Override
     public UserLogin save(UserLogin userLogin) {
         return userLoginRepository.save(userLogin);
+    }
+
+    @Override
+    public UserLogin saveNickName(Long uid, String nickname) {
+        UserLogin ul = userLoginRepository.findOne(uid);
+        if (ul != null) {
+            ul.setNickname(nickname);
+            return userLoginRepository.save(ul);
+        }
+        return null;
     }
 }

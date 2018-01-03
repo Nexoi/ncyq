@@ -9,15 +9,15 @@ import java.util.Date;
 @Entity
 @IdClass(User$TagPKeys.class)
 @Table(name = "ywq_user_tags", indexes = {
-        @Index(name = "user_tags_index1", columnList = "tags_id"),
-        @Index(name = "user_tags_index2", columnList = "user_uid")
+        @Index(name = "user_tags_index1", unique = false, columnList = "tags_id"),
+        @Index(name = "user_tags_index1", unique = false, columnList = "user_uid")
 })
 public class User$Tag {
     @Id
-    @Column(name = "tags_id")
+    @Column(name = "tags_id", unique = false)
     private Long tagId;
     @Id
-    @Column(name = "user_uid")
+    @Column(name = "user_uid", unique = false)
     private Long uid;
 
     private Date createTime;

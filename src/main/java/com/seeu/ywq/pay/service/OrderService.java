@@ -1,6 +1,8 @@
 package com.seeu.ywq.pay.service;
 
 import com.seeu.third.exception.SMSSendFailureException;
+import com.seeu.ywq.exception.RewardAmountCannotBeNegitiveException;
+import com.seeu.ywq.exception.RewardResourceNotFoundException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
@@ -20,7 +22,8 @@ public interface OrderService {
 
     OrderLog createWithdraw();
 
-    OrderLog createReward();
+    // 送花（直接将花转成钻石）
+    OrderLog createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, RewardResourceNotFoundException,RewardAmountCannotBeNegitiveException;
 
     OrderLog createSendGift();
 

@@ -13,6 +13,14 @@ public interface UserInfoService {
 
     UserVO findOne(Long uid);
 
+    void followPlusOne(Long uid);
+
+    void followMinsOne(Long uid);
+
+    void fansPlusOne(Long uid);
+
+    void fansMinsOne(Long uid);
+
     /**
      * @param uid
      * @param image

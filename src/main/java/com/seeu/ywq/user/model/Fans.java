@@ -10,8 +10,8 @@ import java.util.Date;
 @Entity
 @IdClass(FansPKeys.class)
 @Table(name = "ywq_fans", indexes = {
-        @Index(name = "fans_index1", columnList = "fans_uid"),
-        @Index(name = "fans_index2", columnList = "followed_uid")
+        @Index(name = "fans_index1", unique = false, columnList = "fans_uid"),
+        @Index(name = "fans_index1", unique = false, columnList = "followed_uid")
 })
 public class Fans {
 
@@ -28,12 +28,12 @@ public class Fans {
 
     @NotNull
     @Id
-    @Column(name = "fans_uid")
+    @Column(name = "fans_uid", unique = false)
     private Long fansUid;//用户账号
 
     @NotNull
     @Id
-    @Column(name = "followed_uid")
+    @Column(name = "followed_uid", unique = false)
     private Long followedUid;//被关注的用户账号
 
     @Enumerated

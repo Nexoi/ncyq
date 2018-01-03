@@ -13,4 +13,6 @@ public interface User$TagRepository extends JpaRepository<User$Tag, User$TagPKey
 
     @Query(value = "select tags_id as tagId, tag_name as tagName from ywq_user_tags as tu join ywq_tag as t on t.id = tu.tags_id where user_uid = ?1", nativeQuery = true)
     List<Object[]> findAllTagsByUid(@Param("uid") Long uid);
+
+    void deleteAllByUid(@Param("uid") Long uid);
 }

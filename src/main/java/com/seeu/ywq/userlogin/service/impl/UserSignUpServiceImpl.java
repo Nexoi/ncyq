@@ -44,6 +44,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     private SMSService smsService;
     @Value("${ywq.sms.regist_sendcode}")
     private String message;
+    @Value("${ywq.headicon}")
+    private String headIcon;
 
     public UserSignUpService.SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
@@ -114,6 +116,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(password));
         userLogin.setLikeNum(0L);
+        userLogin.setHeadIconUrl(headIcon);
 
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);
@@ -123,10 +126,16 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         roles.add(userAuthRole);
         userLogin.setRoles(roles);
         UserLogin savedUserLogin = userReactService.save(userLogin);
+        // 更新昵称
+        savedUserLogin.setNickname("user_" + savedUserLogin.getUid());
+        savedUserLogin = userReactService.save(savedUserLogin);
         // 添加用户基本信息 //
         User user = new User();
         user.setUid(savedUserLogin.getUid());
         user.setPhone(phone);
+        user.setPublishNum(0L);
+        user.setFansNum(0L);
+        user.setFollowNum(0L);
         userInfoRepository.saveAndFlush(user);
         // 初始化用户余额系统 //
         balanceService.initAccount(savedUserLogin.getUid(), null);

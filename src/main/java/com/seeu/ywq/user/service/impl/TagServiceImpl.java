@@ -8,12 +8,14 @@ import com.seeu.ywq.user.repository.User$TagRepository;
 import com.seeu.ywq.user.repository.TagRepository;
 import com.seeu.ywq.user.service.TagService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +66,20 @@ public class TagServiceImpl implements TagService {
         existTag.setDeleteFlag(Tag.DELETE_FLAG.delete);
     }
 
+    @Transactional
+    @Override
+    public STATUS resetMine(Long uid, Long[] ids) {
+        user$TagRepository.deleteAllByUid(uid);
+        return addMine(uid, ids);
+    }
+
+    @Transactional
+    @Override
+    public STATUS resetFocus(Long uid, Long[] ids) {
+        user$TagRepository.deleteAllByUid(uid);
+        return addFocus(uid, ids);
+    }
+
     @Override
     public STATUS addMine(Long uid, Long[] ids) {
         List<User$Tag> mines = new ArrayList<>();
@@ -88,7 +104,11 @@ public class TagServiceImpl implements TagService {
             focus.setUid(uid);
             foci.add(focus);
         }
-        user$TagRepository.save(foci);
+        try {
+            user$TagRepository.save(foci);
+        } catch (DataIntegrityViolationException exception) {
+            return STATUS.no_such_tag;
+        }
         return STATUS.success;
     }
 

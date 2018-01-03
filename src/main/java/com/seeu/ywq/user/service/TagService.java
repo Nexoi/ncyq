@@ -21,6 +21,10 @@ public interface TagService {
 
     void deleteFake(Long id);
 
+    STATUS resetMine(Long uid, Long[] ids);
+
+    STATUS resetFocus(Long uid, Long[] ids);
+
     STATUS addMine(Long uid, Long[] ids); // 添加自己的标签
 
     STATUS addFocus(Long uid, Long[] ids); // 添加自己关注的标签
@@ -36,7 +40,8 @@ public interface TagService {
     public enum STATUS {
         hasAdded,
         success,
-        failure
+        failure,
+        no_such_tag
     }
 
 }

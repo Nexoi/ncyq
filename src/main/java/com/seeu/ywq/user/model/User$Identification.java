@@ -9,9 +9,9 @@ import java.util.Date;
 @Entity
 @IdClass(User$IdentificationPKeys.class)
 @Table(name = "ywq_user_identifications", indexes = {
-        @Index(name = "identification_index1", columnList = "uid"),
-        @Index(name = "identification_index2", columnList = "identification_id"),
-        @Index(name = "identification_index3", columnList = "status")
+        @Index(name = "identification_index1", unique = false, columnList = "uid"),
+        @Index(name = "identification_index1", unique = false, columnList = "identification_id"),
+        @Index(name = "identification_index3", unique = false, columnList = "status")
 })
 public class User$Identification {
     public enum STATUS {
@@ -22,10 +22,10 @@ public class User$Identification {
     }
 
     @Id
-    @Column(name = "identification_id")
+    @Column(name = "identification_id", unique = false)
     private Long identificationId;
     @Id
-    @Column(name = "uid")
+    @Column(name = "uid", unique = false)
     private Long uid;
 
     private STATUS status; // 认证状态

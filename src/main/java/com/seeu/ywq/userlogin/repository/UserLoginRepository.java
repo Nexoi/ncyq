@@ -21,4 +21,5 @@ public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
     @Modifying
     @Query("update UserLogin u set u.likeNum = u.likeNum - 1 where u.uid = :uid")
     void cancelLikeMe(@Param("uid") Long uid);
+
 }

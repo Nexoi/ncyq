@@ -1,6 +1,7 @@
 package com.seeu.ywq.userlogin.service;
 
 import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
 public interface UserReactService {
@@ -11,6 +12,8 @@ public interface UserReactService {
     Boolean exists(Long uid);
 
     UserLogin findOne(Long uid);
+
+    UserLoginVO findOneWithSafety(Long uid);
 
     UserLogin findByPhone(String phone);
 
@@ -23,6 +26,7 @@ public interface UserReactService {
     /* save **/
     UserLogin save(UserLogin userLogin);
 
+    UserLogin saveNickName(Long uid, String nickname);
 
     public enum STATUS {
         success,

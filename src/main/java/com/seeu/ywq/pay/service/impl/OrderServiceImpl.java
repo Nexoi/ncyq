@@ -1,7 +1,15 @@
 package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
+import com.seeu.third.push.PushService;
 import com.seeu.third.sms.SMSService;
+import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
+import com.seeu.ywq.exception.RewardAmountCannotBeNegitiveException;
+import com.seeu.ywq.exception.RewardResourceNotFoundException;
+import com.seeu.ywq.gift.model.GiftOrder;
+import com.seeu.ywq.gift.model.Reward;
+import com.seeu.ywq.gift.service.GiftOrderService;
+import com.seeu.ywq.gift.service.RewardService;
 import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
@@ -18,6 +26,7 @@ import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,12 +54,20 @@ public class OrderServiceImpl implements OrderService {
     private OrderLogRepository orderLogRepository;
     @Autowired
     private GlobalConfigurerService globalConfigurerService;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Value("${ywq.resource.interval.publish}")
     private Integer timeInterval_Publish;
 
     @Value("${ywq.sms.unlock_wechat}")
     private String unlockWeChatSMSText;
+
+    // 打赏
+    @Autowired
+    private RewardService rewardService;
+    @Autowired
+    private GiftOrderService giftOrderService;
 
     @Override
     public OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds) {
@@ -62,9 +79,55 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    // 送花（打赏物品）
+    @Transactional
     @Override
-    public OrderLog createReward() {
-        return null;
+    public OrderLog createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, RewardResourceNotFoundException, RewardAmountCannotBeNegitiveException {
+        // 判断资源是否存在
+        Reward reward = rewardService.findOne(rewardResourceId);
+        if (reward == null) throw new RewardResourceNotFoundException();
+        // 计算总价
+        if (amount <= 0) throw new RewardAmountCannotBeNegitiveException();
+        Long price = reward.getDiamonds() * amount;
+        // 观看者用户扣钱
+        balanceService.minus(uid, price); // 可以报余额不足异常
+        Date date = new Date();
+        // 记录订单
+        OrderLog log = new OrderLog();
+        log.setOrderId(genOrderID());
+        log.setCreateTime(date);
+        log.setDiamonds(price);
+        log.setEvent(OrderLog.EVENT.REWARD);
+        log.setType(OrderLog.TYPE.OUT);
+        log.setUid(uid);
+        log = orderLogRepository.save(log);
+        // 收钱
+        // 发布者用户收钱 （百分比配）
+        Long transactionPrice = (long) (price * globalConfigurerService.getUserRewardDiamondsPercent());
+        balanceService.plus(herUid, transactionPrice, OrderLog.EVENT.UNLOCK_PUBLISH);
+        // 记录订单
+        String herOrderId = genOrderID();
+        OrderLog log2 = new OrderLog();
+        log2.setOrderId(herOrderId);
+        log2.setCreateTime(date);
+        log2.setDiamonds(transactionPrice);
+        log2.setEvent(OrderLog.EVENT.RECEIVE_REWARD);
+        log2.setType(OrderLog.TYPE.IN);
+        log2.setUid(herUid);
+        log2 = orderLogRepository.save(log2);
+        // 记录订单（送礼单独的订单）
+        GiftOrder giftOrder = new GiftOrder();
+        giftOrder.setCreateTime(date);
+        giftOrder.setDiamonds(price);
+        giftOrder.setUid(uid);
+        giftOrder.setHerUid(herUid);
+        giftOrder.setRewardResourceId(rewardResourceId);
+        giftOrder.setOrderId(herOrderId);
+        giftOrder = giftOrderService.save(giftOrder);
+        // 地址（通知里面进行判断，以便完善）
+        // 通知
+        applicationContext.publishEvent(new ReceiveRewardEvent(this, herUid, uid,"",rewardResourceId,reward.getName(),amount, price, transactionPrice, giftOrder.getOrderId()));
+        return log;
     }
 
     @Override

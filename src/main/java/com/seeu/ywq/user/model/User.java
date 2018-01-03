@@ -3,6 +3,7 @@ package com.seeu.ywq.user.model;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -36,7 +37,10 @@ public class User {
     private Long fansNum;   // 粉丝数
     @ApiParam(hidden = true)
     private Long followNum; // 关注人数
+    @ApiParam(hidden = true)
+    private Long publishNum; // 动态发布数
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDay;  // 出生日期间
     private Integer height; // 身高
     @Column(precision = 6, scale = 2)
@@ -176,5 +180,13 @@ public class User {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Long getPublishNum() {
+        return publishNum;
+    }
+
+    public void setPublishNum(Long publishNum) {
+        this.publishNum = publishNum;
     }
 }

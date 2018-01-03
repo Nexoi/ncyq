@@ -55,6 +55,26 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public void followPlusOne(Long uid) {
+        userInfoRepository.followPlusOne(uid);
+    }
+
+    @Override
+    public void followMinsOne(Long uid) {
+        userInfoRepository.followMinsOne(uid);
+    }
+
+    @Override
+    public void fansPlusOne(Long uid) {
+        userInfoRepository.fansPlusOne(uid);
+    }
+
+    @Override
+    public void fansMinsOne(Long uid) {
+        userInfoRepository.fansMinsOne(uid);
+    }
+
+    @Override
     public String updateHeadIcon(Long uid, MultipartFile image) {
         UserLogin ul = userReactService.findOne(uid);
         if (ul == null)

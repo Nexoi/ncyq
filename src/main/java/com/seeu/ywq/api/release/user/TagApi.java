@@ -95,6 +95,31 @@ public class TagApi {
         }
     }
 
+    @ApiOperation(value = "添加标签【重置】", notes = "为自己添加标签信息，性别必须为：女。")
+    @ApiResponse(code = 400, message = "数据错误")
+    @PostMapping("/set-withclean")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity resetMyTag(@AuthenticationPrincipal UserLogin authUser,
+                                   @ApiParam(value = "需要添加的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
+                                   @RequestParam Long[] ids) {
+        // 判断性别
+        if (authUser.getGender() == UserLogin.GENDER.male)
+            return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
+        if (ids == null || ids.length == 0)
+            return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
+        // 添加
+        TagService.STATUS status = tagService.resetMine(authUser.getUid(), ids);
+        switch (status) {
+            case success:
+                return ResponseEntity.ok(R.code(200).message("添加成功").build());
+            case hasAdded:
+                return ResponseEntity.badRequest().body(R.code(4003).message("有已经添加过的标签，请勿重复添加").build());
+            case failure:
+            default:
+                return ResponseEntity.badRequest().body(R.code(4004).message("添加失败，请稍后再试").build());
+        }
+    }
+
     @ApiOperation(value = "关注标签", notes = "为自己添加关注的标签信息，性别必须为：男。若上传标签重复，依然会返回“关注成功”信息")
     @ApiResponse(code = 400, message = "数据错误")
     @PostMapping("/follow")
@@ -115,11 +140,38 @@ public class TagApi {
             case hasAdded:
                 return ResponseEntity.badRequest().body(R.code(4003).message("有已经关注过的标签，请勿重复关注").build());
             case failure:
+            case no_such_tag:
+                return ResponseEntity.badRequest().body(R.code(4005).message("无此标签可以关注").build());
             default:
                 return ResponseEntity.badRequest().body(R.code(4004).message("关注失败，请稍后再试").build());
         }
     }
-
+    @ApiOperation(value = "关注标签【重置】", notes = "为自己添加关注的标签信息，性别必须为：男。")
+    @ApiResponse(code = 400, message = "数据错误")
+    @PostMapping("/follow-withclean")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity resetFocusTag(@AuthenticationPrincipal UserLogin authUser,
+                                      @ApiParam(value = "需要关注的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
+                                      @RequestParam Long[] ids) {
+        // 判断性别
+        if (authUser.getGender() == UserLogin.GENDER.female)
+            return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
+        if (ids == null || ids.length == 0)
+            return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
+        // 添加
+        TagService.STATUS status = tagService.resetFocus(authUser.getUid(), ids);
+        switch (status) {
+            case success:
+                return ResponseEntity.ok(R.code(200).message("关注成功").build());
+            case hasAdded:
+                return ResponseEntity.badRequest().body(R.code(4003).message("有已经关注过的标签，请勿重复关注").build());
+            case failure:
+            case no_such_tag:
+                return ResponseEntity.badRequest().body(R.code(4005).message("无此标签可以关注").build());
+            default:
+                return ResponseEntity.badRequest().body(R.code(4004).message("关注失败，请稍后再试").build());
+        }
+    }
     @ApiOperation(value = "删除添加的标签", notes = "删除自己添加的标签信息，性别必须为：女。")
     @ApiResponse(code = 400, message = "数据错误")
     @DeleteMapping("/set")

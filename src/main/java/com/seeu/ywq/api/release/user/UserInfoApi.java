@@ -3,10 +3,15 @@ package com.seeu.ywq.api.release.user;
 import com.seeu.core.R;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
 import com.seeu.ywq.user.dvo.UserVO;
+import com.seeu.ywq.user.dvo.UserWithNickName;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPhotoWallService;
+import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserVIP;
+import com.seeu.ywq.userlogin.service.UserReactService;
+import com.seeu.ywq.userlogin.service.UserVIPService;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,10 @@ public class UserInfoApi {
     private UserInfoService userInfoService;
     @Autowired
     private UserPhotoWallService userPhotoWallService;
+    @Autowired
+    private UserReactService userReactService;
+    @Autowired
+    private UserVIPService userVIPService;
 
     /**
      * 查看用户所有信息【本人】
@@ -53,9 +62,18 @@ public class UserInfoApi {
             return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
         // 其余信息
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
+        UserLoginVO ul = userReactService.findOneWithSafety(uid);
+        UserVIP vip = userVIPService.findOne(uid);
+        if (vip == null) {
+            vip = new UserVIP();
+            vip.setTerminationDate(null);
+            vip.setVipLevel(UserVIP.VIP.none);
+        }
         Map map = new HashMap();
         map.put("info", user);
+        map.put("basicInfo", ul);
         map.put("albums", userAlbums);
+        map.put("vip", vip);
         return ResponseEntity.ok(map);
     }
 
@@ -130,16 +148,28 @@ public class UserInfoApi {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity saveOrUpdate(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser,
-                                       User user) {
+                                       User user,
+                                       @RequestParam(required = false) String nickname) {
         User sourceUser = userInfoService.findOneInfo(authUser.getUid());
         user.setPhone(null); // 电话号码不可修改
         user.setFansNum(null);
         user.setFollowNum(null);
+        user.setPublishNum(null);
         user.setTags(null);
 //        user.setSkills(null);
         user.setUid(authUser.getUid());
         BeanUtils.copyProperties(user, sourceUser);
         User savedUser = userInfoService.saveInfo(sourceUser);
+        // 昵称修改
+        if (nickname != null) {
+            UserLogin ul = userReactService.saveNickName(authUser.getUid(), nickname);
+            if (ul != null) {
+                UserWithNickName userWithNickName = new UserWithNickName();
+                BeanUtils.copyProperties(savedUser, userWithNickName);
+                userWithNickName.setNickname(ul.getNickname());
+                return ResponseEntity.ok(userWithNickName);
+            }
+        }
         return ResponseEntity.ok(savedUser);
     }
 
