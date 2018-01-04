@@ -75,6 +75,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public void publishPlusOne(Long uid) {
+        userInfoRepository.publishPlusOne(uid);
+    }
+
+    @Override
+    public void publishMinsOne(Long uid) {
+        userInfoRepository.publishMinsOne(uid);
+    }
+
+    @Override
     public String updateHeadIcon(Long uid, MultipartFile image) {
         UserLogin ul = userReactService.findOne(uid);
         if (ul == null)
@@ -107,16 +117,16 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (user == null) return null;
         UserVO vo = new UserVO();
         BeanUtils.copyProperties(user, vo);
-        List<TagVO> tagVOS = new ArrayList<>();
-        List<Tag> tags = user.getTags();
-        if (tags == null || tags.size() == 0) return vo;
-        for (Tag tag : tags) {
-            TagVO tagVO = new TagVO();
-            tagVO.setTagName(tag.getTagName());
-            tagVO.setId(tag.getId());
-            tagVOS.add(tagVO);
-        }
-        vo.setTags(tagVOS);
+//        List<TagVO> tagVOS = new ArrayList<>();
+//        List<Tag> tags = user.getTags();
+//        if (tags == null || tags.size() == 0) return vo;
+//        for (Tag tag : tags) {
+//            TagVO tagVO = new TagVO();
+//            tagVO.setTagName(tag.getTagName());
+//            tagVO.setId(tag.getId());
+//            tagVOS.add(tagVO);
+//        }
+//        vo.setTags(tagVOS);
         return vo;
     }
 

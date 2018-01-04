@@ -52,6 +52,7 @@ public class UserPictureServiceImpl implements UserPictureService {
             PublishPictureVO vo = new PublishPictureVO();
             BeanUtils.copyProperties(picture, vo);
             vo.setImage(picture.getImageOpen()); // 全部设置为清晰图
+            vo.setAlbumType(Picture.ALBUM_TYPE.open); // 设定为开放（对自己开放的）
             publishPictureVOS.add(vo);
         }
         Page voPage = new PageImpl(publishPictureVOS, pageRequest, page.getTotalElements());

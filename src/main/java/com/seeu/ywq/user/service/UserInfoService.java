@@ -21,6 +21,10 @@ public interface UserInfoService {
 
     void fansMinsOne(Long uid);
 
+    void publishPlusOne(Long uid);
+
+    void publishMinsOne(Long uid);
+
     /**
      * @param uid
      * @param image

@@ -30,4 +30,14 @@ public interface UserInfoRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("update User u set u.fansNum = u.fansNum - 1 where u.uid = :uid")
     void fansMinsOne(@Param("uid") Long uid);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.publishNum = u.publishNum + 1 where u.uid = :uid")
+    void publishPlusOne(@Param("uid") Long uid);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.publishNum = u.publishNum - 1 where u.uid = :uid")
+    void publishMinsOne(@Param("uid") Long uid);
 }

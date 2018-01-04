@@ -26,9 +26,7 @@ public class PagePublishApi {
     @GetMapping("/advertisements")
     public ResponseEntity getAds() {
         List list = appPublishPageService.getPublishPageAdvertisements();
-        return list == null || list.size() == 0
-                ? ResponseEntity.status(204).body(R.code(204).message("无广告信息").build())
-                : ResponseEntity.ok(list);
+        return ResponseEntity.ok(list);
     }
 
     @ApiOperation(value = "推荐【需要登录】", notes = "根据用户信息（关注标签）进行推荐，若匿名用户，则默认表示所有标签。按时间排序")

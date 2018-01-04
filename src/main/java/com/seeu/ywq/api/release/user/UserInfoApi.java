@@ -2,9 +2,11 @@ package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
+import com.seeu.ywq.user.dvo.User$TagVO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.dvo.UserWithNickName;
 import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.service.TagService;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPhotoWallService;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
@@ -41,6 +43,8 @@ public class UserInfoApi {
     private UserReactService userReactService;
     @Autowired
     private UserVIPService userVIPService;
+    @Autowired
+    private TagService tagService;
 
     /**
      * 查看用户所有信息【本人】
@@ -64,6 +68,7 @@ public class UserInfoApi {
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         UserLoginVO ul = userReactService.findOneWithSafety(uid);
         UserVIP vip = userVIPService.findOne(uid);
+        List<User$TagVO> tagVOS = tagService.findAllMine(uid);
         if (vip == null) {
             vip = new UserVIP();
             vip.setTerminationDate(null);
@@ -72,6 +77,7 @@ public class UserInfoApi {
         Map map = new HashMap();
         map.put("info", user);
         map.put("basicInfo", ul);
+        map.put("tags", tagVOS);
         map.put("albums", userAlbums);
         map.put("vip", vip);
         return ResponseEntity.ok(map);
@@ -96,8 +102,10 @@ public class UserInfoApi {
 
         // 其余信息
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
+        List<User$TagVO> tagVOS = tagService.findAllMine(uid);
         Map map = new HashMap();
         map.put("info", user);
+        map.put("tags", tagVOS);
         map.put("albums", userAlbums);
         return ResponseEntity.ok(map);
     }
@@ -155,7 +163,7 @@ public class UserInfoApi {
         user.setFansNum(null);
         user.setFollowNum(null);
         user.setPublishNum(null);
-        user.setTags(null);
+//        user.setTags(null);
 //        user.setSkills(null);
         user.setUid(authUser.getUid());
         BeanUtils.copyProperties(user, sourceUser);

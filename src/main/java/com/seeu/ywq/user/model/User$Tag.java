@@ -8,18 +8,17 @@ import java.util.Date;
  */
 @Entity
 @IdClass(User$TagPKeys.class)
-@Table(name = "ywq_user_tags", indexes = {
-        @Index(name = "user_tags_index1", unique = false, columnList = "tags_id"),
-        @Index(name = "user_tags_index1", unique = false, columnList = "user_uid")
-})
+@Table(name = "ywq_user_tags")
 public class User$Tag {
-    @Id
-    @Column(name = "tags_id", unique = false)
-    private Long tagId;
     @Id
     @Column(name = "user_uid", unique = false)
     private Long uid;
+    @Id
+    @Column(name = "tags_id", unique = false)
+    private Long tagId;
 
+
+    @Column(name = "create_time")
     private Date createTime;
 
     public Long getTagId() {

@@ -17,6 +17,7 @@ import com.seeu.ywq.trend.model.PublishLikedUserPKeys;
 import com.seeu.ywq.trend.service.PublishCommentService;
 import com.seeu.ywq.trend.service.PublishLikedUserService;
 import com.seeu.ywq.trend.service.PublishService;
+import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,8 @@ public class PublishServiceImpl implements PublishService {
     private PublishCommentService publishCommentService;
     @Autowired
     private ResourceAuthService resourceAuthService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     /* 以下两个数据源只在此类使用 **/
     @Resource
@@ -67,6 +70,10 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public Publish save(Publish publish) {
+        if (publish == null) return null;
+        // 用户发布数量加一
+        if (publish.getUid() != null)
+            userInfoService.publishPlusOne(publish.getUid());
         return publishRepository.save(publish);
     }
 
@@ -153,14 +160,16 @@ public class PublishServiceImpl implements PublishService {
     @Transactional
     @Override
     public STATUS deletePublish(Long publishId) {
-        if (!publishRepository.exists(publishId))
+        Publish publish = publishRepository.findOne(publishId);
+        if (publish == null)
             return STATUS.not_found_publish;
         // 删除全部信息（包含点赞、评论）
         publishRepository.delete(publishId);
         publishLikedUserRepository.deleteAllByPublishId(publishId);
         publishCommentRepository.deleteAllByPublishId(publishId);
         // 用户发布数量减一
-
+        if (publish.getUid() != null)
+            userInfoService.publishMinsOne(publish.getUid());
         return STATUS.success;
     }
 

@@ -60,8 +60,8 @@ public class User {
     @Column(length = 15)
     private String phone;       // 初始化的时候绑定为注册时使用的那个
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Tag> tags;
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Tag> tags;
 //    删除，独立在新表里
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<Identification> identifications;
@@ -174,13 +174,13 @@ public class User {
         this.birthDay = birthDay;
     }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
+//    public List<Tag> getTags() {
+//        return tags;
+//    }
+//
+//    public void setTags(List<Tag> tags) {
+//        this.tags = tags;
+//    }
 
     public Long getPublishNum() {
         return publishNum;

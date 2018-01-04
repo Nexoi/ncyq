@@ -66,7 +66,7 @@ public class UserPhotoWallApi {
     @ApiResponses({
             @ApiResponse(code = 201, message = "上传成功"),
             @ApiResponse(code = 400, message = "400 数据错误"),
-            @ApiResponse(code = 417, message = "417 服务器异常")
+            @ApiResponse(code = 500, message = "500 服务器异常")
     })
     @PostMapping("/photo-wall")
     @PreAuthorize("hasRole('USER')")
@@ -84,7 +84,7 @@ public class UserPhotoWallApi {
             return photoWallVOS.size() == 0 ? ResponseEntity.badRequest().body(R.code(4001).message("请至少传入一张图片").build()) : ResponseEntity.status(201).body(photoWallVOS);
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(R.code(417).message("服务器异常，文件传输失败").build());
+            return ResponseEntity.status(500).body(R.code(500).message("服务器异常，文件传输失败").build());
         }
     }
 }

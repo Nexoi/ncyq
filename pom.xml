@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <spring.boot.version>1.5.4.RELEASE</spring.boot.version>
+        <spring.boot.version>1.5.9.RELEASE</spring.boot.version>
         <kotlin.version>1.1.51</kotlin.version>
     </properties>
 
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <scope>6.0.6</scope>
         </dependency>
 
         <!--阿里 FastJson依赖-->
