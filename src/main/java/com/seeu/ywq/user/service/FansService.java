@@ -16,11 +16,14 @@ public interface FansService {
 
     List<Fans> findAllByFansUid(Long uid);
 
-    STATUS followSomeone(Long myUid, Long hisUid);
+    STATUS followSomeone(Long myUid, Long herUid);
+
+    STATUS cancelFollowSomeone(Long myUid, Long herUid);
 
     public enum STATUS {
-        not_such_person,
+        no_such_person,
         have_followed,
+        not_followed,
         success,
         failure
     }

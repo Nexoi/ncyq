@@ -56,7 +56,7 @@ public class FansServiceImpl implements FansService {
     public STATUS followSomeone(Long myUid, Long hisUid) {
         // 有这个人？
         if (!userReactService.exists(hisUid))
-            return STATUS.not_such_person;
+            return STATUS.no_such_person;
         // 先查看自己是否已经关注过对方
         Fans fans = fansRepository.findOne(new FansPKeys(myUid, hisUid));
         if (fans != null)
@@ -87,6 +87,36 @@ public class FansServiceImpl implements FansService {
             fansRepository.save(f);
             userInfoService.followPlusOne(myUid); // 自己的关注人数 +1
             userInfoService.fansPlusOne(hisUid);    // 他的粉丝数 +1
+            return STATUS.success;
+        }
+    }
+
+    @Override
+    public STATUS cancelFollowSomeone(Long myUid, Long herUid) {
+        // 有这个人？
+        if (!userReactService.exists(herUid))
+            return STATUS.no_such_person;
+        // 是否关注过
+        Fans fans = fansRepository.findOne(new FansPKeys(myUid, herUid));
+        if (fans == null)
+            return STATUS.not_followed;
+        // 查看对方有没有关注自己
+        Fans herFans = fansRepository.findOne(new FansPKeys(herUid, myUid));
+        if (herFans != null && herFans.getDeleteFlag() != Fans.DELETE_FLAG.delete) {
+            // 关注了，表示互相关注
+            // 对方设置为单向关注
+            herFans.setFollowEach(Fans.FOLLOW_EACH.single);
+            fansRepository.save(herFans);
+            // 己方删除记录
+            fansRepository.delete(fans);
+            userInfoService.followMinsOne(myUid); // 自己的关注人数 -1
+            userInfoService.fansMinsOne(herUid);    // 他的粉丝数 -1
+            return STATUS.success;
+        } else {
+            // 己方删除记录
+            fansRepository.delete(fans);
+            userInfoService.followMinsOne(myUid); // 自己的关注人数 -1
+            userInfoService.fansMinsOne(herUid);    // 他的粉丝数 -1
             return STATUS.success;
         }
     }

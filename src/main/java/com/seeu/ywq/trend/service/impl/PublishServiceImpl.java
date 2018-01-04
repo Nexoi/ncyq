@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -149,6 +150,7 @@ public class PublishServiceImpl implements PublishService {
         return transferToVO(publish, resourceAuthService.canVisit(uid, publishId));
     }
 
+    @Transactional
     @Override
     public STATUS deletePublish(Long publishId) {
         if (!publishRepository.exists(publishId))
@@ -157,6 +159,8 @@ public class PublishServiceImpl implements PublishService {
         publishRepository.delete(publishId);
         publishLikedUserRepository.deleteAllByPublishId(publishId);
         publishCommentRepository.deleteAllByPublishId(publishId);
+        // 用户发布数量减一
+
         return STATUS.success;
     }
 

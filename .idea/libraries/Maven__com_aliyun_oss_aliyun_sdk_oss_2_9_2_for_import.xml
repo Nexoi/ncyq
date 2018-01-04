@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.aliyun.oss:aliyun-sdk-oss:2.9.2-for-import">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aliyun/oss/aliyun-sdk-oss/2.9.2-for-import/aliyun-sdk-oss-2.9.2-for-import.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aliyun/oss/aliyun-sdk-oss/2.9.2-for-import/aliyun-sdk-oss-2.9.2-for-import-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aliyun/oss/aliyun-sdk-oss/2.9.2-for-import/aliyun-sdk-oss-2.9.2-for-import-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -40,6 +40,7 @@ public interface PublishService {
     /* 基于 findOneByPublishId(publishId) */
     PublishVO viewIt(Long publishId);
 
+    // 一并删除评论、点赞信息等（用户发布数量减一）
     STATUS deletePublish(Long publishId);
 
     Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable);

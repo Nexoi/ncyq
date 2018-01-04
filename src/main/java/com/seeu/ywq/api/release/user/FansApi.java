@@ -51,14 +51,30 @@ public class FansApi {
                 return ResponseEntity.ok().body(R.code(200).message("关注成功！").build());
             case have_followed:
                 return ResponseEntity.badRequest().body(R.code(400).message("您已经关注过该用户，无需重复关注").build());
-            case not_such_person:
+            case no_such_person:
                 return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
             case failure:
             default:
                 return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
         }
     }
-
+    @ApiOperation(value = "取消关注某人")
+    @DeleteMapping("/follow/{uid}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity cancelFansSomeOne(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long uid) {
+        FansService.STATUS status = fansService.cancelFollowSomeone(authUser.getUid(), uid);
+        switch (status) {
+            case success:
+                return ResponseEntity.ok().body(R.code(200).message("取消关注成功！").build());
+            case not_followed:
+                return ResponseEntity.badRequest().body(R.code(400).message("您还未关注该用户，无法进行该操作").build());
+            case no_such_person:
+                return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
+            case failure:
+            default:
+                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        }
+    }
     @ApiOperation(value = "喜欢某人", notes = "会让该用户字段：likeNum（喜欢人数）+1")
     @PostMapping("/like/{uid}")
     @PreAuthorize("hasRole('USER')")
