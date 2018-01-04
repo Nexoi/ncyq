@@ -6,11 +6,13 @@ import com.seeu.ywq.user.model.UserLike;
 import com.seeu.ywq.user.model.UserLikePKeys;
 import com.seeu.ywq.user.repository.UserLikeRepository;
 import com.seeu.ywq.user.repository.UserInfoRepository;
+import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +27,8 @@ public class UserReactServiceImpl implements UserReactService {
     private UserLikeRepository userLikeRepository;
     @Resource
     private UserInfoRepository userInfoRepository;
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Transactional
     @Override
@@ -33,7 +37,7 @@ public class UserReactServiceImpl implements UserReactService {
             return STATUS.contradiction;
         if (userLikeRepository.exists(new UserLikePKeys(myUid, hisUid)))
             return STATUS.exist;
-        userLoginRepository.likeMe(hisUid);
+        userInfoService.likeMePlusOne(hisUid);
         UserLike like = new UserLike();
         like.setCreateTime(new Date());
         like.setLikedUid(hisUid);
@@ -50,6 +54,7 @@ public class UserReactServiceImpl implements UserReactService {
         if (!userLikeRepository.exists(new UserLikePKeys(myUid, hisUid)))
             return STATUS.not_exist;
         userLikeRepository.delete(new UserLikePKeys(myUid, hisUid));
+        userInfoService.likeMeMinsOne(hisUid);
         return STATUS.success;
     }
 

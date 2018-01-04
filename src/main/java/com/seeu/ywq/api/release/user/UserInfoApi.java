@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
 import com.seeu.ywq.user.dvo.User$TagVO;
 import com.seeu.ywq.user.dvo.UserVO;
@@ -156,18 +157,18 @@ public class UserInfoApi {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity saveOrUpdate(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser,
-                                       User user,
+                                       UserDTO user,
                                        @RequestParam(required = false) String nickname) {
-        User sourceUser = userInfoService.findOneInfo(authUser.getUid());
-        user.setPhone(null); // 电话号码不可修改
-        user.setFansNum(null);
-        user.setFollowNum(null);
-        user.setPublishNum(null);
-//        user.setTags(null);
-//        user.setSkills(null);
-        user.setUid(authUser.getUid());
-        BeanUtils.copyProperties(user, sourceUser);
-        User savedUser = userInfoService.saveInfo(sourceUser);
+//        User sourceUser = userInfoService.findOneInfo(authUser.getUid());
+//        user.setPhone(null); // 电话号码不可修改
+//        user.setFansNum(null);
+//        user.setFollowNum(null);
+//        user.setPublishNum(null);
+////        user.setTags(null);
+////        user.setSkills(null);
+//        user.setUid(authUser.getUid());
+//        BeanUtils.copyProperties(user, sourceUser);
+        User savedUser = userInfoService.saveInfo(authUser.getUid(), user);
         // 昵称修改
         if (nickname != null) {
             UserLogin ul = userReactService.saveNickName(authUser.getUid(), nickname);

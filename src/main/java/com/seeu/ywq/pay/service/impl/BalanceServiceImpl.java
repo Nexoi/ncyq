@@ -32,6 +32,15 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
+    public Balance queryDetail(Long uid) throws NoSuchUserException {
+        Balance balance = payBalanceRepository.findOne(uid);
+        if (balance == null)
+            throw new NoSuchUserException("用户 [ \" + uid + \" ] 不存在");
+        balance.setBindUid(null); // 匿掉
+        return balance;
+    }
+
+    @Override
     public void plus(Long uid, Long diamonds, OrderLog.EVENT event) {
         Balance balance = payBalanceRepository.findOne(uid);
         if (balance == null) {

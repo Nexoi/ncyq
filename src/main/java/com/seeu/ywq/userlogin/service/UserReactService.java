@@ -4,6 +4,9 @@ import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
+/**
+ * 辅助设计，对用户的基本交互（规避权限安全问题）
+ */
 public interface UserReactService {
     STATUS likeMe(Long myUid, Long hisUid);
 

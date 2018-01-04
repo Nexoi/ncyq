@@ -40,8 +40,6 @@ public class UserLoginVO {
     @Column(name = "last_login_time")
     private Date lastLoginTime;
 
-    @ApiParam(hidden = true)
-    private Long likeNum;   // 点赞人数
     // 最近登陆坐标
     @ApiParam(hidden = true)
     @Column(name = "longitude", precision = 19, scale = 10)
@@ -153,11 +151,4 @@ public class UserLoginVO {
         this.gender = gender;
     }
 
-    public Long getLikeNum() {
-        return likeNum;
-    }
-
-    public void setLikeNum(Long likeNum) {
-        this.likeNum = likeNum;
-    }
 }

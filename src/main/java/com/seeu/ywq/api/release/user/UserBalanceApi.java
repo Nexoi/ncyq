@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.Balance;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.service.BalanceService;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "用户账户", description = "充值/提现")
+@Api(tags = "用户账户", description = "充值/提现/交易记录/账户信息")
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserBalanceApi {
@@ -36,9 +38,24 @@ public class UserBalanceApi {
     public ResponseEntity listTransactions(@AuthenticationPrincipal UserLogin authUser,
                                            @RequestParam(defaultValue = "0") Integer page,
                                            @RequestParam(defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(orderService.queryAll(authUser.getUid(), new PageRequest(page, size)));
+        return ResponseEntity.ok(orderService.queryAll(authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime"))));
     }
 
+    @ApiOperation(value = "查看账户各项额度记录", notes = "查看自己账户余额、相册收入、打赏收入、提现记录等")
+    @GetMapping("/account")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getMyBalanceDetail(@AuthenticationPrincipal UserLogin authUser) {
+        Balance balance = null;
+        try {
+            balance = balanceService.queryDetail(authUser.getUid());
+        } catch (NoSuchUserException e) {
+            // 初始化账户
+            balanceService.initAccount(authUser.getUid(), null);
+            balance = new Balance();
+            balance.setBindUid(null);
+        }
+        return ResponseEntity.ok(balance);
+    }
 
     @ApiOperation(value = "查看余额", notes = "查看自己账户余额")
     @GetMapping("/balance")
@@ -55,6 +72,7 @@ public class UserBalanceApi {
         map.put("balance", diamonds);
         return ResponseEntity.ok(map);
     }
+
 
     @ApiOperation(value = "充值", notes = "给自己充值一定额度的钻石，服务器创建订单，客户端将订单信息发送到支付宝/微信进行支付，完成后服务器会自动校验支付情况。重新刷新余额即可查看结果")
     @PostMapping("/balance/recharge")

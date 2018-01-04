@@ -12,6 +12,7 @@ public class UserVO {
     private Long fansNum;   // 粉丝数
     private Long followNum; // 关注人数
     private Long likeNum;   // 点赞人数
+    private Long publishNum; // 动态数量
 
     private Date birthDay;  // 出生日期间
     private Integer height; // 身高
@@ -158,5 +159,13 @@ public class UserVO {
 
     public void setTags(List<TagVO> tags) {
         this.tags = tags;
+    }
+
+    public Long getPublishNum() {
+        return publishNum;
+    }
+
+    public void setPublishNum(Long publishNum) {
+        this.publishNum = publishNum;
     }
 }

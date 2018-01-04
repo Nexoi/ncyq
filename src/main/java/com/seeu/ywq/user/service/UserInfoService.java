@@ -1,5 +1,6 @@
 package com.seeu.ywq.user.service;
 
+import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -10,6 +11,8 @@ public interface UserInfoService {
     User findOneInfo(Long uid);
 
     User saveInfo(User user);
+
+    User saveInfo(Long uid, UserDTO userDTO);
 
     UserVO findOne(Long uid);
 
@@ -24,6 +27,10 @@ public interface UserInfoService {
     void publishPlusOne(Long uid);
 
     void publishMinsOne(Long uid);
+
+    void likeMePlusOne(Long uid);
+
+    void likeMeMinsOne(Long uid);
 
     /**
      * @param uid

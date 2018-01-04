@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -82,7 +83,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
 
     /**
-     * 发送手机验证码进行验证注册
+     * 得到手机验证码进行验证注册
      *
      * @param name
      * @param phone
@@ -136,6 +137,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         user.setPublishNum(0L);
         user.setFansNum(0L);
         user.setFollowNum(0L);
+        user.setLikeNum(0L);
+        user.setBirthDay(new Date()); // 默认今天
         userInfoRepository.saveAndFlush(user);
         // 初始化用户余额系统 //
         balanceService.initAccount(savedUserLogin.getUid(), null);

@@ -10,9 +10,9 @@ import javax.annotation.Resource;
 @Service
 public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
 
-    private static final String KEY_UNLOCK_WECHAT = "unlock.wechat";
-    private static final String KEY_BIND_USER_DIAMOND_PERCENT = "binduser.diamond.percent";
-    private static final String KEY_USER_REWARD_DIAMOND_PERCENT = "user.reward.diamond.percent";
+    private static final String KEY_UNLOCK_WECHAT = "unlock.wechat"; // 解锁微信消耗钻石数
+    private static final String KEY_BIND_USER_DIAMOND_PERCENT = "binduser.diamond.percent"; // 用户上家分钱比例
+    private static final String KEY_USER_DIAMOND_PERCENT = "user.diamond.percent"; // 用户分钱比例
 
     @Resource
     private GlobalConfigurerRepository repository;
@@ -65,10 +65,10 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
     public void setUserRewardDiamondsPercent(float percent) {
         if (percent < 0 || percent > 1)
             return;
-        GlobalConfigurer configurer = repository.findOne(KEY_USER_REWARD_DIAMOND_PERCENT);
+        GlobalConfigurer configurer = repository.findOne(KEY_USER_DIAMOND_PERCENT);
         if (configurer == null) {
             configurer = new GlobalConfigurer();
-            configurer.setAttrKey(KEY_USER_REWARD_DIAMOND_PERCENT);
+            configurer.setAttrKey(KEY_USER_DIAMOND_PERCENT);
             configurer.setAttrValue("0.00");
         }
         configurer.setAttrKey(String.valueOf(percent));
@@ -76,8 +76,8 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
     }
 
     @Override
-    public float getUserRewardDiamondsPercent() {
-        String percent = findOne(KEY_USER_REWARD_DIAMOND_PERCENT);
+    public float getUserDiamondsPercent() {
+        String percent = findOne(KEY_USER_DIAMOND_PERCENT);
         return percent == null ? 0.00f : Float.parseFloat(percent);
     }
 }

@@ -19,6 +19,12 @@ public class Identification {
     @Column(length = 20)
     private String identificationName;
 
+    @ApiParam(hidden = true)
+    private String iconUrl;
+
+    @ApiParam(hidden = true)
+    private String iconActiveUrl;
+
     public Long getId() {
         return id;
     }
@@ -33,5 +39,21 @@ public class Identification {
 
     public void setIdentificationName(String identificationName) {
         this.identificationName = identificationName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public String getIconActiveUrl() {
+        return iconActiveUrl;
+    }
+
+    public void setIconActiveUrl(String iconActiveUrl) {
+        this.iconActiveUrl = iconActiveUrl;
     }
 }

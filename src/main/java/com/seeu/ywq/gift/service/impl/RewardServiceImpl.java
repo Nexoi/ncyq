@@ -27,7 +27,7 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public Page<Reward> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return repository.findAllByDiamondsNotNullOrderBySortId(pageable);
     }
 
     @Override

@@ -11,8 +11,8 @@ import java.util.Date;
         @Index(name = "ORDER_LOG_INDEX1", columnList = "uid"),
         @Index(name = "ORDER_LOG_INDEX2", columnList = "event")
 })
+@IdClass(OrderLogPKeys.class)
 public class OrderLog {
-
 
     public enum EVENT {
         REWARD,
@@ -33,6 +33,7 @@ public class OrderLog {
     @Column(length = 20)
     private String orderId; // 20180101095648123123  // yyyyMMddHHmmssS{随机数}
 
+    @Id
     private Long uid;
 
     private EVENT event;

@@ -78,6 +78,7 @@ public class YWQResponseBodyAdvice implements ResponseBodyAdvice {
 //                !(methodParameter.getMethod().getName().equalsIgnoreCase("swaggerResources")) &&
 //        return !(methodParameter.getMethod().getName().equalsIgnoreCase("error"));
         return false;
+//        return !(methodParameter.getMethod().getName().equalsIgnoreCase("loadFile"));
     }
 
     @Override

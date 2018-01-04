@@ -1,7 +1,6 @@
 package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
-import com.seeu.third.push.PushService;
 import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
 import com.seeu.ywq.exception.RewardAmountCannotBeNegitiveException;
@@ -92,9 +91,10 @@ public class OrderServiceImpl implements OrderService {
         // 观看者用户扣钱
         balanceService.minus(uid, price); // 可以报余额不足异常
         Date date = new Date();
+        String orderID = genOrderID();
         // 记录订单
         OrderLog log = new OrderLog();
-        log.setOrderId(genOrderID());
+        log.setOrderId(orderID);
         log.setCreateTime(date);
         log.setDiamonds(price);
         log.setEvent(OrderLog.EVENT.REWARD);
@@ -103,12 +103,11 @@ public class OrderServiceImpl implements OrderService {
         log = orderLogRepository.save(log);
         // 收钱
         // 发布者用户收钱 （百分比配）
-        Long transactionPrice = (long) (price * globalConfigurerService.getUserRewardDiamondsPercent());
-        balanceService.plus(herUid, transactionPrice, OrderLog.EVENT.UNLOCK_PUBLISH);
+        Long transactionPrice = (long) (price * globalConfigurerService.getUserDiamondsPercent());
+        balanceService.plus(herUid, transactionPrice, OrderLog.EVENT.RECEIVE_REWARD);
         // 记录订单
-        String herOrderId = genOrderID();
         OrderLog log2 = new OrderLog();
-        log2.setOrderId(herOrderId);
+        log2.setOrderId(orderID);
         log2.setCreateTime(date);
         log2.setDiamonds(transactionPrice);
         log2.setEvent(OrderLog.EVENT.RECEIVE_REWARD);
@@ -122,11 +121,11 @@ public class OrderServiceImpl implements OrderService {
         giftOrder.setUid(uid);
         giftOrder.setHerUid(herUid);
         giftOrder.setRewardResourceId(rewardResourceId);
-        giftOrder.setOrderId(herOrderId);
+        giftOrder.setOrderId(orderID);
         giftOrder = giftOrderService.save(giftOrder);
         // 地址（通知里面进行判断，以便完善）
         // 通知
-        applicationContext.publishEvent(new ReceiveRewardEvent(this, herUid, uid,"",rewardResourceId,reward.getName(),amount, price, transactionPrice, giftOrder.getOrderId()));
+        applicationContext.publishEvent(new ReceiveRewardEvent(this, herUid, uid, "", rewardResourceId, reward.getName(), amount, price, transactionPrice, giftOrder.getOrderId()));
         return log;
     }
 
@@ -149,9 +148,10 @@ public class OrderServiceImpl implements OrderService {
         Long diamonds = publish.getUnlockPrice().longValue();
         // 观看者用户扣钱
         balanceService.minus(uid, diamonds);
+        String orderID = genOrderID();
         // 记录订单
         OrderLog log = new OrderLog();
-        log.setOrderId(genOrderID());
+        log.setOrderId(orderID);
         log.setCreateTime(new Date());
         log.setDiamonds(diamonds);
         log.setEvent(OrderLog.EVENT.UNLOCK_PUBLISH);
@@ -159,11 +159,11 @@ public class OrderServiceImpl implements OrderService {
         log.setUid(uid);
         log = orderLogRepository.save(log);
         // 发布者用户收钱 （百分比配）
-        diamonds = (long) (diamonds * globalConfigurerService.getUserRewardDiamondsPercent());
+        diamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
         balanceService.plus(herUid, diamonds, OrderLog.EVENT.UNLOCK_PUBLISH);
         // 记录订单
         OrderLog log2 = new OrderLog();
-        log2.setOrderId(genOrderID());
+        log2.setOrderId(orderID);
         log2.setCreateTime(new Date());
         log2.setDiamonds(diamonds);
         log2.setEvent(OrderLog.EVENT.UNLOCK_PUBLISH);
@@ -200,7 +200,7 @@ public class OrderServiceImpl implements OrderService {
         log.setUid(uid);
         log = orderLogRepository.save(log);
         // 发布者用户收钱 （百分比配）
-        diamonds = (long) (diamonds * globalConfigurerService.getUserRewardDiamondsPercent());
+        diamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
         balanceService.plus(herUid, diamonds, OrderLog.EVENT.UNLOCK_WECHAT);
         // 记录订单
         OrderLog log2 = new OrderLog();

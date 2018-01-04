@@ -15,19 +15,33 @@ import java.util.List;
 @DynamicUpdate
 @DynamicInsert
 public class User {
+    //    public enum STAR_SIGN {
+//        Aries,      // 白羊座
+//        Taurus,     // 金牛座
+//        Gemini,     // 双子座
+//        Cancer,     //  巨蟹座
+//        Leo,        //  狮子座
+//        Virgo,      //  处女座
+//        Libra,      //  天秤座
+//        Scorpio,    //  天蝎座
+//        Sagittarius,  //  射手座
+//        Capricorn,    //  摩羯座
+//        Aquarius,     //  水瓶座
+//        Pisces,       //  双鱼座
+//    }
     public enum STAR_SIGN {
-        Aries,      // 白羊座
-        Taurus,     // 金牛座
-        Gemini,     // 双子座
-        Cancer,     //  巨蟹座
-        Leo,        //  狮子座
-        Virgo,      //  处女座
-        Libra,      //  天秤座
-        Scorpio,    //  天蝎座
-        Sagittarius,  //  射手座
-        Capricorn,    //  摩羯座
-        Aquarius,     //  水瓶座
-        Pisces,       //  双鱼座
+        白羊座,      // 白羊座
+        金牛座,     // 金牛座
+        双子座,     // 双子座
+        巨蟹座,     //  巨蟹座
+        狮子座,        //  狮子座
+        处女座,      //  处女座
+        天秤座,      //  天秤座
+        天蝎座,    //  天蝎座
+        射手座,  //  射手座
+        摩羯座,    //  摩羯座
+        水瓶座,     //  水瓶座
+        双鱼座,       //  双鱼座
     }
 
     @ApiParam(hidden = true)
@@ -39,6 +53,8 @@ public class User {
     private Long followNum; // 关注人数
     @ApiParam(hidden = true)
     private Long publishNum; // 动态发布数
+    @ApiParam(hidden = true)
+    private Long likeNum;   // 喜欢数
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDay;  // 出生日期间
@@ -181,6 +197,14 @@ public class User {
 //    public void setTags(List<Tag> tags) {
 //        this.tags = tags;
 //    }
+
+    public Long getLikeNum() {
+        return likeNum;
+    }
+
+    public void setLikeNum(Long likeNum) {
+        this.likeNum = likeNum;
+    }
 
     public Long getPublishNum() {
         return publishNum;

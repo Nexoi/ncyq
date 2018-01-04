@@ -1,6 +1,7 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.dvo.User$IdentificationVO;
 import com.seeu.ywq.user.dvo.UserVO;
@@ -44,6 +45,31 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public User saveInfo(Long uid, UserDTO userDTO) {
+        if (userDTO == null) return null;
+        User user = userInfoRepository.findOne(uid);
+        if (userDTO.getBirthDay() != null)
+            user.setBirthDay(userDTO.getBirthDay());
+        if (userDTO.getBust() != null)
+            user.setBust(userDTO.getBust());
+        if (userDTO.getHeight() != null)
+            user.setHeight(userDTO.getHeight());
+        if (userDTO.getHip() != null)
+            user.setHip(userDTO.getHip());
+        if (userDTO.getIntroduce() != null)
+            user.setIntroduce(userDTO.getIntroduce());
+        if (userDTO.getStarSign() != null)
+            user.setStarSign(userDTO.getStarSign());
+        if (userDTO.getWaist() != null)
+            user.setWaist(userDTO.getWaist());
+        if (userDTO.getWechat() != null)
+            user.setWechat(userDTO.getWechat());
+        if (userDTO.getWeight() != null)
+            user.setWeight(userDTO.getWeight());
+        return userInfoRepository.save(user);
+    }
+
+    @Override
     public UserVO findOne(Long uid) {
         User user = userInfoRepository.findOne(uid);
         UserVO vo = transferToVO(user);
@@ -82,6 +108,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public void publishMinsOne(Long uid) {
         userInfoRepository.publishMinsOne(uid);
+    }
+
+    @Override
+    public void likeMePlusOne(Long uid) {
+        userInfoRepository.likeMe(uid);
+    }
+
+    @Override
+    public void likeMeMinsOne(Long uid) {
+        userInfoRepository.cancelLikeMe(uid);
     }
 
     @Override
