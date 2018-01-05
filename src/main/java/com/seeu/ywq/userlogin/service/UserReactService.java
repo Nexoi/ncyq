@@ -4,6 +4,9 @@ import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * 辅助设计，对用户的基本交互（规避权限安全问题）
  */
@@ -21,6 +24,8 @@ public interface UserReactService {
     UserLogin findByPhone(String phone);
 
     SimpleUserVO findOneAndTransferToVO(Long uid);
+
+    List<SimpleUserVO> findAllSimpleUsers(Long uid, Collection<Long> uids);
 
     String getPhone(Long uid);
 

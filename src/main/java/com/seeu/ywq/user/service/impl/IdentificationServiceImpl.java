@@ -4,7 +4,7 @@ import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.user.model.Identification;
 import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.resource.model.Image;
-import com.seeu.ywq.user.model.User$Identification;
+import com.seeu.ywq.user.model.UserIdentification;
 import com.seeu.ywq.user.repository.IdentificationApplyRepository;
 import com.seeu.ywq.user.repository.IdentificationRepository;
 import com.seeu.ywq.user.repository.User$IdentificationRepository;
@@ -32,12 +32,12 @@ public class IdentificationServiceImpl implements IdentificationService {
     private FileUploadService fileUploadService;
 
     @Override
-    public List<User$Identification> findAllAccessByUid(Long uid) {
-        return user$IdentificationRepository.findAllByUidAndStatusNot(uid, User$Identification.STATUS.waitFor);
+    public List<UserIdentification> findAllAccessByUid(Long uid) {
+        return user$IdentificationRepository.findAllByUidAndStatusNot(uid, UserIdentification.STATUS.waitFor);
     }
 
     @Override
-    public List<User$Identification> findAllByUid(Long uid) {
+    public List<UserIdentification> findAllByUid(Long uid) {
         return user$IdentificationRepository.findAllByUid(uid);
     }
 

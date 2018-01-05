@@ -2,17 +2,25 @@ package com.seeu.ywq.user.model;
 
 import java.io.Serializable;
 
-public class User$IdentificationPKeys implements Serializable {
-
-    private Long identificationId;
+public class UserTagPKeys implements Serializable {
+    private Long tagId;
     private Long uid;
 
-    public Long getIdentificationId() {
-        return identificationId;
+    public UserTagPKeys() {
     }
 
-    public void setIdentificationId(Long identificationId) {
-        this.identificationId = identificationId;
+    public UserTagPKeys(Long tagId, Long uid) {
+        this.tagId = tagId;
+        this.uid = uid;
+    }
+
+
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
     public Long getUid() {
@@ -22,12 +30,13 @@ public class User$IdentificationPKeys implements Serializable {
     public void setUid(Long uid) {
         this.uid = uid;
     }
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
-        result = PRIME * result + ((identificationId == null) ? 0 : identificationId.hashCode());
+        result = PRIME * result + ((tagId == null) ? 0 : tagId.hashCode());
         return result;
     }
 
@@ -43,7 +52,7 @@ public class User$IdentificationPKeys implements Serializable {
             return false;
         }
 
-        final User$IdentificationPKeys other = (User$IdentificationPKeys) obj;
+        final UserTagPKeys other = (UserTagPKeys) obj;
         if (uid == null) {
             if (other.uid != null) {
                 return false;
@@ -51,11 +60,11 @@ public class User$IdentificationPKeys implements Serializable {
         } else if (!uid.equals(other.uid)) {
             return false;
         }
-        if (identificationId == null) {
-            if (other.identificationId != null) {
+        if (tagId == null) {
+            if (other.tagId != null) {
                 return false;
             }
-        } else if (!identificationId.equals(other.identificationId)) {
+        } else if (!tagId.equals(other.tagId)) {
             return false;
         }
         return true;

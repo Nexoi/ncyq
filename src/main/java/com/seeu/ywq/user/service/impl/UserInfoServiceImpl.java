@@ -2,13 +2,11 @@ package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.user.dto.UserDTO;
-import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.dvo.User$IdentificationVO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.resource.model.Image;
-import com.seeu.ywq.user.model.Tag;
 import com.seeu.ywq.user.model.User;
-import com.seeu.ywq.user.model.User$Identification;
+import com.seeu.ywq.user.model.UserIdentification;
 import com.seeu.ywq.user.repository.UserInfoRepository;
 import com.seeu.ywq.user.service.IdentificationService;
 import com.seeu.ywq.user.service.UserInfoService;
@@ -74,7 +72,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         User user = userInfoRepository.findOne(uid);
         UserVO vo = transferToVO(user);
         if (vo != null) {
-            List<User$Identification> identifications = identificationService.findAllAccessByUid(user.getUid());
+            List<UserIdentification> identifications = identificationService.findAllAccessByUid(user.getUid());
             vo.setIdentifications(transferToVO(identifications));
         }
         return vo;
@@ -166,17 +164,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         return vo;
     }
 
-    private User$IdentificationVO transferToVO(User$Identification identification) {
+    private User$IdentificationVO transferToVO(UserIdentification identification) {
         if (identification == null) return null;
         User$IdentificationVO identificationVO = new User$IdentificationVO();
         BeanUtils.copyProperties(identification, identificationVO);
         return identificationVO;
     }
 
-    private List<User$IdentificationVO> transferToVO(List<User$Identification> identifications) {
+    private List<User$IdentificationVO> transferToVO(List<UserIdentification> identifications) {
         if (identifications == null || identifications.size() == 0) return new ArrayList<>();
         List<User$IdentificationVO> vos = new ArrayList<>();
-        for (User$Identification identification : identifications) {
+        for (UserIdentification identification : identifications) {
             vos.add(transferToVO(identification));
         }
         return vos;

@@ -20,10 +20,18 @@ public interface OrderService {
     // 充值
     OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds);
 
-    OrderLog createWithdraw();
+    /**
+     * @param uid
+     * @param diamonds  钻石数量
+     * @param payMethod 支付方式
+     * @param payId     支付账号ID
+     * @param payName   真实姓名
+     * @return
+     */
+    OrderLog createWithdraw(Long uid, Long diamonds, OrderRecharge.PAY_METHOD payMethod, String payId, String payName);
 
     // 送花（直接将花转成钻石）
-    OrderLog createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, RewardResourceNotFoundException,RewardAmountCannotBeNegitiveException;
+    OrderLog createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, RewardResourceNotFoundException, RewardAmountCannotBeNegitiveException;
 
     OrderLog createSendGift();
 

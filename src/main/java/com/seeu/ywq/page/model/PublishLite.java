@@ -1,5 +1,6 @@
 package com.seeu.ywq.page.model;
 
+import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.model.PublishVideo;
@@ -39,9 +40,9 @@ public class PublishLite {
     private Date createTime;//创建时间
 
     private Long unlockPrice;//解锁需要金额
-    @ApiParam(hidden = true)
-    @Enumerated
-    private Publish.STATUS status;//状态，正常/封禁/已删除
+//    @ApiParam(hidden = true)
+//    @Enumerated
+//    private Publish.STATUS status;//状态，正常/封禁/已删除
 
     @ApiParam(hidden = true)
     private Integer viewNum; // 浏览次数
@@ -66,6 +67,11 @@ public class PublishLite {
     @OneToOne(targetEntity = PublishVideo.class)
     @JoinColumn(name = "video_id", referencedColumnName = "id")
     private PublishVideo video;
+
+    // 用户个人信息
+    @Transient
+    private SimpleUserVO user;
+
 
     public Long getId() {
         return id;
@@ -123,13 +129,13 @@ public class PublishLite {
         this.text = text;
     }
 
-    public Publish.STATUS getStatus() {
-        return status;
-    }
-
-    public void setStatus(Publish.STATUS status) {
-        this.status = status;
-    }
+//    public Publish.STATUS getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Publish.STATUS status) {
+//        this.status = status;
+//    }
 
     public Integer getViewNum() {
         return viewNum;
@@ -185,6 +191,14 @@ public class PublishLite {
 
     public void setWeight(Integer weight) {
         this.weight = weight;
+    }
+
+    public SimpleUserVO getUser() {
+        return user;
+    }
+
+    public void setUser(SimpleUserVO user) {
+        this.user = user;
     }
 
     public PublishLite() {

@@ -1,6 +1,8 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.page.service.AppVOService;
+import com.seeu.ywq.page.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.model.UserLike;
 import com.seeu.ywq.user.model.UserLikePKeys;
@@ -9,6 +11,7 @@ import com.seeu.ywq.user.repository.UserInfoRepository;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserVIP;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +20,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserReactServiceImpl implements UserReactService {
@@ -29,6 +35,8 @@ public class UserReactServiceImpl implements UserReactService {
     private UserInfoRepository userInfoRepository;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private AppVOUtils appVOUtils;
 
     @Transactional
     @Override
@@ -87,7 +95,38 @@ public class UserReactServiceImpl implements UserReactService {
         SimpleUserVO userVO = new SimpleUserVO();
         if (ul == null) return userVO;// if ul==null，则直接返回，不填充数据
         BeanUtils.copyProperties(ul, userVO);
+
+        // vip\liked\followed
         return userVO;
+    }
+
+    @Override
+    public List<SimpleUserVO> findAllSimpleUsers(Long uid, Collection<Long> uids) {
+        List<Object[]> list = userLoginRepository.queryItsByUid(uid, uids);
+        List<SimpleUserVO> vos = new ArrayList<>();
+        for (Object[] objects : list) {
+            vos.add(transferToVO(objects));
+        }
+        return vos;
+    }
+
+    private SimpleUserVO transferToVO(Object[] objects) {
+        if (objects == null || objects.length != 9) return null;// 长度必须是 9 个
+        SimpleUserVO vo = new SimpleUserVO();
+        vo.setUid(appVOUtils.parseLong(objects[0]));
+        vo.setNickname(appVOUtils.parseString(objects[1]));
+        vo.setHeadIconUrl(appVOUtils.parseString(objects[2]));
+        vo.setGender(appVOUtils.parseGENDER(objects[3]));
+        vo.setVip(UserVIP.VIP.none);
+        UserVIP.VIP vip = appVOUtils.parseVIP(objects[4]);
+        Date terTime = appVOUtils.parseDate(objects[5]);
+        if (vip == null) vip = UserVIP.VIP.none;
+        if (terTime == null || terTime.before(new Date())) vip = UserVIP.VIP.none;
+        vo.setVip(vip);
+        vo.setIdentifications(appVOUtils.parseBytesToLongList(objects[6]));
+        vo.setFollowed(1 == appVOUtils.parseInt(objects[7]) ? true : false);
+        vo.setLiked(1 == appVOUtils.parseInt(objects[8]) ? true : false);
+        return vo;
     }
 
     @Override

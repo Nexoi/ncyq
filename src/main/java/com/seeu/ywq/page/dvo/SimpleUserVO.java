@@ -1,10 +1,12 @@
 package com.seeu.ywq.page.dvo;
 
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserVIP;
 import io.swagger.annotations.ApiParam;
 
 import javax.persistence.Column;
 import javax.persistence.Enumerated;
+import java.util.List;
 
 public class SimpleUserVO {
     private Long uid;
@@ -12,6 +14,9 @@ public class SimpleUserVO {
     private UserLogin.GENDER gender;
     private String headIconUrl;
     private Boolean followed;
+    private Boolean liked;
+    private UserVIP.VIP vip; // 存储 vip 等级信息
+    private List<Long> identifications;
 
     public Long getUid() {
         return uid;
@@ -51,5 +56,29 @@ public class SimpleUserVO {
 
     public void setFollowed(Boolean followed) {
         this.followed = followed;
+    }
+
+    public List<Long> getIdentifications() {
+        return identifications;
+    }
+
+    public void setIdentifications(List<Long> identifications) {
+        this.identifications = identifications;
+    }
+
+    public Boolean getLiked() {
+        return liked;
+    }
+
+    public void setLiked(Boolean liked) {
+        this.liked = liked;
+    }
+
+    public UserVIP.VIP getVip() {
+        return vip;
+    }
+
+    public void setVip(UserVIP.VIP vip) {
+        this.vip = vip;
     }
 }

@@ -61,14 +61,17 @@ public class PagePublishApi {
     public ResponseEntity getMines(@AuthenticationPrincipal UserLogin authUser,
                                    @RequestParam(defaultValue = "0") Integer page,
                                    @RequestParam(defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(appPublishPageService.getWhose(authUser.getUid(), new PageRequest(page, size)));
+        return ResponseEntity.ok(appPublishPageService.getWhose(authUser.getUid(), authUser.getUid(), new PageRequest(page, size)));
     }
 
     @ApiOperation(value = "用户所有动态", notes = "列出个人用户的动态列表")
     @GetMapping("/user/{uid}")
-    public ResponseEntity getWhose(@PathVariable("uid") Long uid,
+    public ResponseEntity getWhose(@AuthenticationPrincipal UserLogin authUser,
+                                   @PathVariable("uid") Long uid,
                                    @RequestParam(defaultValue = "0") Integer page,
                                    @RequestParam(defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(appPublishPageService.getWhose(uid, new PageRequest(page, size)));
+        Long visitorUid = 0L;
+        if (authUser != null) visitorUid = authUser.getUid();
+        return ResponseEntity.ok(appPublishPageService.getWhose(visitorUid, uid, new PageRequest(page, size)));
     }
 }

@@ -7,9 +7,7 @@ import org.springframework.data.domain.Pageable;
 public interface PublishLiteService {
     Page<PublishLiteVO> findAllByTagIds(Long visitorUid, Pageable pageable, Long... ids);
 
-    Page<PublishLiteVO> findAll(Long visitorUid, Pageable pageable);
-
     Page<PublishLiteVO> findAllByFollowedUids(Long visitorUid, Pageable pageable, Long... uids);
 
-    Page<PublishLiteVO> findAllByUid(Long uid, Pageable pageable);
+    Page<PublishLiteVO> findAllByUid(Long visitorUid, Long uid, Pageable pageable);
 }

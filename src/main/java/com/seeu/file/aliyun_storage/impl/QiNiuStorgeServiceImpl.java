@@ -130,7 +130,7 @@ public class QiNiuStorgeServiceImpl implements StorageImageService {
         // if album_type == close 处理为模糊图片再上传
         if (album_type == Picture.ALBUM_TYPE.close) {
             BufferedImage dst = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
-            dst = new GaussianFilter(40).filter(bufferedImage, dst);
+            dst = new GaussianFilter(80).filter(bufferedImage, dst);
             ByteArrayOutputStream os2 = new ByteArrayOutputStream();
             ImageIO.write(dst, "jpeg", os2);
             ByteArrayInputStream is2 = new ByteArrayInputStream(os2.toByteArray());

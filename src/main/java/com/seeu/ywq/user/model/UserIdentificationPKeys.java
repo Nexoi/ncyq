@@ -2,25 +2,17 @@ package com.seeu.ywq.user.model;
 
 import java.io.Serializable;
 
-public class User$TagPKeys implements Serializable {
-    private Long tagId;
+public class UserIdentificationPKeys implements Serializable {
+
+    private Long identificationId;
     private Long uid;
 
-    public User$TagPKeys() {
+    public Long getIdentificationId() {
+        return identificationId;
     }
 
-    public User$TagPKeys(Long tagId, Long uid) {
-        this.tagId = tagId;
-        this.uid = uid;
-    }
-
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+    public void setIdentificationId(Long identificationId) {
+        this.identificationId = identificationId;
     }
 
     public Long getUid() {
@@ -30,13 +22,12 @@ public class User$TagPKeys implements Serializable {
     public void setUid(Long uid) {
         this.uid = uid;
     }
-
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
-        result = PRIME * result + ((tagId == null) ? 0 : tagId.hashCode());
+        result = PRIME * result + ((identificationId == null) ? 0 : identificationId.hashCode());
         return result;
     }
 
@@ -52,7 +43,7 @@ public class User$TagPKeys implements Serializable {
             return false;
         }
 
-        final User$TagPKeys other = (User$TagPKeys) obj;
+        final UserIdentificationPKeys other = (UserIdentificationPKeys) obj;
         if (uid == null) {
             if (other.uid != null) {
                 return false;
@@ -60,11 +51,11 @@ public class User$TagPKeys implements Serializable {
         } else if (!uid.equals(other.uid)) {
             return false;
         }
-        if (tagId == null) {
-            if (other.tagId != null) {
+        if (identificationId == null) {
+            if (other.identificationId != null) {
                 return false;
             }
-        } else if (!tagId.equals(other.tagId)) {
+        } else if (!identificationId.equals(other.identificationId)) {
             return false;
         }
         return true;

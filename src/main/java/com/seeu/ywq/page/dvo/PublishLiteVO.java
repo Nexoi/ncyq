@@ -28,6 +28,9 @@ public class PublishLiteVO {
 
     private String text;    // 文本内容
 
+    // 用户个人信息
+    private SimpleUserVO user;
+
     public Long getId() {
         return id;
     }
@@ -114,5 +117,13 @@ public class PublishLiteVO {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public SimpleUserVO getUser() {
+        return user;
+    }
+
+    public void setUser(SimpleUserVO user) {
+        this.user = user;
     }
 }

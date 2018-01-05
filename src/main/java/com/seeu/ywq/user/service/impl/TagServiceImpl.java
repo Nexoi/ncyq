@@ -3,7 +3,7 @@ package com.seeu.ywq.user.service.impl;
 import com.seeu.ywq.user.dvo.User$TagVO;
 import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.model.Tag;
-import com.seeu.ywq.user.model.User$Tag;
+import com.seeu.ywq.user.model.UserTag;
 import com.seeu.ywq.user.repository.User$TagRepository;
 import com.seeu.ywq.user.repository.TagRepository;
 import com.seeu.ywq.user.service.TagService;
@@ -82,9 +82,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public STATUS addMine(Long uid, Long[] ids) {
-        List<User$Tag> mines = new ArrayList<>();
+        List<UserTag> mines = new ArrayList<>();
         for (Long id : ids) {
-            User$Tag mine = new User$Tag();
+            UserTag mine = new UserTag();
             mine.setCreateTime(new Date());
             mine.setTagId(id);
             mine.setUid(uid);
@@ -96,9 +96,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public STATUS addFocus(Long uid, Long[] ids) {
-        List<User$Tag> foci = new ArrayList<>();
+        List<UserTag> foci = new ArrayList<>();
         for (Long id : ids) {
-            User$Tag focus = new User$Tag();
+            UserTag focus = new UserTag();
             focus.setCreateTime(new Date());
             focus.setTagId(id);
             focus.setUid(uid);
@@ -144,10 +144,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<User$TagVO> deleteMine(Long uid, Long[] ids) {
-        List<User$Tag> mines = new ArrayList<>();
+        List<UserTag> mines = new ArrayList<>();
         for (Long id : ids) {
             if (id == null) continue;
-            User$Tag mine = new User$Tag();
+            UserTag mine = new UserTag();
             mine.setUid(uid);
             mine.setTagId(id);
             mine.setCreateTime(new Date());
@@ -159,10 +159,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<User$TagVO> deleteFocus(Long uid, Long[] ids) {
-        List<User$Tag> foci = new ArrayList<>();
+        List<UserTag> foci = new ArrayList<>();
         for (Long id : ids) {
             if (id == null) continue;
-            User$Tag focus = new User$Tag();
+            UserTag focus = new UserTag();
             focus.setUid(uid);
             focus.setTagId(id);
             focus.setCreateTime(new Date());

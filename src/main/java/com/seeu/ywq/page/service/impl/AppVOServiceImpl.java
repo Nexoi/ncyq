@@ -204,6 +204,8 @@ public class AppVOServiceImpl implements AppVOService {
         return list;
     }
 
+    /// ************************************** parse
+
     private List<Long> parseBytesToLongList(Object object) {
         if (object == null) return new ArrayList<>();
         byte[] bytes = (byte[]) object;

@@ -2,11 +2,13 @@ package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.ywq.userlogin.model.TokenPersistent;
 import com.seeu.ywq.userlogin.repository.TokenPersistentRepository;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.Date;
 
 @Service
@@ -21,6 +23,8 @@ public class TokenPersistentServiceImpl implements PersistentTokenRepository {
         persistent.setSeries(persistentRememberMeToken.getSeries());
         persistent.setUsername(persistentRememberMeToken.getUsername());
         persistent.setLastUsed(persistentRememberMeToken.getDate());
+        // 清除 token
+//        tokenPersistentRepository.deleteByUsername(persistentRememberMeToken.getUsername());
         tokenPersistentRepository.save(persistent);
     }
 
@@ -47,6 +51,6 @@ public class TokenPersistentServiceImpl implements PersistentTokenRepository {
 
     @Override
     public void removeUserTokens(String username) {
-        tokenPersistentRepository.deleteByUsername(username);
+//        tokenPersistentRepository.deleteByUsername(username);
     }
 }

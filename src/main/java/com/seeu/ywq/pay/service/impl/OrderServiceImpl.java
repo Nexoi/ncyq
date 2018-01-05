@@ -74,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderLog createWithdraw() {
+    public OrderLog createWithdraw(Long uid, Long diamonds, OrderRecharge.PAY_METHOD payMethod, String payId, String payName) {
         return null;
     }
 

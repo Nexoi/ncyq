@@ -260,6 +260,12 @@
             <version>1.0.0</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.googlecode.log4jdbc</groupId>
+            <artifactId>log4jdbc</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <build>

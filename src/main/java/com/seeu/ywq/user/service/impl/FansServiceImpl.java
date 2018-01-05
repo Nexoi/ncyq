@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -148,26 +149,37 @@ public class FansServiceImpl implements FansService {
 
     private List<Long> parseBytesToLongList(Object object) {
         if (object == null) return new ArrayList<>();
-        byte[] bytes = (byte[]) object;
-        if (bytes.length == 0) return new ArrayList<>();
-        List<Long> longs = new ArrayList<>();
-        String temp = "";
-        for (int i = 0; i < bytes.length; i++) {
-            byte id = bytes[i];
-            if (id == 44) {
-                // 这是逗号
-                longs.add(parseLong(temp)); // 转成对应的 int 值
-                temp = "";
-            } else if (i + 1 == bytes.length) {
-                // 这是句末
-                temp += Byte.toUnsignedLong(id) - 48;
-                longs.add(parseLong(temp));
-                temp = "";
-            } else {
-                temp += Byte.toUnsignedLong(id) - 48;
+        if (object instanceof byte[]) {
+            byte[] bytes = (byte[]) object;
+            if (bytes.length == 0) return new ArrayList<>();
+            List<Long> longs = new ArrayList<>();
+            String temp = "";
+            for (int i = 0; i < bytes.length; i++) {
+                byte id = bytes[i];
+                if (id == 44) {
+                    // 这是逗号
+                    longs.add(parseLong(temp)); // 转成对应的 int 值
+                    temp = "";
+                } else if (i + 1 == bytes.length) {
+                    // 这是句末
+                    temp += Byte.toUnsignedLong(id) - 48;
+                    longs.add(parseLong(temp));
+                    temp = "";
+                } else {
+                    temp += Byte.toUnsignedLong(id) - 48;
+                }
             }
         }
-        return longs;
+        if (object instanceof String) {
+            String longStr = object.toString();
+            List<Long> longs = new ArrayList<>();
+            String[] ids = longStr.split(",");
+            for (String id : ids) {
+                longs.add(parseLong(id));
+            }
+            return longs;
+        }
+        return new ArrayList<>();
     }
 
     private Long parseLong(Object object) {

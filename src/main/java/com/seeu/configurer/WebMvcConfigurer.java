@@ -66,11 +66,11 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 response.setCharacterEncoding("UTF-8");
 //                response.setHeader("Content-type", "application/json;charset=UTF-8");
                 // 给页面添加是否登录状态信息
-                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (principal != null && !principal.equals("anonymousUser") && modelAndView != null) {
-                    UserLogin authUser = (UserLogin) principal;
-                    modelAndView.addObject("signed", authUser.getUsername()); // email
-                }
+//                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//                if (principal != null && !principal.equals("anonymousUser") && modelAndView != null) {
+//                    UserLogin authUser = (UserLogin) principal;
+//                    modelAndView.addObject("signed", authUser.getUsername()); // email
+//                }
             }
         }).addPathPatterns("/**").excludePathPatterns("/signin", "/*.xml");
     }

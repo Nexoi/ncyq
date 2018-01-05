@@ -1,6 +1,6 @@
 package com.seeu.ywq.user.dvo;
 
-import com.seeu.ywq.user.model.User$Identification;
+import com.seeu.ywq.user.model.UserIdentification;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ public class User$IdentificationVO {
 
     private Long identificationId;
 
-    private User$Identification.STATUS status; // 认证状态
+    private UserIdentification.STATUS status; // 认证状态
 
     private Date createTime;
 
@@ -20,11 +20,11 @@ public class User$IdentificationVO {
         this.identificationId = identificationId;
     }
 
-    public User$Identification.STATUS getStatus() {
+    public UserIdentification.STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(User$Identification.STATUS status) {
+    public void setStatus(UserIdentification.STATUS status) {
         this.status = status;
     }
 

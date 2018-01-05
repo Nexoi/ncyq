@@ -7,13 +7,13 @@ import java.util.Date;
  * 用户认证
  */
 @Entity
-@IdClass(User$IdentificationPKeys.class)
+@IdClass(UserIdentificationPKeys.class)
 @Table(name = "ywq_user_identifications", indexes = {
         @Index(name = "identification_index1", unique = false, columnList = "uid"),
         @Index(name = "identification_index1", unique = false, columnList = "identification_id"),
         @Index(name = "identification_index3", unique = false, columnList = "status")
 })
-public class User$Identification {
+public class UserIdentification {
     public enum STATUS {
         pass,    // 通过
         nonactive,

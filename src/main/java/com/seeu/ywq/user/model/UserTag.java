@@ -7,9 +7,9 @@ import java.util.Date;
  * 用户标签
  */
 @Entity
-@IdClass(User$TagPKeys.class)
+@IdClass(UserTagPKeys.class)
 @Table(name = "ywq_user_tags")
-public class User$Tag {
+public class UserTag {
     @Id
     @Column(name = "user_uid", unique = false)
     private Long uid;
