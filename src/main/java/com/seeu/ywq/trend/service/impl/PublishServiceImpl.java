@@ -17,6 +17,7 @@ import com.seeu.ywq.trend.model.PublishLikedUserPKeys;
 import com.seeu.ywq.trend.service.PublishCommentService;
 import com.seeu.ywq.trend.service.PublishLikedUserService;
 import com.seeu.ywq.trend.service.PublishService;
+import com.seeu.ywq.trend.service.PublishVideoService;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -45,6 +46,8 @@ public class PublishServiceImpl implements PublishService {
     private PublishLikedUserService publishLikedUserService;
     @Autowired
     private PublishCommentService publishCommentService;
+    @Autowired
+    private PublishVideoService publishVideoService;
     @Autowired
     private ResourceAuthService resourceAuthService;
     @Autowired
@@ -116,6 +119,7 @@ public class PublishServiceImpl implements PublishService {
                 vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vod.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vod.setComments(publishCommentService.transferToVO(publish.getComments()));
+                vod.setVideo(publishVideoService.transferToVO(publish.getVideo(), canVisitClosedResource));
                 // TODO video 权限得加
                 return vod;
             case word:

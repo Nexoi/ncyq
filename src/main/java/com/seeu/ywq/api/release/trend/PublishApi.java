@@ -1,12 +1,14 @@
 package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.PublishSRCTYPEConvertException;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.model.PublishVideo;
 import com.seeu.ywq.resource.model.Video;
 import com.seeu.ywq.trend.service.PublishService;
+import com.seeu.ywq.trend.service.PublishVideoService;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.*;
@@ -29,6 +31,8 @@ public class PublishApi {
     private UserPictureService userPictureService;
     @Autowired
     private PublishService publishService;
+    @Autowired
+    private PublishVideoService publishVideoService;
 
     @ApiOperation(value = "获取某一条动态", notes = "根据发布动态ID获取动态内容")
     @ApiResponse(code = 404, message = "找不到该动态")
@@ -62,45 +66,53 @@ public class PublishApi {
     })
     @PostMapping
     @PreAuthorize("hasRole('USER')")
+    // Publish.SRC_TYPE[] srcTypes,// 照片类型（公开1/私密0）[废弃该参数]
     public ResponseEntity add(@AuthenticationPrincipal UserLogin authUser,
                               Publish publish,
-                              Video video,
                               @ApiParam(value = "照片/视频类型，数组，用逗号隔开，可选值：open、close，分别表示：公开、私密。如：open,close,close", example = "open,close,open")
-                                      Publish.SRC_TYPE[] srcTypes,// 照片类型（公开1/私密0）
-                              MultipartFile[] images
-//                              @RequestParam(required = false) String videoCoverUrl, // 视频封面
-//                              @RequestParam(required = false) String videoUrl//    视频链接
+                              @RequestParam(required = false) String srcTypes,
+                              MultipartFile[] images,
+                              @RequestParam(required = false) String videoCoverUrl, // 视频封面
+                              @RequestParam(required = false) String videoUrl//    视频链接
     ) {
-        if (publish.getType() == null)
-            return ResponseEntity.badRequest().body(R.code(4006).message("请选择一个动态类型").build());
-        if (publish.getType() != Publish.PUBLISH_TYPE.word && srcTypes == null) {
+        Publish.SRC_TYPE[] srcTypesArray = null;
+        try {
+            srcTypesArray = formTypes(srcTypes);
+        } catch (PublishSRCTYPEConvertException e) {
+            return ResponseEntity.badRequest().body(R.code(4008).message("动态类型 [" + publish.getType().name() + "] 资源类型字段：srcTypes 解析错误").build());
+        }
+        if (srcTypes == null)
+            if (publish.getType() == null)
+                return ResponseEntity.badRequest().body(R.code(4006).message("请选择一个动态类型").build());
+        if (publish.getType() != Publish.PUBLISH_TYPE.word && srcTypesArray == null) {
             return ResponseEntity.badRequest().body(R.code(4007).message("动态类型 [" + publish.getType().name() + "] 需要同时上传对应的资源类型字段：srcTypes").build());
         }
         // if picture
         if (publish.getType() == Publish.PUBLISH_TYPE.picture) {
             if (images == null || images.length == 0)
                 return ResponseEntity.badRequest().body(R.code(4001).message("请传入至少一张图片").build());
-            if (images.length != srcTypes.length)
+            if (images.length != srcTypesArray.length)
                 return ResponseEntity.badRequest().body(R.code(4002).message("参数错误，srcTypes 长度需要和 images 一致").build());
         }
         // if video
         if (publish.getType() == Publish.PUBLISH_TYPE.video) {
-            if (video.getCoverUrl() == null || video.getSrcUrl() == null)
+
+            if (videoCoverUrl == null || videoUrl == null)
                 return ResponseEntity.badRequest().body(R.code(4005).message("视频内容不能为空").build());
-            if (srcTypes.length != 1)
+            if (srcTypesArray.length != 1)
                 return ResponseEntity.badRequest().body(R.code(4006).message("视频类型（公开/私密）数组长度必须为 1").build());
-//            Video video = new Video();
-//            video.setCoverUrl(videoCoverUrl);
-//            video.setSrcUrl(videoUrl);
+            Video video = new Video();
+            video.setCoverUrl(videoCoverUrl);
+            video.setSrcUrl(videoUrl);
             video.setId(null);
             PublishVideo publishVideo = new PublishVideo();
             publishVideo.setVideo(video);
-            publishVideo.setVideoType(srcTypes[0] == Publish.SRC_TYPE.open ? PublishVideo.VIDEO_TYPE.open : PublishVideo.VIDEO_TYPE.close);
+            publishVideo.setVideoType(srcTypesArray[0] == Publish.SRC_TYPE.open ? PublishVideo.VIDEO_TYPE.open : PublishVideo.VIDEO_TYPE.close);
             publishVideo.setCreateTime(new Date());
             publishVideo.setDeleteFlag(PublishVideo.DELETE_FLAG.show);
             publishVideo.setUid(authUser.getUid());
             // 必须提前持久化？no need
-//            PublishVideo savedPublishVideo = publishVideoRepository.save(publishVideo);
+            publishVideo = publishVideoService.save(publishVideo);
             publish.setVideo(publishVideo);
         }
         // 初始化判断
@@ -131,9 +143,9 @@ public class PublishApi {
                     publish.setPictures(null);
                     break;
                 case picture:
-                    Picture.ALBUM_TYPE[] album_types = new Picture.ALBUM_TYPE[srcTypes.length];
-                    for (int i = 0; i < srcTypes.length; i++) {
-                        album_types[i] = srcTypes[i] == Publish.SRC_TYPE.open ? Picture.ALBUM_TYPE.open : Picture.ALBUM_TYPE.close;
+                    Picture.ALBUM_TYPE[] album_types = new Picture.ALBUM_TYPE[srcTypesArray.length];
+                    for (int i = 0; i < srcTypesArray.length; i++) {
+                        album_types[i] = srcTypesArray[i] == Publish.SRC_TYPE.open ? Picture.ALBUM_TYPE.open : Picture.ALBUM_TYPE.close;
                     }
                     publish.setPictures(userPictureService.getPictureWithOutSave(authUser.getUid(), publish.getId(), album_types, images));  // 图片信息
                     publish.setVideo(null);
@@ -165,5 +177,22 @@ public class PublishApi {
         return ResponseEntity.ok().build();
     }
 
+
+    private Publish.SRC_TYPE[] formTypes(String string) throws PublishSRCTYPEConvertException {
+        if (string == null) return null;
+        try {
+            String[] arr = string.split(",");
+            Publish.SRC_TYPE[] types = new Publish.SRC_TYPE[arr.length];
+            for (int i = 0; i < arr.length; i++) {
+                String type = arr[i];
+                if (type == null || (!type.equals("open") && !type.equals("close")))
+                    throw new PublishSRCTYPEConvertException();
+                types[i] = type.equals("open") ? Publish.SRC_TYPE.open : Publish.SRC_TYPE.close;
+            }
+            return types;
+        } catch (Exception e) {
+            throw new PublishSRCTYPEConvertException();
+        }
+    }
 
 }

@@ -1,15 +1,18 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.user.dto.IdentificationApplyDTO;
 import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.user.service.IdentificationService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,30 +49,44 @@ public class UserIdentificationApi {
         return ResponseEntity.ok(list);
     }
 
+    @ApiOperation("查看自己的认证列表信息【附上所有认证列表信息】")
+    @GetMapping("/with-identificationList")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity listMineWithIdentificationList(@AuthenticationPrincipal UserLogin authUser) {
+        List list = identificationService.findAllWithFullIdentificationInfoByUid(authUser.getUid());
+        return ResponseEntity.ok(list);
+    }
+
     @ApiOperation("认证信息上传")
     @PostMapping("/apply")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity apply(@AuthenticationPrincipal UserLogin authUser,
-                                IdentificationApply identificationApply,
+                                @Validated IdentificationApply identificationApply,
+                                @ApiParam(hidden = true)
+                                @RequestParam(required = false) MultipartFile transferVoucherImage, // 转账图片
                                 MultipartFile frontImage,
                                 MultipartFile backImage) {
         if (frontImage == null || backImage == null)
             return ResponseEntity.badRequest().body(R.code(4000).message("身份证图片不能为空").build());
+//        if (transferVoucherImage == null)
+//            return ResponseEntity.badRequest().body(R.code(4001).message("转账图片不能为空").build());
+        if (identificationApply.getIdentificationId() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("认证 ID 不能为空").build());
         identificationApply.setUid(authUser.getUid()); // set to myself
         try {
-            IdentificationApply apply = identificationService.apply(authUser.getUid(), identificationApply, frontImage, backImage);
-            return apply == null ? ResponseEntity.badRequest().body(R.code(4001).message("申请数据加载失败，请重新上传数据").build()) : ResponseEntity.ok(apply);
+            IdentificationApply apply = identificationService.apply(identificationApply.getIdentificationId(), authUser.getUid(), identificationApply, frontImage, backImage, transferVoucherImage);
+            return apply == null ? ResponseEntity.badRequest().body(R.code(4002).message("申请数据加载失败，请重新上传数据").build()) : ResponseEntity.ok(apply);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(R.code(500).message("服务器内部异常，请联系管理员").build());
         }
     }
 
-    @ApiOperation("认证信息下载")
+    @ApiOperation(value = "认证信息下载", notes = "以最新上传的一次为主")
     @GetMapping("/apply")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getMyApplyInfo(@AuthenticationPrincipal UserLogin authUser) {
-        IdentificationApply apply = identificationService.findApplyInfo(authUser.getUid());
+        IdentificationApply apply = identificationService.findMyRecentInfo(authUser.getUid());
         return apply == null ? ResponseEntity.status(404).body(R.code(404).message("您还未上传认证信息，请上传后重试").build()) : ResponseEntity.ok(apply);
     }
 }

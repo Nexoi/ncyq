@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class FansServiceImpl implements FansService {
             vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
             vo.setNickname(parseString(objects[3]));
             vo.setHeadIconUrl(parseString(objects[4]));
-            vo.setText(parseString(objects[5]));
+            vo.setIntroduce(parseString(objects[5]));
             vo.setIdentificationIds(parseBytesToLongList(objects[6]));
             fansVOS.add(vo);
         }
@@ -135,7 +134,7 @@ public class FansServiceImpl implements FansService {
             vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
             vo.setNickname(parseString(objects[3]));
             vo.setHeadIconUrl(parseString(objects[4]));
-            vo.setText(parseString(objects[5]));
+            vo.setIntroduce(parseString(objects[5]));
             vo.setIdentificationIds(parseBytesToLongList(objects[6]));
             fansVOS.add(vo);
         }

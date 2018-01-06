@@ -1,9 +1,11 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.user.dvo.UserIdentificationWithFullListVO;
 import com.seeu.ywq.user.model.Identification;
 import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.resource.model.Image;
+import com.seeu.ywq.user.model.IdentificationApplyPKeys;
 import com.seeu.ywq.user.model.UserIdentification;
 import com.seeu.ywq.user.repository.IdentificationApplyRepository;
 import com.seeu.ywq.user.repository.IdentificationRepository;
@@ -15,8 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class IdentificationServiceImpl implements IdentificationService {
@@ -33,7 +34,7 @@ public class IdentificationServiceImpl implements IdentificationService {
 
     @Override
     public List<UserIdentification> findAllAccessByUid(Long uid) {
-        return user$IdentificationRepository.findAllByUidAndStatusNot(uid, UserIdentification.STATUS.waitFor);
+        return user$IdentificationRepository.findAllByUidAndStatus(uid, UserIdentification.STATUS.active);
     }
 
     @Override
@@ -42,25 +43,64 @@ public class IdentificationServiceImpl implements IdentificationService {
     }
 
     @Override
+    public List<UserIdentificationWithFullListVO> findAllWithFullIdentificationInfoByUid(Long uid) {
+        List<UserIdentification> list = user$IdentificationRepository.findAllByUid(uid);
+        List<Identification> identifications = identificationRepository.findAll();
+        List<UserIdentificationWithFullListVO> vos = new ArrayList<>();
+        // hash
+        Map<Long, UserIdentification> map = new HashMap();
+        for (UserIdentification identification : list) {
+            map.put(identification.getIdentificationId(), identification);
+        }
+
+        for (Identification identification : identifications) {
+            UserIdentificationWithFullListVO vo = new UserIdentificationWithFullListVO();
+            vo.setIdentificationId(identification.getId());
+            vo.setIdentificationName(identification.getIdentificationName());
+            vo.setIconUrl(identification.getIconUrl());
+            vo.setIconActiveUrl(identification.getIconActiveUrl());
+            UserIdentification userIdentification = map.get(identification.getId());
+            if (userIdentification != null) {
+                vo.setCreateTime(userIdentification.getCreateTime());
+                vo.setStatus(userIdentification.getStatus());
+            } else {
+                vo.setStatus(UserIdentification.STATUS.inactive);
+            }
+            vos.add(vo);
+        }
+        return vos;
+    }
+
+    @Override
     public List<Identification> findAll() {
         return identificationRepository.findAll();
     }
 
     @Override
-    public IdentificationApply apply(Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage) throws IOException {
+    public IdentificationApply apply(Long identificationId, Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage, MultipartFile transferVoucherImage) throws IOException {
         if (applyData == null) return null;
+        applyData.setIdentificationId(identificationId);
         applyData.setUid(uid);
         applyData.setCreateTime(new Date());
         // 上传图片
         Image fImage = fileUploadService.uploadImage(frontImage);
         Image bImage = fileUploadService.uploadImage(backImage);
+        Image transferImage = null;
+        if (transferVoucherImage != null) // 用户可能不上传这个
+            transferImage = fileUploadService.uploadImage(transferVoucherImage);
         applyData.setFrontIdCardImage(fImage);
         applyData.setBackIdCardImage(bImage);
+        applyData.setTransferVoucherImage(transferImage);
         return identificationApplyRepository.save(applyData);
     }
 
     @Override
-    public IdentificationApply findApplyInfo(Long uid) {
-        return identificationApplyRepository.findOne(uid);
+    public IdentificationApply findApplyInfo(Long uid, Long identificationId) {
+        return identificationApplyRepository.findOne(new IdentificationApplyPKeys(identificationId, uid));
+    }
+
+    @Override
+    public IdentificationApply findMyRecentInfo(Long uid) {
+        return identificationApplyRepository.findFirstByUidOrderByCreateTimeDesc(uid);
     }
 }

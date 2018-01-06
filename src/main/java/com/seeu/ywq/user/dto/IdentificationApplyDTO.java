@@ -1,49 +1,24 @@
-package com.seeu.ywq.user.model;
+package com.seeu.ywq.user.dto;
 
 import com.seeu.ywq.resource.model.Image;
 import io.swagger.annotations.ApiParam;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-@Entity
-@IdClass(IdentificationApplyPKeys.class)
-@Table(name = "ywq_identification_apply")
-public class IdentificationApply {
-
-    @ApiParam(hidden = true)
-    @Id
+public class IdentificationApplyDTO {
     private Long uid;
-
-    @Id
-    @NotNull
-    private Long identificationId;
-    @NotNull
     private String name;
-    @NotNull
     private String phone;
-    @NotNull
     private String wechat;
-    @NotNull
     private String email;
-    @NotNull
     private String idCardNum;
     private String notes;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "front_id", referencedColumnName = "id")
     private Image frontIdCardImage;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "back_id", referencedColumnName = "id")
     private Image backIdCardImage;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "transfer_id", referencedColumnName = "id")
     private Image transferVoucherImage;
-
-    @ApiParam(hidden = true)
     private String transferVoucherSerialNumber;
-
-    @ApiParam(hidden = true)
+    private Long identificationId;
     private Date createTime;
 
     public Long getUid() {
@@ -94,6 +69,14 @@ public class IdentificationApply {
         this.idCardNum = idCardNum;
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public Image getFrontIdCardImage() {
         return frontIdCardImage;
     }
@@ -110,30 +93,6 @@ public class IdentificationApply {
         this.backIdCardImage = backIdCardImage;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Long getIdentificationId() {
-        return identificationId;
-    }
-
-    public void setIdentificationId(Long identificationId) {
-        this.identificationId = identificationId;
-    }
-
     public Image getTransferVoucherImage() {
         return transferVoucherImage;
     }
@@ -148,5 +107,21 @@ public class IdentificationApply {
 
     public void setTransferVoucherSerialNumber(String transferVoucherSerialNumber) {
         this.transferVoucherSerialNumber = transferVoucherSerialNumber;
+    }
+
+    public Long getIdentificationId() {
+        return identificationId;
+    }
+
+    public void setIdentificationId(Long identificationId) {
+        this.identificationId = identificationId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

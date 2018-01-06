@@ -13,9 +13,11 @@ public class Video {
     private Long id;
 
     @ApiParam(name = "coverUrl")
+    @Column(length = 1024)
     private String coverUrl;
 
     @ApiParam(name = "srcUrl")
+    @Column(length = 1024)
     private String srcUrl;
 
     public Long getId() {

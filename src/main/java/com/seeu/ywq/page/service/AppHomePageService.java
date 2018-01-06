@@ -1,5 +1,9 @@
 package com.seeu.ywq.page.service;
 
+import com.seeu.ywq.exception.ResourceAddException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
+import com.seeu.ywq.exception.ResourceDeleteException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
 import com.seeu.ywq.page.model.Advertisement;
@@ -14,17 +18,17 @@ import java.util.List;
  */
 public interface AppHomePageService {
 
-    STATUS addAdvertisement(MultipartFile image, Advertisement.CATEGORY category, String url, Integer order);
+    void addAdvertisement(MultipartFile image, Advertisement.CATEGORY category, String url, Integer order) throws ResourceAddException;
 
-    STATUS deleteAdvertisement(Long advertisementId);
+    void deleteAdvertisement(Long advertisementId) throws ResourceNotFoundException;
 
-    STATUS addUserConfigurer(HomePageUser.CATEGORY category, Long srcId, Integer order);
+    void addUserConfigurer(HomePageUser.CATEGORY category, Long srcId, Integer order) throws ResourceAlreadyExistedException;
 
-    STATUS deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid);
+    void deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid) throws ResourceNotFoundException;
 
-    STATUS addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer order);
+    HomePageVideo addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer order) throws ResourceAddException;
 
-    STATUS deleteVideo(Long videoId);
+    void deleteVideo(Long videoId) throws ResourceNotFoundException;
 
     // 查看首页广告列表
     List<Advertisement> getHomePage_Advertisements();
@@ -56,10 +60,4 @@ public interface AppHomePageService {
     // VR 视频
     List<HomePageVOVideo> getVideo_VR();
 
-    public enum STATUS {
-        success,
-        failure,
-        exist,
-        not_exist
-    }
 }

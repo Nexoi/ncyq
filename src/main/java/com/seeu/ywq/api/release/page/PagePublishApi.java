@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +40,7 @@ public class PagePublishApi {
         Long uid = 0L;
         if (authUser != null)
             uid = authUser.getUid();
-        return ResponseEntity.ok(appPublishPageService.getTuijian(uid, new PageRequest(page, size)));
+        return ResponseEntity.ok(appPublishPageService.getTuijian(uid, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime"))));
     }
 
 

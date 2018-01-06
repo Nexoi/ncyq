@@ -41,7 +41,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
     @Override
     public Page<PublishLiteVO> findAllByTagIds(Long visitorUid, Pageable pageable, Long... ids) {
-        List list = publishLiteRepository.queryItUseMyTags(Arrays.asList(ids), pageable);
+        List list = publishLiteRepository.queryItUseMyTags(Arrays.asList(ids), pageable.getPageNumber()*pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = publishLiteRepository.countItUseMyTags(Arrays.asList(ids));
         list = appVOService.formPublishLite(list);
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片
@@ -52,7 +52,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
     @Override
     public Page<PublishLiteVO> findAllByFollowedUids(Long visitorUid, Pageable pageable, Long... uids) {
-        List list = publishLiteRepository.queryItUseFollowedUids(Arrays.asList(uids), pageable);
+        List list = publishLiteRepository.queryItUseFollowedUids(Arrays.asList(uids), pageable.getPageNumber()*pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = publishLiteRepository.countItUseFollowedUids(Arrays.asList(uids));
         list = appVOService.formPublishLite(list);
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片

@@ -1,12 +1,12 @@
 package com.seeu.ywq.user.service.impl;
 
-import com.seeu.file.aliyun_storage.StorageImageService;
-import com.seeu.ywq.trend.dvo.PublishPictureVO;
+import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.resource.model.Image;
-import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.resource.repository.ImageRepository;
-import com.seeu.ywq.user.repository.UserPictureRepository;
 import com.seeu.ywq.resource.service.ResourceAuthService;
+import com.seeu.ywq.trend.dvo.PublishPictureVO;
+import com.seeu.ywq.trend.model.Picture;
+import com.seeu.ywq.user.repository.UserPictureRepository;
 import com.seeu.ywq.user.service.UserPictureService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,8 @@ public class UserPictureServiceImpl implements UserPictureService {
     UserPictureRepository userPictureRepository;
     @Resource
     ImageRepository imageRepository;
-    @Resource
-    StorageImageService storageImageService;
+    @Autowired
+    FileUploadService fileUploadService;
     @Autowired
     private ResourceAuthService resourceAuthService;
 
@@ -104,21 +104,25 @@ public class UserPictureServiceImpl implements UserPictureService {
         if (images == null || images.length == 0) return new ArrayList<>(); // empty
         if (images.length != albumTypes.length) return new ArrayList<>();//empty
         // 一张张存入阿里云或其他服务器
-        List<Image> imageList = new ArrayList<>();
+//        List<Image> imageList = new ArrayList<>();
+//        List<Picture> pictures = new ArrayList<>();
+//        StorageImageService.Result result = storageImageService.saveImages(images, albumTypes); // 暂时采用的阿里云 OSS
+//        if (result != null && result.getStatus() == StorageImageService.Result.STATUS.success) {
+//            // 拿到返回的图片信息，未持久化
+//            // 逻辑修改了：传回来的每一张图都是可以用的图，不再需要判断是否 close，图片序列如此：open;open,close;open,close;close，依次读取即可
+//            imageList = result.getImageList();
+////            List<Image> imageListFromStorage = result.getImageList();
+////            for (int i = 0; i < result.getImageNum(); i++) {
+////                imageList.add(imageListFromStorage.get(2 * i)); // open 图
+////                if (albumTypes[i] == Picture.ALBUM_TYPE.close) {
+////                    imageList.add(imageListFromStorage.get(2 * i + 1)); // close 图
+////                }
+////            }
+//        }
+
+        // 存储在 七牛 服务器
+        List<Image> imageList = fileUploadService.uploadImages(images);
         List<Picture> pictures = new ArrayList<>();
-        StorageImageService.Result result = storageImageService.saveImages(images, albumTypes); // 暂时采用的阿里云 OSS
-        if (result != null && result.getStatus() == StorageImageService.Result.STATUS.success) {
-            // 拿到返回的图片信息，未持久化
-            // 逻辑修改了：传回来的每一张图都是可以用的图，不再需要判断是否 close，图片序列如此：open;open,close;open,close;close，依次读取即可
-            imageList = result.getImageList();
-//            List<Image> imageListFromStorage = result.getImageList();
-//            for (int i = 0; i < result.getImageNum(); i++) {
-//                imageList.add(imageListFromStorage.get(2 * i)); // open 图
-//                if (albumTypes[i] == Picture.ALBUM_TYPE.close) {
-//                    imageList.add(imageListFromStorage.get(2 * i + 1)); // close 图
-//                }
-//            }
-        }
 
         // 数据持久化到数据库，以后根据此信息进行访问图片
         List<Image> savedImages = imageRepository.save(imageList);

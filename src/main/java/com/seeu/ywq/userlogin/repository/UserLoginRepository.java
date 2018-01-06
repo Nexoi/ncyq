@@ -27,7 +27,7 @@ public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
             "from ywq_user_login ul  " +
             "left join ywq_user_identifications iden on ul.uid = iden.uid and iden.status = 0 " +
             "left join ywq_user_vip vip on vip.uid=null or ul.uid=vip.uid " +
-            "left join ywq_fans f on f.fans_uid = ul.uid and f.followed_uid = :uid " +
+            "left join ywq_fans f on f.followed_uid = ul.uid and f.fans_uid = :uid " +
             "left join ywq_user_like l on l.liked_uid = ul.uid and l.uid = :uid " +
             "where ul.uid in (:uids) " +
             "group by ul.uid;", nativeQuery = true)

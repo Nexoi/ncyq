@@ -1,6 +1,6 @@
 package com.seeu.ywq.page.service.impl;
 
-import com.seeu.ywq.user.dvo.User$TagVO;
+import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.page.dvo.PublishLiteVO;
 import com.seeu.ywq.user.model.Fans;
 import com.seeu.ywq.page.model.Advertisement;
@@ -35,10 +35,10 @@ public class AppPublishPageServiceImpl implements AppPublishPageService {
 
     @Override
     public Page<PublishLiteVO> getTuijian(Long uid, Pageable pageable) {
-        List<User$TagVO> myTags = tagService.findAllMine(uid);
+        List<UserTagVO> myTags = tagService.findAllMine(uid);
         Long[] ids = new Long[myTags.size()];
         for (int i = 0; i < ids.length; i++) {
-            User$TagVO tag = myTags.get(i);
+            UserTagVO tag = myTags.get(i);
             ids[i] = tag.getTagId();
         }
         Page page = publishLiteService.findAllByTagIds(uid, pageable, ids);

@@ -29,7 +29,7 @@ public class UserVO {
 
     private List<TagVO> tags;
 
-    private List<User$IdentificationVO> identifications;
+    private List<UserIdentificationVO> identifications;
 //
 //    private List<Skill> skills;
 
@@ -129,11 +129,11 @@ public class UserVO {
         this.starSign = starSign;
     }
 
-    public List<User$IdentificationVO> getIdentifications() {
+    public List<UserIdentificationVO> getIdentifications() {
         return identifications;
     }
 
-    public void setIdentifications(List<User$IdentificationVO> identifications) {
+    public void setIdentifications(List<UserIdentificationVO> identifications) {
         this.identifications = identifications;
     }
 

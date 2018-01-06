@@ -1,6 +1,9 @@
 package com.seeu.ywq.api.admin;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ResourceAddException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.model.Advertisement;
 import com.seeu.ywq.page.model.HomePageUser;
 import com.seeu.ywq.page.model.HomePageVideo;
@@ -28,41 +31,37 @@ public class AppPageConfigApi {
     @PostMapping("/person")
     public ResponseEntity addPerson(@AuthenticationPrincipal UserLogin authUser,
                                     HomePageUser.CATEGORY category,
-                                    Integer order,
+                                    @RequestParam(required = true) Integer order,
                                     @RequestParam(required = false) Long uid) {
-        if (order < 0)
-            return ResponseEntity.status(400).body(R.code(4000).message("序号不能为负数").build());
+        if (order == null || order < 0)
+            return ResponseEntity.status(400).body(R.code(4000).message("序号不能为空或负数").build());
         // add user
-        AppHomePageService.STATUS status = appHomePageService.addUserConfigurer(category, uid, order);
-        if (status == AppHomePageService.STATUS.success)
+        try {
+            appHomePageService.addUserConfigurer(category, uid, order);
             return ResponseEntity.status(201).body(R.code(201).message("添加成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
-            return ResponseEntity.badRequest().body(R.code(4001).message("添加失败").build());
-        if (status == AppHomePageService.STATUS.exist)
+        } catch (ResourceAlreadyExistedException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("添加失败，请勿重复添加").build());
-
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        }
     }
 
     @ApiOperation(value = "视频信息增添")
     @PostMapping("/video")
     public ResponseEntity addVideo(@AuthenticationPrincipal UserLogin authUser,
                                    HomePageVideo.CATEGORY category,
-                                   Integer order,
-                                   Long uid,
+                                   @RequestParam(required = true) Integer order,
+                                   @RequestParam(required = true) Long uid,
                                    String title,
                                    @RequestParam(required = false) MultipartFile video,
                                    @RequestParam(required = false) MultipartFile coverImage) {
-        if (order < 0 || uid < 0)
-            return ResponseEntity.status(400).body(R.code(4000).message("序号或用户 UID 不能为负数").build());
-        // add user
-        AppHomePageService.STATUS status = appHomePageService.addVideo(video, coverImage, uid, title, category, order);
-        if (status == AppHomePageService.STATUS.success)
-            return ResponseEntity.status(201).body(R.code(201).message("添加成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
-            return ResponseEntity.badRequest().body(R.code(400).message("添加失败").build());
-
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        if (order == null || order < 0 || uid < 0)
+            return ResponseEntity.status(400).body(R.code(4000).message("序号或用户 UID 不能为空或负数").build());
+        // upload video
+        try {
+            HomePageVideo homePageVideo = appHomePageService.addVideo(video, coverImage, uid, title, category, order);
+            return ResponseEntity.status(200).body(homePageVideo);
+        } catch (ResourceAddException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("添加失败【" + e.getMessage() + "】").build());
+        }
     }
 
     @ApiOperation(value = "广告添加")
@@ -71,54 +70,48 @@ public class AppPageConfigApi {
                                            Advertisement.CATEGORY category,
                                            MultipartFile image,
                                            String url,
-                                           Integer order) {
-        if (order < 0)
-            return ResponseEntity.status(400).body(R.code(4000).message("序号不能为负数").build());
-        AppHomePageService.STATUS status = appHomePageService.addAdvertisement(image, category, url, order);
-        if (status == AppHomePageService.STATUS.success)
+                                           @RequestParam(required = true) Integer order) {
+        if (order == null || order < 0)
+            return ResponseEntity.status(400).body(R.code(4000).message("序号不能为空或负数").build());
+        try {
+            appHomePageService.addAdvertisement(image, category, url, order);
             return ResponseEntity.status(201).body(R.code(201).message("添加成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
+        } catch (ResourceAddException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("添加失败").build());
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        }
     }
 
     @ApiOperation(value = "删除该尤物、网红配置记录")
     @DeleteMapping("/person/{category}/{uid}")
     public ResponseEntity deletePerson(@PathVariable HomePageUser.CATEGORY category, @PathVariable Long uid) {
-        AppHomePageService.STATUS status = appHomePageService.deleteUserConfigurer(category, uid);
-        if (status == AppHomePageService.STATUS.success)
+        try {
+            appHomePageService.deleteUserConfigurer(category, uid);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
-            return ResponseEntity.badRequest().body(R.code(400).message("删除失败").build());
-        if (status == AppHomePageService.STATUS.not_exist)
-            return ResponseEntity.status(404).body(R.code(404).message("找不到该配置记录").build());
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("删除失败，找不到该配置记录").build());
+        }
     }
 
     @ApiOperation(value = "删除视频记录")
     @DeleteMapping("/video/{videoId}")
     public ResponseEntity deleteVideo(@PathVariable Long videoId) {
         // set deleteFlag 即可
-        AppHomePageService.STATUS status = appHomePageService.deleteVideo(videoId);
-        if (status == AppHomePageService.STATUS.success)
+        try {
+            appHomePageService.deleteVideo(videoId);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
-            return ResponseEntity.badRequest().body(R.code(400).message("删除失败").build());
-        if (status == AppHomePageService.STATUS.not_exist)
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该视频记录").build());
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        }
     }
 
     @ApiOperation(value = "删除广告")
     @DeleteMapping("/advertisement/{advertisementId}")
     public ResponseEntity deleteAdvertisement(@PathVariable Long advertisementId) {
-        AppHomePageService.STATUS status = appHomePageService.deleteAdvertisement(advertisementId);
-        if (status == AppHomePageService.STATUS.success)
+        try {
+            appHomePageService.deleteAdvertisement(advertisementId);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());
-        if (status == AppHomePageService.STATUS.failure)
-            return ResponseEntity.badRequest().body(R.code(400).message("删除失败").build());
-        if (status == AppHomePageService.STATUS.not_exist)
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该广告记录").build());
-        return ResponseEntity.status(500).body(R.code(500).message("系统异常，请联系管理员").build());
+        }
     }
 }

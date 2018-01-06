@@ -1,6 +1,6 @@
 package com.seeu.ywq.user.dvo;
 
-public class User$TagVO {
+public class UserTagVO {
     private Long tagId;
 
     private String tagName;

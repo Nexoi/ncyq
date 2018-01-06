@@ -12,12 +12,11 @@ public class FansVO {
     @Column(name = "followed_uid")
     private Long followedUid;
     @Column(name = "nickname")
-    @JoinColumn(name = "nickname", referencedColumnName = "nickname", table = "UserLogin")
     private String nickname;
     @Column(name = "head_icon_url")
     private String headIconUrl;
-    @Column(name = "text")
-    private String text;
+    @Column(name = "introduce")
+    private String introduce;
     @Column(name = "identification_ids")
     private List<Long> identificationIds;
     @Column(name = "follow_each")
@@ -58,12 +57,12 @@ public class FansVO {
         this.headIconUrl = headIconUrl;
     }
 
-    public String getText() {
-        return text;
+    public String getIntroduce() {
+        return introduce;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
     }
 
     public List<Long> getIdentificationIds() {

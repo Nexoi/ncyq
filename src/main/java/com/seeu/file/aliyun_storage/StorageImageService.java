@@ -6,6 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * @see com.seeu.third.filestore.FileUploadService
+ * <p>
+ * 该接口已经被 FileUploadService 替换，请及时更替（更替完成）
+ */
+@Deprecated
 public interface StorageImageService {
 
 

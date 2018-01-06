@@ -3,7 +3,7 @@ package com.seeu.ywq.api.release.user;
 import com.seeu.core.R;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
-import com.seeu.ywq.user.dvo.User$TagVO;
+import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.dvo.UserWithNickName;
 import com.seeu.ywq.user.model.User;
@@ -69,7 +69,7 @@ public class UserInfoApi {
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         UserLoginVO ul = userReactService.findOneWithSafety(uid);
         UserVIP vip = userVIPService.findOne(uid);
-        List<User$TagVO> tagVOS = tagService.findAllMine(uid);
+        List<UserTagVO> tagVOS = tagService.findAllMine(uid);
         if (vip == null) {
             vip = new UserVIP();
             vip.setTerminationDate(null);
@@ -103,7 +103,7 @@ public class UserInfoApi {
 
         // 其余信息
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
-        List<User$TagVO> tagVOS = tagService.findAllMine(uid);
+        List<UserTagVO> tagVOS = tagService.findAllMine(uid);
         Map map = new HashMap();
         map.put("info", user);
         map.put("tags", tagVOS);

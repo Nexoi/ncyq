@@ -2,7 +2,7 @@ package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.user.dto.UserDTO;
-import com.seeu.ywq.user.dvo.User$IdentificationVO;
+import com.seeu.ywq.user.dvo.UserIdentificationVO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.user.model.User;
@@ -164,16 +164,16 @@ public class UserInfoServiceImpl implements UserInfoService {
         return vo;
     }
 
-    private User$IdentificationVO transferToVO(UserIdentification identification) {
+    private UserIdentificationVO transferToVO(UserIdentification identification) {
         if (identification == null) return null;
-        User$IdentificationVO identificationVO = new User$IdentificationVO();
+        UserIdentificationVO identificationVO = new UserIdentificationVO();
         BeanUtils.copyProperties(identification, identificationVO);
         return identificationVO;
     }
 
-    private List<User$IdentificationVO> transferToVO(List<UserIdentification> identifications) {
+    private List<UserIdentificationVO> transferToVO(List<UserIdentification> identifications) {
         if (identifications == null || identifications.size() == 0) return new ArrayList<>();
-        List<User$IdentificationVO> vos = new ArrayList<>();
+        List<UserIdentificationVO> vos = new ArrayList<>();
         for (UserIdentification identification : identifications) {
             vos.add(transferToVO(identification));
         }

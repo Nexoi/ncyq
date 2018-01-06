@@ -18,7 +18,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -49,6 +51,18 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         image.setThumbImage500pxUrl(url + "?imageView2/2/w/500");
         return image;
     }
+
+    @Override
+    public List<Image> uploadImages(MultipartFile[] files) throws IOException {
+        if (files == null) return new ArrayList<>();
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file == null) continue;
+            images.add(uploadImage(file));
+        }
+        return images;
+    }
+
 
     @Override
     public Video uploadVideo(MultipartFile videoFile, MultipartFile coverImage) throws IOException {

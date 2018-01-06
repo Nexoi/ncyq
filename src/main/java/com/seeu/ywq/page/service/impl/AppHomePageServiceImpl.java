@@ -1,6 +1,10 @@
 package com.seeu.ywq.page.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.exception.ResourceAddException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
+import com.seeu.ywq.exception.ResourceDeleteException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
 import com.seeu.ywq.resource.model.Image;
@@ -44,29 +48,28 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     private ImageRepository imageRepository; // 存储图片之用
 
     @Override
-    public STATUS addUserConfigurer(HomePageUser.CATEGORY category, Long uid, Integer orderId) {
+    public void addUserConfigurer(HomePageUser.CATEGORY category, Long uid, Integer orderId) throws ResourceAlreadyExistedException {
         if (homePageUserRepository.exists(new HomePageUserPKeys(category, uid)))
-            return STATUS.exist;
+            throw new ResourceAlreadyExistedException("Resource: [category:" + category + ",uid:" + uid + "] already exist.");
         HomePageUser config = new HomePageUser();
         config.setOrderId(orderId);
         config.setCategory(category);
         config.setUid(uid);
         config.setCreateTime(new Date());
         homePageUserRepository.save(config);
-        return STATUS.success;
     }
 
     @Override
-    public STATUS deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid) {
+    public void deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid) throws ResourceNotFoundException {
         if (!homePageUserRepository.exists(new HomePageUserPKeys(category, uid)))
-            return STATUS.not_exist;
+            throw new ResourceNotFoundException("Can not found Resource: [category:" + category + ",uid:" + uid + "]");
         homePageUserRepository.delete(new HomePageUserPKeys(category, uid));
         // TODO 如果是视频的话，可以尝试删除视频信息，清理部分内容
-        return STATUS.success;
+        // ...
     }
 
     @Override
-    public STATUS addAdvertisement(MultipartFile imageFile, Advertisement.CATEGORY category, String url, Integer orderId) {
+    public void addAdvertisement(MultipartFile imageFile, Advertisement.CATEGORY category, String url, Integer orderId) throws ResourceAddException {
         // 文件上传
         try {
             Image image = fileUploadService.uploadImage(imageFile);
@@ -79,22 +82,21 @@ public class AppHomePageServiceImpl implements AppHomePageService {
             advertisement.setOrderId(orderId);
             advertisement.setCreateTime(new Date());
             pageAdvertisementRepository.save(advertisement);
-            return STATUS.success;
         } catch (Exception e) {
-            return STATUS.failure;
+            throw new ResourceAddException(e.getMessage());
         }
     }
 
     @Override
-    public STATUS deleteAdvertisement(Long advertisementId) {
+    public void deleteAdvertisement(Long advertisementId) throws ResourceNotFoundException {
         Advertisement advertisement = pageAdvertisementRepository.findOne(advertisementId);
-        if (advertisement == null) return STATUS.not_exist;
+        if (advertisement == null)
+            throw new ResourceNotFoundException("Can not found Advertisement[ID:" + advertisementId + "]");
         pageAdvertisementRepository.delete(advertisementId);
-        return STATUS.success;
     }
 
     @Override
-    public STATUS addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer orderId) {
+    public HomePageVideo addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer orderId) throws ResourceAddException {
         try {
             // video
             Video video = fileUploadService.uploadVideo(videoFile);
@@ -112,21 +114,19 @@ public class AppHomePageServiceImpl implements AppHomePageService {
             pageVideo.setVideo(savedVideo);
             pageVideo.setCoverImage(savedImage);
             pageVideo.setCreateTime(new Date());
-            homePageVideoRepository.save(pageVideo);
-            return STATUS.success;
+            return homePageVideoRepository.save(pageVideo);
         } catch (IOException e) {
-            return STATUS.failure;
+            throw new ResourceAddException("Resource add exception: 视频上传失败！");
         }
     }
 
     @Override
-    public STATUS deleteVideo(Long videoId) {
+    public void deleteVideo(Long videoId) throws ResourceNotFoundException {
         HomePageVideo video = homePageVideoRepository.findOne(videoId);
         if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
-            return STATUS.not_exist;
+            throw new ResourceNotFoundException("Can not found Resource[Video:" + videoId + "]");
         video.setDeleteFlag(HomePageVideo.DELETE_FLAG.delete);
         homePageVideoRepository.saveAndFlush(video);
-        return STATUS.success;
     }
 
     @Override

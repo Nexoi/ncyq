@@ -1,6 +1,6 @@
 package com.seeu.ywq.user.service.impl;
 
-import com.seeu.ywq.user.dvo.User$TagVO;
+import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.model.Tag;
 import com.seeu.ywq.user.model.UserTag;
@@ -113,13 +113,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<User$TagVO> findAllMine(Long uid) {
+    public List<UserTagVO> findAllMine(Long uid) {
         List<Object[]> mines = user$TagRepository.findAllTagsByUid(uid);
         if (mines == null || mines.size() == 0) return new ArrayList<>();
-        List<User$TagVO> vos = new ArrayList<>();
+        List<UserTagVO> vos = new ArrayList<>();
         for (Object[] objects : mines) {
             if (objects == null) continue;
-            User$TagVO vo = new User$TagVO();
+            UserTagVO vo = new UserTagVO();
             vo.setTagId(Long.parseLong(objects[0].toString()));
             vo.setTagName(objects[1].toString());
             vos.add(vo);
@@ -128,13 +128,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<User$TagVO> findAllFocus(Long uid) {
+    public List<UserTagVO> findAllFocus(Long uid) {
         List<Object[]> foci = user$TagRepository.findAllTagsByUid(uid);
         if (foci == null || foci.size() == 0) return new ArrayList<>();
-        List<User$TagVO> vos = new ArrayList<>();
+        List<UserTagVO> vos = new ArrayList<>();
         for (Object[] objects : foci) {
             if (objects == null) continue;
-            User$TagVO vo = new User$TagVO();
+            UserTagVO vo = new UserTagVO();
             vo.setTagId(Long.parseLong(objects[0].toString()));
             vo.setTagName(objects[1].toString());
             vos.add(vo);
@@ -143,7 +143,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<User$TagVO> deleteMine(Long uid, Long[] ids) {
+    public List<UserTagVO> deleteMine(Long uid, Long[] ids) {
         List<UserTag> mines = new ArrayList<>();
         for (Long id : ids) {
             if (id == null) continue;
@@ -158,7 +158,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<User$TagVO> deleteFocus(Long uid, Long[] ids) {
+    public List<UserTagVO> deleteFocus(Long uid, Long[] ids) {
         List<UserTag> foci = new ArrayList<>();
         for (Long id : ids) {
             if (id == null) continue;

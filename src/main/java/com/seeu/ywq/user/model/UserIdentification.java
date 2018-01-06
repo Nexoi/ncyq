@@ -15,8 +15,8 @@ import java.util.Date;
 })
 public class UserIdentification {
     public enum STATUS {
-        pass,    // 通过
-        nonactive,
+        active,   // 通过
+        inactive, // 未申请审核
         waitFor, // 待审核
         failure  // 审核失败
     }
