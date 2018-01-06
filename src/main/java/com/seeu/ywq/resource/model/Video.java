@@ -12,10 +12,10 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ApiParam(hidden = true)
+    @ApiParam(name = "coverUrl")
     private String coverUrl;
-    
-    @ApiParam(hidden = true)
+
+    @ApiParam(name = "srcUrl")
     private String srcUrl;
 
     public Long getId() {

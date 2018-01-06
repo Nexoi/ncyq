@@ -64,11 +64,12 @@ public class PublishApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity add(@AuthenticationPrincipal UserLogin authUser,
                               Publish publish,
+                              Video video,
                               @ApiParam(value = "照片/视频类型，数组，用逗号隔开，可选值：open、close，分别表示：公开、私密。如：open,close,close", example = "open,close,open")
                                       Publish.SRC_TYPE[] srcTypes,// 照片类型（公开1/私密0）
-                              MultipartFile[] images,
-                              @RequestParam(required = false) String videoCoverUrl, // 视频封面
-                              @RequestParam(required = false) String videoUrl//    视频链接
+                              MultipartFile[] images
+//                              @RequestParam(required = false) String videoCoverUrl, // 视频封面
+//                              @RequestParam(required = false) String videoUrl//    视频链接
     ) {
         if (publish.getType() == null)
             return ResponseEntity.badRequest().body(R.code(4006).message("请选择一个动态类型").build());
@@ -84,13 +85,14 @@ public class PublishApi {
         }
         // if video
         if (publish.getType() == Publish.PUBLISH_TYPE.video) {
-            if (videoCoverUrl == null || videoUrl == null)
+            if (video.getCoverUrl() == null || video.getSrcUrl() == null)
                 return ResponseEntity.badRequest().body(R.code(4005).message("视频内容不能为空").build());
             if (srcTypes.length != 1)
                 return ResponseEntity.badRequest().body(R.code(4006).message("视频类型（公开/私密）数组长度必须为 1").build());
-            Video video = new Video();
-            video.setCoverUrl(videoCoverUrl);
-            video.setSrcUrl(videoUrl);
+//            Video video = new Video();
+//            video.setCoverUrl(videoCoverUrl);
+//            video.setSrcUrl(videoUrl);
+            video.setId(null);
             PublishVideo publishVideo = new PublishVideo();
             publishVideo.setVideo(video);
             publishVideo.setVideoType(srcTypes[0] == Publish.SRC_TYPE.open ? PublishVideo.VIDEO_TYPE.open : PublishVideo.VIDEO_TYPE.close);
