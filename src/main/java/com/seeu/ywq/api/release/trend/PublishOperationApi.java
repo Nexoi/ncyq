@@ -1,6 +1,8 @@
 package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
@@ -44,16 +46,14 @@ public class PublishOperationApi {
     public ResponseEntity likeIt(@AuthenticationPrincipal UserLogin authUser,
                                  @PathVariable("publishId") Long publishId) {
 
-        PublishService.STATUS status = publishService.likeIt(publishId, authUser);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok().body(R.code(200).message("点赞成功").build());
-            case not_found_publish:
-                return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法点赞").build());
-            case existed_not_modify:
-                return ResponseEntity.status(400).body(R.code(400).message("您已经点过赞了").build());
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            publishService.likeIt(publishId, authUser);
+            return ResponseEntity.ok().body(R.code(200).message("点赞成功").build());
+        } catch (ResourceNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法点赞").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.status(400).body(R.code(400).message("您已经点过赞了").build());
         }
     }
 
@@ -67,16 +67,13 @@ public class PublishOperationApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity dislikeIt(@AuthenticationPrincipal UserLogin authUser,
                                     @PathVariable("publishId") Long publishId) {
-        PublishService.STATUS status = publishService.dislikeIt(publishId, authUser.getUid());
-        switch (status) {
-            case success:
-                return ResponseEntity.ok().body(R.code(200).message("取消点赞成功").build());
-            case not_found_publish:
-                return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法取消点赞").build());
-            case not_existed:
-                return ResponseEntity.status(400).body(R.code(400).message("您未对此动态点过赞").build());
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            publishService.dislikeIt(publishId, authUser.getUid());
+            return ResponseEntity.ok().body(R.code(200).message("取消点赞成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法取消点赞").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.status(400).body(R.code(400).message("您未对此动态点过赞").build());
         }
     }
 
@@ -98,14 +95,13 @@ public class PublishOperationApi {
     public ResponseEntity commentIt(@AuthenticationPrincipal UserLogin authUser,
                                     @PathVariable("publishId") Long publishId,
                                     @RequestParam String text) {
-        PublishService.STATUS status = publishService.commentIt(publishId, null, authUser, text);
-        switch (status) {
-            case success:
-                return ResponseEntity.status(201).body(R.code(201).message("评论成功").build());
-            case not_found_publish:
-                return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法评论").build());
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            publishService.commentIt(publishId, null, authUser, text);
+            return ResponseEntity.status(201).body(R.code(201).message("评论成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法评论").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.status(400).body(R.code(404).message(e.getMessage()).build());
         }
     }
 
@@ -121,16 +117,13 @@ public class PublishOperationApi {
                                   @PathVariable("publishId") Long publishId,
                                   @PathVariable(value = "fatherId") Long fatherId,
                                   @RequestParam String text) {
-        PublishService.STATUS status = publishService.commentIt(publishId, fatherId, authUser, text);
-        switch (status) {
-            case success:
-                return ResponseEntity.status(201).body(R.code(201).message("回复成功").build());
-            case not_found_publish:
-                return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法评论/回复").build());
-            case not_existed:
-                return ResponseEntity.status(400).body(R.code(404).message("找不到该评论，无法进行回复").build());
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            publishService.commentIt(publishId, fatherId, authUser, text);
+            return ResponseEntity.status(201).body(R.code(201).message("回复成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法评论/回复").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.status(400).body(R.code(404).message("找不到该评论，无法进行回复").build());
         }
     }
 
@@ -144,14 +137,11 @@ public class PublishOperationApi {
     public ResponseEntity deleteComment(@AuthenticationPrincipal UserLogin authUser,
                                         @PathVariable(value = "publishId", required = false) Long publishId,
                                         @PathVariable(value = "commentId") Long commentId) {
-        PublishService.STATUS status = publishService.deleteComment(commentId);
-        switch (status) {
-            case success:
-                return ResponseEntity.status(200).body(R.code(200).message("删除评论成功").build());
-            case not_existed:
-                return ResponseEntity.status(404).body(R.code(404).message("删除失败，找不到该评论/回复").build());
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            publishService.deleteComment(commentId);
+            return ResponseEntity.status(200).body(R.code(200).message("删除评论成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("删除失败，找不到该评论/回复").build());
         }
     }
 }

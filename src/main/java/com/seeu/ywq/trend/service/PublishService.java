@@ -1,5 +1,7 @@
 package com.seeu.ywq.trend.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.model.PublishComment;
@@ -41,28 +43,20 @@ public interface PublishService {
     PublishVO viewIt(Long publishId);
 
     // 一并删除评论、点赞信息等（用户发布数量减一）
-    STATUS deletePublish(Long publishId);
+    void deletePublish(Long publishId) throws ResourceNotFoundException;
 
     Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable);
 
-    STATUS likeIt(Long publishId, UserLogin user);
+    void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException;
 
-    STATUS dislikeIt(Long publishId, Long uid);
+    void dislikeIt(Long publishId, Long uid) throws ResourceNotFoundException, ActionNotSupportException;
 
     PublishComment getComment(Long commentId);
 
     Page<PublishComment> listComments(Long publishId, Pageable pageable);
 
-    STATUS commentIt(Long publishId, Long fatherId, UserLogin user, String text);
+    void commentIt(Long publishId, Long fatherId, UserLogin user, String text) throws ResourceNotFoundException, ActionNotSupportException;
 
-    STATUS deleteComment(Long commentId);
+    void deleteComment(Long commentId) throws ResourceNotFoundException;
 
-    public enum STATUS {
-        existed_not_modify, // 存在，未做修改
-        not_existed,         // 不存在，未做修改
-        not_found_publish,  // 不存在该动态
-        not_match,           // 不匹配
-        success,
-        failure
-    }
 }

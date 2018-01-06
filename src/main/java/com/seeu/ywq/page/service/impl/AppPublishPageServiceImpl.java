@@ -1,5 +1,6 @@
 package com.seeu.ywq.page.service.impl;
 
+import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.page.dvo.PublishLiteVO;
 import com.seeu.ywq.user.model.Fans;
@@ -35,11 +36,23 @@ public class AppPublishPageServiceImpl implements AppPublishPageService {
 
     @Override
     public Page<PublishLiteVO> getTuijian(Long uid, Pageable pageable) {
-        List<UserTagVO> myTags = tagService.findAllMine(uid);
-        Long[] ids = new Long[myTags.size()];
-        for (int i = 0; i < ids.length; i++) {
-            UserTagVO tag = myTags.get(i);
-            ids[i] = tag.getTagId();
+        Long[] ids = null;
+        List<UserTagVO> myTags = tagService.findAllVO(uid);
+        if (myTags.size() != 0) {
+            // 如果用户有关注标签
+            ids = new Long[myTags.size()];
+            for (int i = 0; i < ids.length; i++) {
+                UserTagVO tag = myTags.get(i);
+                ids[i] = tag.getTagId();
+            }
+        } else {
+            // 如果用户未关注任何标签
+            List<TagVO> allTags = tagService.findAll();
+            ids = new Long[allTags.size()];
+            for (int i = 0; i < ids.length; i++) {
+                TagVO vo = allTags.get(i);
+                ids[i] = vo.getId();
+            }
         }
         Page page = publishLiteService.findAllByTagIds(uid, pageable, ids);
         return page;
@@ -58,7 +71,7 @@ public class AppPublishPageServiceImpl implements AppPublishPageService {
     }
 
     @Override
-    public Page<PublishLiteVO> getWhose(Long visitorUid,Long uid, Pageable pageable) {
-        return publishLiteService.findAllByUid(visitorUid,uid, pageable);
+    public Page<PublishLiteVO> getWhose(Long visitorUid, Long uid, Pageable pageable) {
+        return publishLiteService.findAllByUid(visitorUid, uid, pageable);
     }
 }

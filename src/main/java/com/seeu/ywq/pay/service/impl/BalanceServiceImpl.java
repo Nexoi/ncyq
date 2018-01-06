@@ -27,7 +27,7 @@ public class BalanceServiceImpl implements BalanceService {
     public Long query(Long uid) throws NoSuchUserException {
         Balance balance = payBalanceRepository.findOne(uid);
         if (balance == null)
-            throw new NoSuchUserException("用户 [ \" + uid + \" ] 不存在");
+            throw new NoSuchUserException(uid);
         return balance.getBalance();
     }
 
@@ -35,7 +35,7 @@ public class BalanceServiceImpl implements BalanceService {
     public Balance queryDetail(Long uid) throws NoSuchUserException {
         Balance balance = payBalanceRepository.findOne(uid);
         if (balance == null)
-            throw new NoSuchUserException("用户 [ \" + uid + \" ] 不存在");
+            throw new NoSuchUserException(uid);
         balance.setBindUid(null); // 匿掉
         return balance;
     }

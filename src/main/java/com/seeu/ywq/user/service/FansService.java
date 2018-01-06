@@ -1,6 +1,8 @@
 package com.seeu.ywq.user.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.user.model.Fans;
+import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,15 +18,8 @@ public interface FansService {
 
     List<Fans> findAllByFansUid(Long uid);
 
-    STATUS followSomeone(Long myUid, Long herUid);
+    void followSomeone(Long myUid, Long herUid) throws NoSuchUserException, ActionNotSupportException;
 
-    STATUS cancelFollowSomeone(Long myUid, Long herUid);
+    void cancelFollowSomeone(Long myUid, Long herUid) throws NoSuchUserException, ActionNotSupportException;
 
-    public enum STATUS {
-        no_such_person,
-        have_followed,
-        not_followed,
-        success,
-        failure
-    }
 }

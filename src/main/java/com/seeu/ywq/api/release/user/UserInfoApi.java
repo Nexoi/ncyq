@@ -69,7 +69,7 @@ public class UserInfoApi {
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         UserLoginVO ul = userReactService.findOneWithSafety(uid);
         UserVIP vip = userVIPService.findOne(uid);
-        List<UserTagVO> tagVOS = tagService.findAllMine(uid);
+        List<UserTagVO> tagVOS = tagService.findAllVO(uid);
         if (vip == null) {
             vip = new UserVIP();
             vip.setTerminationDate(null);
@@ -103,7 +103,7 @@ public class UserInfoApi {
 
         // 其余信息
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
-        List<UserTagVO> tagVOS = tagService.findAllMine(uid);
+        List<UserTagVO> tagVOS = tagService.findAllVO(uid);
         Map map = new HashMap();
         map.put("info", user);
         map.put("tags", tagVOS);

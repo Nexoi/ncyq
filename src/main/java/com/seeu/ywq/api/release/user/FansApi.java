@@ -1,7 +1,9 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.user.service.FansService;
+import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.Api;
@@ -45,36 +47,30 @@ public class FansApi {
     @PostMapping("/follow/{uid}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity fansSomeOne(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long uid) {
-        FansService.STATUS status = fansService.followSomeone(authUser.getUid(), uid);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok().body(R.code(200).message("关注成功！").build());
-            case have_followed:
-                return ResponseEntity.badRequest().body(R.code(400).message("您已经关注过该用户，无需重复关注").build());
-            case no_such_person:
-                return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
-            case failure:
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            fansService.followSomeone(authUser.getUid(), uid);
+            return ResponseEntity.ok().body(R.code(200).message("关注成功！").build());
+        } catch (NoSuchUserException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("您已经关注过该用户，无需重复关注").build());
         }
     }
+
     @ApiOperation(value = "取消关注某人")
     @DeleteMapping("/follow/{uid}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity cancelFansSomeOne(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long uid) {
-        FansService.STATUS status = fansService.cancelFollowSomeone(authUser.getUid(), uid);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok().body(R.code(200).message("取消关注成功！").build());
-            case not_followed:
-                return ResponseEntity.badRequest().body(R.code(400).message("您还未关注该用户，无法进行该操作").build());
-            case no_such_person:
-                return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
-            case failure:
-            default:
-                return ResponseEntity.status(500).body(R.code(500).message("未知异常").build());
+        try {
+            fansService.cancelFollowSomeone(authUser.getUid(), uid);
+            return ResponseEntity.ok().body(R.code(200).message("取消关注成功！").build());
+        } catch (NoSuchUserException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("无此用户").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("您还未关注该用户，无法进行该操作").build());
         }
     }
+
     @ApiOperation(value = "喜欢某人", notes = "会让该用户字段：likeNum（喜欢人数）+1")
     @PostMapping("/like/{uid}")
     @PreAuthorize("hasRole('USER')")

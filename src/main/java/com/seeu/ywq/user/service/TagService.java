@@ -1,7 +1,8 @@
 package com.seeu.ywq.user.service;
 
-import com.seeu.ywq.user.dvo.UserTagVO;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dvo.TagVO;
+import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.user.model.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,27 +22,14 @@ public interface TagService {
 
     void deleteFake(Long id);
 
-    STATUS resetMine(Long uid, Long[] ids);
+    void resetMine(Long uid, Long[] ids) throws ResourceNotFoundException;
 
-    STATUS resetFocus(Long uid, Long[] ids);
+    void resetFocus(Long uid, Long[] ids) throws ResourceNotFoundException;
 
-    STATUS addMine(Long uid, Long[] ids); // 添加自己的标签
+    void addTags(Long uid, Long[] ids) throws ResourceNotFoundException; // 添加自己关注的标签
 
-    STATUS addFocus(Long uid, Long[] ids); // 添加自己关注的标签
+    List<UserTagVO> findAllVO(Long uid); // 找到自己所有的标签
 
-    List<UserTagVO> findAllMine(Long uid); // 找到自己所有的标签
-
-    List<UserTagVO> findAllFocus(Long uid); // 找到自己关注的所有标签
-
-    List<UserTagVO> deleteMine(Long uid, Long[] ids); // 删除自己的标签
-
-    List<UserTagVO> deleteFocus(Long uid, Long[] ids); // 删除自己关注的标签
-
-    public enum STATUS {
-        hasAdded,
-        success,
-        failure,
-        no_such_tag
-    }
+    List<UserTagVO> deleteAndGetVO(Long uid, Long[] ids); // 删除自己的标签
 
 }

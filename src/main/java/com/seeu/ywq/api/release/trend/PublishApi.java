@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.PublishSRCTYPEConvertException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.trend.model.Publish;
@@ -173,7 +174,11 @@ public class PublishApi {
             return ResponseEntity.badRequest().body(R.code(400).message("不能删除非本人的动态信息").build());
         }
         // 会一并清除点赞、评论等信息
-        publishService.deletePublish(publishId);
+        try {
+            publishService.deletePublish(publishId);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("您无此动态信息").build());
+        }
         return ResponseEntity.ok().build();
     }
 

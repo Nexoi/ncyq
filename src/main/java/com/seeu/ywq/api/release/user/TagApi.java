@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dvo.TagVO;
 import com.seeu.ywq.user.service.TagService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -54,9 +55,11 @@ public class TagApi {
     @GetMapping("/set")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getMine(@AuthenticationPrincipal UserLogin authUser) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         if (authUser.getGender() == UserLogin.GENDER.male)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
-        List list = tagService.findAllMine(authUser.getUid());
+        List list = tagService.findAllVO(authUser.getUid());
         return list == null || list.size() == 0 ? ResponseEntity.status(404).body(R.code(404).message("您还未添加任何标签").build()) : ResponseEntity.ok(list);
     }
 
@@ -64,9 +67,11 @@ public class TagApi {
     @GetMapping("/follow")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getFocus(@AuthenticationPrincipal UserLogin authUser) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         if (authUser.getGender() == UserLogin.GENDER.female)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
-        List list = tagService.findAllFocus(authUser.getUid());
+        List list = tagService.findAllVO(authUser.getUid());
         return list == null || list.size() == 0 ? ResponseEntity.status(404).body(R.code(404).message("您还未关注任何标签").build()) : ResponseEntity.ok(list);
     }
 
@@ -77,21 +82,20 @@ public class TagApi {
     public ResponseEntity addMyTag(@AuthenticationPrincipal UserLogin authUser,
                                    @ApiParam(value = "需要添加的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
                                    @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         // 判断性别
         if (authUser.getGender() == UserLogin.GENDER.male)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
         // 添加
-        TagService.STATUS status = tagService.addMine(authUser.getUid(), ids);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok(R.code(200).message("添加成功").build());
-            case hasAdded:
-                return ResponseEntity.badRequest().body(R.code(4003).message("有已经添加过的标签，请勿重复添加").build());
-            case failure:
-            default:
-                return ResponseEntity.badRequest().body(R.code(4004).message("添加失败，请稍后再试").build());
+        try {
+            tagService.addTags(authUser.getUid(), ids);
+            return ResponseEntity.ok(R.code(200).message("添加成功").build());
+        } catch (ResourceNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(R.code(400).message("添加失败，存在无法识别的标签").build());
         }
     }
 
@@ -100,23 +104,21 @@ public class TagApi {
     @PostMapping("/set-withclean")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity resetMyTag(@AuthenticationPrincipal UserLogin authUser,
-                                   @ApiParam(value = "需要添加的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
-                                   @RequestParam Long[] ids) {
+                                     @ApiParam(value = "需要添加的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
+                                     @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         // 判断性别
         if (authUser.getGender() == UserLogin.GENDER.male)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
         // 添加
-        TagService.STATUS status = tagService.resetMine(authUser.getUid(), ids);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok(R.code(200).message("添加成功").build());
-            case hasAdded:
-                return ResponseEntity.badRequest().body(R.code(4003).message("有已经添加过的标签，请勿重复添加").build());
-            case failure:
-            default:
-                return ResponseEntity.badRequest().body(R.code(4004).message("添加失败，请稍后再试").build());
+        try {
+            tagService.resetMine(authUser.getUid(), ids);
+            return ResponseEntity.ok(R.code(200).message("添加成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("添加失败，存在无法识别的标签").build());
         }
     }
 
@@ -127,51 +129,45 @@ public class TagApi {
     public ResponseEntity addFocusTag(@AuthenticationPrincipal UserLogin authUser,
                                       @ApiParam(value = "需要关注的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
                                       @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         // 判断性别
         if (authUser.getGender() == UserLogin.GENDER.female)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
         // 添加
-        TagService.STATUS status = tagService.addFocus(authUser.getUid(), ids);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok(R.code(200).message("关注成功").build());
-            case hasAdded:
-                return ResponseEntity.badRequest().body(R.code(4003).message("有已经关注过的标签，请勿重复关注").build());
-            case failure:
-            case no_such_tag:
-                return ResponseEntity.badRequest().body(R.code(4005).message("无此标签可以关注").build());
-            default:
-                return ResponseEntity.badRequest().body(R.code(4004).message("关注失败，请稍后再试").build());
+        try {
+            tagService.addTags(authUser.getUid(), ids);
+            return ResponseEntity.ok(R.code(200).message("添加成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("添加失败，存在无法识别的标签").build());
         }
     }
+
     @ApiOperation(value = "关注标签【重置】", notes = "为自己添加关注的标签信息，性别必须为：男。")
     @ApiResponse(code = 400, message = "数据错误")
     @PostMapping("/follow-withclean")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity resetFocusTag(@AuthenticationPrincipal UserLogin authUser,
-                                      @ApiParam(value = "需要关注的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
-                                      @RequestParam Long[] ids) {
+                                        @ApiParam(value = "需要关注的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
+                                        @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         // 判断性别
         if (authUser.getGender() == UserLogin.GENDER.female)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(4002).message("添加的 id 数组不能为空").build());
         // 添加
-        TagService.STATUS status = tagService.resetFocus(authUser.getUid(), ids);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok(R.code(200).message("关注成功").build());
-            case hasAdded:
-                return ResponseEntity.badRequest().body(R.code(4003).message("有已经关注过的标签，请勿重复关注").build());
-            case failure:
-            case no_such_tag:
-                return ResponseEntity.badRequest().body(R.code(4005).message("无此标签可以关注").build());
-            default:
-                return ResponseEntity.badRequest().body(R.code(4004).message("关注失败，请稍后再试").build());
+        try {
+            tagService.resetFocus(authUser.getUid(), ids);
+            return ResponseEntity.ok(R.code(200).message("关注成功").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4005).message("无此标签可以关注").build());
         }
     }
+
     @ApiOperation(value = "删除添加的标签", notes = "删除自己添加的标签信息，性别必须为：女。")
     @ApiResponse(code = 400, message = "数据错误")
     @DeleteMapping("/set")
@@ -179,11 +175,13 @@ public class TagApi {
     public ResponseEntity deleteMine(@AuthenticationPrincipal UserLogin authUser,
                                      @ApiParam(value = "需要删除的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
                                      @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         if (authUser.getGender() == UserLogin.GENDER.male)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(400).message("参数 ids 必须为数组，用逗号隔开每一个值").build());
-        List list = tagService.deleteMine(authUser.getUid(), ids);
+        List list = tagService.deleteAndGetVO(authUser.getUid(), ids);
         return list == null || list.size() == 0 ? ResponseEntity.ok().body(R.code(200).message("标签删除成功，您现在未添加任何标签").build()) : ResponseEntity.ok(R.code(200).message("标签删除成功").build());
     }
 
@@ -194,11 +192,13 @@ public class TagApi {
     public ResponseEntity deleteFocus(@AuthenticationPrincipal UserLogin authUser,
                                       @ApiParam(value = "需要删除的标签 id 信息，数组，用逗号隔开，如：2,5,3,17,6")
                                       @RequestParam Long[] ids) {
+        if (authUser.getGender() == null)
+            return ResponseEntity.badRequest().body(R.code(4002).message("请设置性别"));
         if (authUser.getGender() == UserLogin.GENDER.female)
             return ResponseEntity.badRequest().body(R.code(4001).message("该性别不可进行该操作").build());
         if (ids == null || ids.length == 0)
             return ResponseEntity.badRequest().body(R.code(400).message("参数 ids 必须为数组，用逗号隔开每一个值").build());
-        List list = tagService.deleteFocus(authUser.getUid(), ids);
+        List list = tagService.deleteAndGetVO(authUser.getUid(), ids);
         return list == null || list.size() == 0 ? ResponseEntity.ok().body(R.code(200).message("标签取消关注成功，您现在未关注任何标签").build()) : ResponseEntity.ok(R.code(200).message("标签取消关注成功").build());
     }
 }

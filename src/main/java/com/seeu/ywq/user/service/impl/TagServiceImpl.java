@@ -1,11 +1,12 @@
 package com.seeu.ywq.user.service.impl;
 
-import com.seeu.ywq.user.dvo.UserTagVO;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dvo.TagVO;
+import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.user.model.Tag;
 import com.seeu.ywq.user.model.UserTag;
-import com.seeu.ywq.user.repository.User$TagRepository;
 import com.seeu.ywq.user.repository.TagRepository;
+import com.seeu.ywq.user.repository.User$TagRepository;
 import com.seeu.ywq.user.service.TagService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -68,34 +69,20 @@ public class TagServiceImpl implements TagService {
 
     @Transactional
     @Override
-    public STATUS resetMine(Long uid, Long[] ids) {
+    public void resetMine(Long uid, Long[] ids) throws ResourceNotFoundException {
         user$TagRepository.deleteAllByUid(uid);
-        return addMine(uid, ids);
+        addTags(uid, ids);
     }
 
     @Transactional
     @Override
-    public STATUS resetFocus(Long uid, Long[] ids) {
+    public void resetFocus(Long uid, Long[] ids) throws ResourceNotFoundException {
         user$TagRepository.deleteAllByUid(uid);
-        return addFocus(uid, ids);
+        addTags(uid, ids);
     }
 
     @Override
-    public STATUS addMine(Long uid, Long[] ids) {
-        List<UserTag> mines = new ArrayList<>();
-        for (Long id : ids) {
-            UserTag mine = new UserTag();
-            mine.setCreateTime(new Date());
-            mine.setTagId(id);
-            mine.setUid(uid);
-            mines.add(mine);
-        }
-        user$TagRepository.save(mines);
-        return STATUS.success;
-    }
-
-    @Override
-    public STATUS addFocus(Long uid, Long[] ids) {
+    public void addTags(Long uid, Long[] ids) throws ResourceNotFoundException {
         List<UserTag> foci = new ArrayList<>();
         for (Long id : ids) {
             UserTag focus = new UserTag();
@@ -107,13 +94,12 @@ public class TagServiceImpl implements TagService {
         try {
             user$TagRepository.save(foci);
         } catch (DataIntegrityViolationException exception) {
-            return STATUS.no_such_tag;
+            throw new ResourceNotFoundException(exception.getMessage());
         }
-        return STATUS.success;
     }
 
     @Override
-    public List<UserTagVO> findAllMine(Long uid) {
+    public List<UserTagVO> findAllVO(Long uid) {
         List<Object[]> mines = user$TagRepository.findAllTagsByUid(uid);
         if (mines == null || mines.size() == 0) return new ArrayList<>();
         List<UserTagVO> vos = new ArrayList<>();
@@ -128,22 +114,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<UserTagVO> findAllFocus(Long uid) {
-        List<Object[]> foci = user$TagRepository.findAllTagsByUid(uid);
-        if (foci == null || foci.size() == 0) return new ArrayList<>();
-        List<UserTagVO> vos = new ArrayList<>();
-        for (Object[] objects : foci) {
-            if (objects == null) continue;
-            UserTagVO vo = new UserTagVO();
-            vo.setTagId(Long.parseLong(objects[0].toString()));
-            vo.setTagName(objects[1].toString());
-            vos.add(vo);
-        }
-        return vos;
-    }
-
-    @Override
-    public List<UserTagVO> deleteMine(Long uid, Long[] ids) {
+    public List<UserTagVO> deleteAndGetVO(Long uid, Long[] ids) {
         List<UserTag> mines = new ArrayList<>();
         for (Long id : ids) {
             if (id == null) continue;
@@ -154,22 +125,7 @@ public class TagServiceImpl implements TagService {
             mines.add(mine);
         }
         user$TagRepository.delete(mines);
-        return findAllMine(uid);
-    }
-
-    @Override
-    public List<UserTagVO> deleteFocus(Long uid, Long[] ids) {
-        List<UserTag> foci = new ArrayList<>();
-        for (Long id : ids) {
-            if (id == null) continue;
-            UserTag focus = new UserTag();
-            focus.setUid(uid);
-            focus.setTagId(id);
-            focus.setCreateTime(new Date());
-            foci.add(focus);
-        }
-        user$TagRepository.delete(foci);
-        return findAllFocus(uid);
+        return findAllVO(uid);
     }
 
 

@@ -1,11 +1,13 @@
 package com.seeu.ywq.user.service.impl;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.user.dvo.FansVO;
 import com.seeu.ywq.user.model.Fans;
 import com.seeu.ywq.user.model.FansPKeys;
 import com.seeu.ywq.user.repository.FansRepository;
 import com.seeu.ywq.user.service.FansService;
 import com.seeu.ywq.user.service.UserInfoService;
+import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,14 +55,14 @@ public class FansServiceImpl implements FansService {
     }
 
     @Override
-    public STATUS followSomeone(Long myUid, Long hisUid) {
+    public void followSomeone(Long myUid, Long hisUid) throws NoSuchUserException, ActionNotSupportException {
         // 有这个人？
         if (!userReactService.exists(hisUid))
-            return STATUS.no_such_person;
+            throw new NoSuchUserException(hisUid);
         // 先查看自己是否已经关注过对方
         Fans fans = fansRepository.findOne(new FansPKeys(myUid, hisUid));
         if (fans != null)
-            return STATUS.have_followed;
+            throw new ActionNotSupportException("操作不可用，Resource [UID: " + myUid + "]已经关注过对方了！Resource [UID: " + hisUid + "]");
         // 查看对方有没有关注自己
         fans = fansRepository.findOne(new FansPKeys(hisUid, myUid));
         if (fans != null && fans.getDeleteFlag() != Fans.DELETE_FLAG.delete) {
@@ -76,7 +78,6 @@ public class FansServiceImpl implements FansService {
             fansRepository.save(fans);
             userInfoService.followPlusOne(myUid); // 自己的关注人数 +1
             userInfoService.fansPlusOne(hisUid);    // 他的粉丝数 +1
-            return STATUS.success;
         } else {
             Fans f = new Fans();
             f.setCreateTime(new Date());
@@ -87,19 +88,18 @@ public class FansServiceImpl implements FansService {
             fansRepository.save(f);
             userInfoService.followPlusOne(myUid); // 自己的关注人数 +1
             userInfoService.fansPlusOne(hisUid);    // 他的粉丝数 +1
-            return STATUS.success;
         }
     }
 
     @Override
-    public STATUS cancelFollowSomeone(Long myUid, Long herUid) {
+    public void cancelFollowSomeone(Long myUid, Long herUid) throws NoSuchUserException, ActionNotSupportException {
         // 有这个人？
         if (!userReactService.exists(herUid))
-            return STATUS.no_such_person;
+            throw new NoSuchUserException(herUid);
         // 是否关注过
         Fans fans = fansRepository.findOne(new FansPKeys(myUid, herUid));
         if (fans == null)
-            return STATUS.not_followed;
+            throw new ActionNotSupportException("操作不可用，Resource [UID: " + myUid + "]还未关注对方！Resource [UID: " + herUid + "]");
         // 查看对方有没有关注自己
         Fans herFans = fansRepository.findOne(new FansPKeys(herUid, myUid));
         if (herFans != null && herFans.getDeleteFlag() != Fans.DELETE_FLAG.delete) {
@@ -111,13 +111,11 @@ public class FansServiceImpl implements FansService {
             fansRepository.delete(fans);
             userInfoService.followMinsOne(myUid); // 自己的关注人数 -1
             userInfoService.fansMinsOne(herUid);    // 他的粉丝数 -1
-            return STATUS.success;
         } else {
             // 己方删除记录
             fansRepository.delete(fans);
             userInfoService.followMinsOne(myUid); // 自己的关注人数 -1
             userInfoService.fansMinsOne(herUid);    // 他的粉丝数 -1
-            return STATUS.success;
         }
     }
 
