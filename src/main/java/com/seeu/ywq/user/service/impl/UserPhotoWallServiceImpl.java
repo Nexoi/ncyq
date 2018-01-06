@@ -39,6 +39,14 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
         return photoWallVOS;
     }
 
+    @Override
+    public PhotoWallVO findCoverPhoto(Long uid) {
+        PhotoWall photoWall = userPhotoWallRepository.findFirstByUidAndDeleteFlagOrderByCreateTimeDesc(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
+        PhotoWallVO vo = new PhotoWallVO();
+        BeanUtils.copyProperties(photoWall, vo);
+        return vo;
+    }
+
     /* 照片墙都是 open 的 */
     @Override
     public List<PhotoWallVO> saveImages(Long uid, MultipartFile[] images) throws Exception {

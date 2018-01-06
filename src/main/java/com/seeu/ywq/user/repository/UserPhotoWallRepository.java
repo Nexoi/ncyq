@@ -13,6 +13,9 @@ public interface UserPhotoWallRepository extends JpaRepository<PhotoWall, Long> 
     // 找到所有的未删除的相片
     List<PhotoWall> findAllByUidAndDeleteFlag(@Param("uid") Long uid, @Param("deleteFlag") PhotoWall.PHOTO_WALL_DELETE_FLAG deleteFlag);
 
+    // 找到最新的一张照片作为封面
+    PhotoWall findFirstByUidAndDeleteFlagOrderByCreateTimeDesc(@Param("uid") Long uid, @Param("deleteFlag") PhotoWall.PHOTO_WALL_DELETE_FLAG deleteFlag);
+
     // 当前照片数量
-    Integer countAllByUidAndDeleteFlag(@Param("uid") Long uid,@Param("deleteFlag") PhotoWall.PHOTO_WALL_DELETE_FLAG deleteFlag);
+    Integer countAllByUidAndDeleteFlag(@Param("uid") Long uid, @Param("deleteFlag") PhotoWall.PHOTO_WALL_DELETE_FLAG deleteFlag);
 }
