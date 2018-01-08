@@ -166,16 +166,20 @@ public class PublishServiceImpl implements PublishService {
     @Transactional
     @Override
     public void deletePublish(Long publishId) throws ResourceNotFoundException {
-        Publish publish = publishRepository.findOne(publishId);
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null)
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
+        // 软删除
+        publish.setStatus(Publish.STATUS.delete);
+        publishRepository.save(publish);
+        return;
         // 删除全部信息（包含点赞、评论）
-        publishRepository.delete(publishId);
-        publishLikedUserRepository.deleteAllByPublishId(publishId);
-        publishCommentRepository.deleteAllByPublishId(publishId);
-        // 用户发布数量减一
-        if (publish.getUid() != null)
-            userInfoService.publishMinsOne(publish.getUid());
+//        publishRepository.delete(publishId);
+//        publishLikedUserRepository.removeAllByPublishId(publishId);
+//        publishCommentRepository.deleteAllByPublishId(publishId);
+//        // 用户发布数量减一
+//        if (publish.getUid() != null)
+//            userInfoService.publishMinsOne(publish.getUid());
     }
 
     @Override
@@ -185,7 +189,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException {
-        Publish publish = publishRepository.findOne(publishId);
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null)
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
         // 是否点赞过
@@ -208,7 +212,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public void dislikeIt(Long publishId, Long uid) throws ResourceNotFoundException, ActionNotSupportException {
-        if (!publishRepository.exists(publishId))
+        if (null == publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal))
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
         // 是否点赞过
         PublishLikedUserPKeys PK = new PublishLikedUserPKeys(publishId, uid);
@@ -231,7 +235,7 @@ public class PublishServiceImpl implements PublishService {
 
     @Override
     public void commentIt(Long publishId, Long fatherId, UserLogin user, String text) throws ResourceNotFoundException, ActionNotSupportException {
-        Publish publish = publishRepository.findOne(publishId);
+        Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null)
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
         if (fatherId != null && !publishCommentRepository.exists(fatherId))

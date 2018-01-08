@@ -1,5 +1,6 @@
 package com.seeu.ywq.pay.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.Balance;
 import com.seeu.ywq.pay.model.OrderLog;
@@ -16,9 +17,9 @@ public interface BalanceService {
 
     Balance queryDetail(Long uid) throws NoSuchUserException;
 
-    void plus(Long uid, Long diamonds, OrderLog.EVENT event);
+    OrderLog update(String orderId, Long uid, OrderLog.EVENT event, Long diamondsDelta) throws BalanceNotEnoughException, ActionNotSupportException;
 
-    void minus(Long uid, Long diamonds) throws BalanceNotEnoughException;
+    OrderLog update(String orderId, Long uid, OrderLog.EVENT event, Long diamondsDelta, Long coinDelta) throws BalanceNotEnoughException, ActionNotSupportException;
 
     // 初始化一个账户，如果该账户存在，则不初始化
     void initAccount(Long uid, Long bindUid);

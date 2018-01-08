@@ -1,6 +1,8 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.IdentificationApplyRepeatException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dto.IdentificationApplyDTO;
 import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.user.service.IdentificationService;
@@ -75,10 +77,27 @@ public class UserIdentificationApi {
         identificationApply.setUid(authUser.getUid()); // set to myself
         try {
             IdentificationApply apply = identificationService.apply(identificationApply.getIdentificationId(), authUser.getUid(), identificationApply, frontImage, backImage, transferVoucherImage);
-            return apply == null ? ResponseEntity.badRequest().body(R.code(4002).message("申请数据加载失败，请重新上传数据").build()) : ResponseEntity.ok(apply);
+            return apply == null ? ResponseEntity.badRequest().body(R.code(4003).message("申请数据加载失败，请重新上传数据").build()) : ResponseEntity.ok(apply);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(R.code(500).message("服务器内部异常，请联系管理员").build());
+        } catch (IdentificationApplyRepeatException e) {
+            return ResponseEntity.badRequest().body(R.code(4004).message("认证信息已提交，不能重复申请认证").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4005).message("无此认证信息，请确认认证 ID 是否正确").build());
+        }
+    }
+
+    @ApiOperation("取消认证信息")
+    @DeleteMapping("/apply/{identificationId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity cancelApply(@AuthenticationPrincipal UserLogin authUser,
+                                      @PathVariable Long identificationId) {
+        try {
+            identificationService.deleteApply(authUser.getUid(), identificationId);
+            return ResponseEntity.ok(R.code(200).message("认证取消成功！").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("您未申请过该认证").build());
         }
     }
 

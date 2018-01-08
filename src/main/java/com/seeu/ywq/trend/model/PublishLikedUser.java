@@ -10,7 +10,9 @@ import java.io.Serializable;
  */
 @Entity
 @IdClass(PublishLikedUserPKeys.class)
-@Table(name = "ywq_publish_liked_users")
+@Table(name = "ywq_publish_liked_users", indexes = {
+        @Index(name = "pub_liked_user_index1", columnList = "publish_id")
+})
 public class PublishLikedUser implements Serializable {
 
     @ApiParam(hidden = true)

@@ -1,10 +1,13 @@
 package com.seeu.ywq.pay.service.impl;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.Balance;
 import com.seeu.ywq.pay.model.OrderLog;
+import com.seeu.ywq.pay.repository.OrderLogRepository;
 import com.seeu.ywq.pay.repository.PayBalanceRepository;
 import com.seeu.ywq.pay.service.BalanceService;
+import com.seeu.ywq.pay.service.OrderLogService;
 import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import com.seeu.ywq.userlogin.service.UserReactService;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.Date;
 
 @Service
@@ -22,6 +26,8 @@ public class BalanceServiceImpl implements BalanceService {
     private UserReactService userReactService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private OrderLogService orderLogService;
 
     @Override
     public Long query(Long uid) throws NoSuchUserException {
@@ -40,44 +46,46 @@ public class BalanceServiceImpl implements BalanceService {
         return balance;
     }
 
+    @Transactional
     @Override
-    public void plus(Long uid, Long diamonds, OrderLog.EVENT event) {
+    public OrderLog update(String orderId, Long uid, OrderLog.EVENT event, Long diamondsDelta) throws BalanceNotEnoughException, ActionNotSupportException {
+        if (diamondsDelta == null || diamondsDelta < 0)
+            throw new ActionNotSupportException("交易额度必须为正整数");
         Balance balance = payBalanceRepository.findOne(uid);
         if (balance == null) {
             // 创建新用户余额系统
             balance = new Balance();
             balance.setUid(uid);
-            balance.setBalance(0l);
+            balance.setBalance(0L);
         }
-        balance.setBalance(balance.getBalance() + diamonds);
         balance.setUpdateTime(new Date());
-        // TODO 对应事件记录 收入则记录，支出不记录
-        eventUpdate(balance, event, diamonds);
+        // 更新账户
+        eventUpdate(balance, event, diamondsDelta);
         payBalanceRepository.saveAndFlush(balance);
+        if (event.canShareBind())
+            orderService.createBindShare(balance.getBindUid(), diamondsDelta);// 上家分成
+        // 消费/收入记录
+        return writeLog(orderId, uid, event, diamondsDelta);
     }
 
+    @Transactional
     @Override
-    public void minus(Long uid, Long diamonds) throws BalanceNotEnoughException {
+    public OrderLog update(String orderId, Long uid, OrderLog.EVENT event, Long diamondsDelta, Long coinDelta) throws BalanceNotEnoughException, ActionNotSupportException {
+        if (diamondsDelta == null || diamondsDelta < 0)
+            throw new ActionNotSupportException("交易额度必须为正整数");
         Balance balance = payBalanceRepository.findOne(uid);
         if (balance == null) {
             // 创建新用户余额系统
             balance = new Balance();
             balance.setUid(uid);
-            balance.setBalance(0l);
+            balance.setBalance(0L);
         }
-        if (balance.getBalance() < diamonds)
-            throw new BalanceNotEnoughException("用户 [ " + uid + " ] 余额不足");
-        balance.setBalance(balance.getBalance() - diamonds);
         balance.setUpdateTime(new Date());
+        // 更新账户
+        eventUpdate(balance, event, diamondsDelta, coinDelta);
         payBalanceRepository.saveAndFlush(balance);
-        // 绑定者获利 10%? 份额
-        if (balance.getBindUid() != null) {
-            orderService.createBindShare(balance.getBindUid(), diamonds);// 该方法会自动计算比例，记录日志
-//            float percent = globalConfigurerService.getBindUserShareDiamondsPercent();
-//            plus(balance.getBindUid(), (long) (diamonds * percent), OrderLog.EVENT.BIND_SHARE); // TODO~
-            // 记录日志
-
-        }
+        // 消费/收入记录
+        return writeLog(orderId, uid, event, diamondsDelta);
     }
 
     @Override
@@ -96,14 +104,16 @@ public class BalanceServiceImpl implements BalanceService {
             balance.setWechatReceive(0L);
             balance.setPublishReceive(0L);
             balance.setRewardReceive(0L);
-            balance.setReward(0L);
+            balance.setRewardExpense(0L);
             balance.setWithdraw(0L);
             balance.setRecharge(0L);
+            balance.setCoin(0L);
             payBalanceRepository.save(balance);
         }
     }
 
-    private void eventUpdate(Balance balance, OrderLog.EVENT event, Long diamondsDelta) {
+    // 相对于自己，主语：I
+    private void eventUpdate(Balance balance, OrderLog.EVENT event, Long diamondsDelta) throws BalanceNotEnoughException {
         if (balance == null) return;
         Long diamonds = 0L;
         switch (event) {
@@ -111,39 +121,106 @@ public class BalanceServiceImpl implements BalanceService {
                 diamonds = balance.getRecharge();
                 if (diamonds == null) diamonds = 0L;
                 balance.setRecharge(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 充值额度需要加入余额
                 break;
             case WITHDRAW:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
                 diamonds = balance.getWithdraw();
                 if (diamonds == null) diamonds = 0L;
                 balance.setWithdraw(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 提现额度需要减少余额
                 break;
-            case REWARD:
-                diamonds = balance.getReward();
+            case REWARD_EXPENSE:
+                diamonds = balance.getRewardExpense();
                 if (diamonds == null) diamonds = 0L;
-                balance.setReward(diamonds + diamondsDelta);
+                balance.setRewardExpense(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 打赏别人
                 break;
-            case RECEIVE_REWARD:
+            case REWARD_RECEIVE:
                 diamonds = balance.getRewardReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setRewardReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 收到打赏
                 break;
             case UNLOCK_PUBLISH:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
+                diamonds = balance.getPublishExpense();
+                if (diamonds == null) diamonds = 0L;
+                balance.setPublishExpense(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 解锁
+                break;
+            case RECEIVE_PUBLISH:
                 diamonds = balance.getPublishReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setPublishReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 收到解锁金额
                 break;
             case UNLOCK_WECHAT:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
+                diamonds = balance.getWechatExpense();
+                if (diamonds == null) diamonds = 0L;
+                balance.setWechatExpense(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 支出
+            case RECEIVE_WECHAT:
                 diamonds = balance.getWechatReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setWechatReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 收获
                 break;
-            case BIND_SHARE:
+            case BIND_SHARED_EXPENSE:
+                diamonds = balance.getSharedExpense();
+                if (diamonds == null) diamonds = 0L;
+                balance.setSharedExpense(diamonds + diamondsDelta);
+//                balance.setBalance(balance.getBalance() - diamondsDelta);  // 支出，不用再支出，系统已经提前自动计账，余额不变
+            case BIND_SHARED_RECEIVE:
                 diamonds = balance.getSharedReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setSharedReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 作为上家分成
                 break;
+            case UNLOCK_PHONE:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
+                diamonds = balance.getPhoneExpense();
+                if (diamonds == null) diamonds = 0L;
+                balance.setPhoneExpense(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 支出
+                break;
+            case RECEIVE_PHONE:
+                diamonds = balance.getPhoneReceive();
+                if (diamonds == null) diamonds = 0L;
+                balance.setPhoneReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 收获
+                break;
+            case DIAMOND_TO_COIN:
+
             default:
                 break;
         }
+    }
+
+    private void eventUpdate(Balance balance, OrderLog.EVENT event, Long diamondsDelta, Long coinDelta) throws BalanceNotEnoughException {
+        if (event == null || event != OrderLog.EVENT.DIAMOND_TO_COIN) return;
+        if (balance == null) return;
+        checkBalance(balance.getBalance(), diamondsDelta);  // check
+        Long coin = balance.getCoin();
+        if (coin == null) coin = 0L;
+        balance.setCoin(coin + coinDelta);
+        balance.setBalance(balance.getBalance() - diamondsDelta);
+    }
+
+    private void checkBalance(Long balance, Long expense) throws BalanceNotEnoughException {
+        if (balance == null || expense == null) return;
+        if (balance < expense) throw new BalanceNotEnoughException("账户余额不足");
+    }
+
+    private OrderLog writeLog(String orderId, Long uid, OrderLog.EVENT event, Long diamonds) {
+        OrderLog log = new OrderLog();
+        log.setOrderId(orderId);
+        log.setCreateTime(new Date());
+        log.setUid(uid);
+        log.setEvent(event);
+        log.setType(event.isExpense() ? OrderLog.TYPE.OUT : OrderLog.TYPE.IN);
+        log.setDiamonds(diamonds);
+        return orderLogService.save(log);
     }
 }

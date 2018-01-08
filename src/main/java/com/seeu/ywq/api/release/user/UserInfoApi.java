@@ -7,6 +7,7 @@ import com.seeu.ywq.user.dvo.UserTagVO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.dvo.UserWithNickName;
 import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.service.FansService;
 import com.seeu.ywq.user.service.TagService;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPhotoWallService;
@@ -24,6 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,8 @@ public class UserInfoApi {
     private UserVIPService userVIPService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private FansService fansService;
 
     /**
      * 查看用户所有信息【本人】
@@ -96,7 +100,10 @@ public class UserInfoApi {
             @ApiResponse(code = 404, message = "无用户信息")
     })
     @GetMapping("/{uid}/all")
-    public ResponseEntity getMineAll(@PathVariable("uid") Long uid) {
+    public ResponseEntity getMineAll(@AuthenticationPrincipal UserLogin authUser,
+                                     @PathVariable("uid") Long uid,
+                                     @RequestParam(required = false) BigDecimal longitude,
+                                     @RequestParam(required = false) BigDecimal latitude) {
         UserVO user = userInfoService.findOne(uid);
         if (user == null)
             return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
@@ -108,6 +115,26 @@ public class UserInfoApi {
         map.put("info", user);
         map.put("tags", tagVOS);
         map.put("albums", userAlbums);
+        // 用户关系
+        if (authUser != null) {
+            Map relation = new HashMap();
+            // 关注信息
+            relation.put("followed", fansService.hasFollowedHer(authUser.getUid(), uid));
+            // 喜欢信息
+            relation.put("liked", userReactService.hasLikedHer(authUser.getUid(), uid));
+            // 位置关系
+            if (latitude != null && longitude != null) {
+                BigDecimal distance = userReactService.calculateDistanceFromHer(longitude, latitude, uid);
+                if (distance.doubleValue() >= 1000) {
+                    relation.put("distance", distance.divide(BigDecimal.valueOf(1000), 2, BigDecimal.ROUND_UP));
+                    relation.put("distance_unit", "km");
+                } else {
+                    relation.put("distance", distance);
+                    relation.put("distance_unit", "m");
+                }
+            }
+            map.put("relation", relation);
+        }
         return ResponseEntity.ok(map);
     }
 

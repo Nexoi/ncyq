@@ -65,13 +65,15 @@ public class PublishLite {
 
     @ApiParam(hidden = true)
     @OneToOne(targetEntity = PublishVideo.class)
-    @JoinColumn(name = "video_id", referencedColumnName = "id")
+    @JoinColumn(name = "video_id")
     private PublishVideo video;
 
     // 用户个人信息
     @Transient
     private SimpleUserVO user;
 
+    @Transient
+    private Boolean likedIt;
 
     public Long getId() {
         return id;
@@ -202,5 +204,13 @@ public class PublishLite {
     }
 
     public PublishLite() {
+    }
+
+    public Boolean getLikedIt() {
+        return likedIt;
+    }
+
+    public void setLikedIt(Boolean likedIt) {
+        this.likedIt = likedIt;
     }
 }

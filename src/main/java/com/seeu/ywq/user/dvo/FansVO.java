@@ -22,6 +22,9 @@ public class FansVO {
     @Column(name = "follow_each")
     private Fans.FOLLOW_EACH followEach;
 
+    // 和字段 identificationIds 只能二选一存在
+    private List<FansIdentificationVO> identifications;
+
     public FansVO() {
     }
 
@@ -79,5 +82,13 @@ public class FansVO {
 
     public void setFollowEach(Fans.FOLLOW_EACH followEach) {
         this.followEach = followEach;
+    }
+
+    public List<FansIdentificationVO> getIdentifications() {
+        return identifications;
+    }
+
+    public void setIdentifications(List<FansIdentificationVO> identifications) {
+        this.identifications = identifications;
     }
 }

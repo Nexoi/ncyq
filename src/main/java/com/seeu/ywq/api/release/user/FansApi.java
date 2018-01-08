@@ -34,13 +34,37 @@ public class FansApi {
         return ResponseEntity.ok(fansService.findPageByFollowedUid(authUser.getUid(), new PageRequest(page, size)));
     }
 
+    @ApiOperation(value = "查看自己的粉丝列表【分页】")
+    @GetMapping("/fans-with-identificationInfo")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getAllMyFansWithIdentificationInfo(@AuthenticationPrincipal UserLogin authUser,
+                                                             @RequestParam(defaultValue = "0") Integer page,
+                                                             @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(fansService.findPageByFollowedUidWithFullIdentificationInfo(authUser.getUid(), new PageRequest(page, size)));
+    }
+
     @ApiOperation(value = "查看自己的关注列表【分页】")
     @GetMapping("/follows")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getAllMyFollows(@AuthenticationPrincipal UserLogin authUser,
+                                          @RequestParam(required = false) String word,
                                           @RequestParam(defaultValue = "0") Integer page,
                                           @RequestParam(defaultValue = "10") Integer size) {
+        if (word != null && word.trim().length() != 0)
+            return ResponseEntity.ok(fansService.searchPageByFansUid(authUser.getUid(), "%" + word + "%", new PageRequest(page, size)));
         return ResponseEntity.ok(fansService.findPageByFansUid(authUser.getUid(), new PageRequest(page, size)));
+    }
+
+    @ApiOperation(value = "查看自己的关注列表【分页】")
+    @GetMapping("/follows-with-identificationInfo")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getAllMyFollowsWithIdentificationInfo(@AuthenticationPrincipal UserLogin authUser,
+                                                                @RequestParam(required = false) String word,
+                                                                @RequestParam(defaultValue = "0") Integer page,
+                                                                @RequestParam(defaultValue = "10") Integer size) {
+        if (word != null && word.trim().length() != 0)
+            return ResponseEntity.ok(fansService.searchPageByFansUidWithFullIdentificationInfo(authUser.getUid(), "%" + word + "%", new PageRequest(page, size)));
+        return ResponseEntity.ok(fansService.findPageByFansUidWithFullIdentificationInfo(authUser.getUid(), new PageRequest(page, size)));
     }
 
     @ApiOperation(value = "关注某人")

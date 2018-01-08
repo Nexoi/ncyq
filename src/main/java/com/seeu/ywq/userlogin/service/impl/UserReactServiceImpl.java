@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -64,6 +65,53 @@ public class UserReactServiceImpl implements UserReactService {
         userLikeRepository.delete(new UserLikePKeys(myUid, hisUid));
         userInfoService.likeMeMinsOne(hisUid);
         return STATUS.success;
+    }
+
+    @Override
+    public Boolean hasLikedHer(Long uid, Long herUid) {
+        return null != userLikeRepository.findOne(new UserLikePKeys(uid, herUid));
+    }
+
+    @Override
+    public BigDecimal calculateDistanceFromHer(BigDecimal longitude, BigDecimal latitude, Long herUid) {
+        if (longitude == null || latitude == null) return null;
+        UserLogin ul = findOne(herUid);
+        if (ul == null || ul.getLatitude() == null || ul.getLongitude() == null) return null;
+        return calculateDistance(longitude, latitude, ul.getLongitude(), ul.getLatitude());
+    }
+
+    /**
+     * @param fromLongitude 经度
+     * @param fromLatitude  维度
+     * @param toLongitude
+     * @param toLatitude
+     * @return
+     */
+    @Override
+    public BigDecimal calculateDistance(BigDecimal fromLongitude, BigDecimal fromLatitude, BigDecimal toLongitude, BigDecimal toLatitude) {
+//        ACOS(
+//                SIN((:lat * 3.1415) /180 )
+//                    *SIN((latitude * 3.1415) / 180)
+//                + COS((:lat * 3.1415) /180 )
+//                    *COS((latitude * 3.1415) / 180)
+//                * COS((:lon * 3.1415) /180 - (longitude * 3.1415) / 180 )
+//        ) *6380
+        double radLat1 = fromLatitude.doubleValue() * Math.PI / 180.0;
+        double radLat2 = toLatitude.doubleValue() * Math.PI / 180.0;
+        double a = radLat1 - radLat2;
+        double b = fromLongitude.doubleValue() * Math.PI / 180.0 - toLongitude.doubleValue() * Math.PI / 180.0;
+        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+        return BigDecimal.valueOf(s * 6378137).setScale(2, BigDecimal.ROUND_UP);//单位米
+
+//        double ratio = 3.141592654 / 180;
+//        return BigDecimal.valueOf(Math.acos(
+//                Math.sin(fromLatitude.doubleValue() * ratio)
+//                        * Math.sin(toLatitude.doubleValue() * ratio)
+//                        + Math.cos(fromLongitude.doubleValue() * ratio)
+//                        * Math.cos(fromLatitude.doubleValue() * ratio)
+//                        * Math.cos(fromLongitude.doubleValue() * ratio
+//                        - toLatitude.doubleValue() * ratio)
+//        ) * 6380);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class Publish {
 
     @ApiParam(hidden = true)
     @OneToOne(targetEntity = PublishVideo.class)
-    @JoinColumn(name = "video_id", referencedColumnName = "id")
+    @JoinColumn(name = "video_id")
     private PublishVideo video;
 
     public Long getId() {

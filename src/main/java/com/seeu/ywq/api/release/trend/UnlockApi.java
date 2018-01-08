@@ -3,6 +3,8 @@ package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
 import com.seeu.third.exception.SMSSendFailureException;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.service.OrderService;
@@ -42,6 +44,8 @@ public class UnlockApi {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该动态").build());
         } catch (ResourceAlreadyActivedException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("该资源已经被解锁，无需重复解锁").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("该资源设定解锁价格异常，无法解锁").build());
         }
     }
 
@@ -59,6 +63,8 @@ public class UnlockApi {
             return ResponseEntity.badRequest().body(R.code(4002).message("该用户未设定微信号码").build());
         } catch (SMSSendFailureException e) {
             return ResponseEntity.badRequest().body(R.code(4001).message("短信发送失败，请稍后再试").build());
+        } catch (GlobalConfigSettingException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("系统设定异常，请联系管理员解决").build());
         }
     }
 }

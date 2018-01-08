@@ -147,7 +147,7 @@ public class AppVOServiceImpl implements AppVOService {
 
     @Override
     public PublishLite formPublishLite(Object[] objects) {
-        if (objects == null || objects.length != 15) return null;// 长度必须是 15 个
+        if (objects == null || objects.length != 16) return null;// 长度必须是 16 个
         PublishLite vo = new PublishLite();
         vo.setId(parseLong(objects[0]));
         vo.setUid(parseLong(objects[1]));
@@ -170,6 +170,7 @@ public class AppVOServiceImpl implements AppVOService {
         publishVideo.setVideo(video);
         vo.setVideo(publishVideo);
         vo.setPictures(new ArrayList<>());
+        vo.setLikedIt(1 == parseInt(objects[15]));
         return vo;
     }
 

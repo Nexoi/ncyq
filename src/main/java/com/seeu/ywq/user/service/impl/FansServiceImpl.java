@@ -1,6 +1,7 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.user.dvo.FansIdentificationVO;
 import com.seeu.ywq.user.dvo.FansVO;
 import com.seeu.ywq.user.model.Fans;
 import com.seeu.ywq.user.model.FansPKeys;
@@ -34,24 +35,30 @@ public class FansServiceImpl implements FansService {
         return fansRepository.exists(new FansPKeys(myUid, herUid));
     }
 
+    // search 关注列表
+    @Override
+    public Page searchPageByFansUid(Long uid, String word, Pageable pageable) {
+        Page<Object[]> page = fansRepository.searchItByFansUid(uid, word, pageable);
+        return new PageImpl(transferToFansVOIgnoreFansUid(page.getContent()), pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page searchPageByFansUidWithFullIdentificationInfo(Long uid, String word, Pageable pageable) {
+        Page<Object[]> page = fansRepository.searchItByFansUidWithFullIdentificationInfo(uid, word, pageable);
+        return new PageImpl(transferToFansVOIgnoreFansUidWithFullIdentificationInfo(page.getContent()), pageable, page.getTotalElements());
+    }
+
+    // find 关注列表
     @Override
     public Page findPageByFansUid(Long fansUid, Pageable pageable) {
         Page<Object[]> page = fansRepository.findItByFansUid(fansUid, pageable);
-        List<FansVO> fansVOS = new ArrayList<>();
-        List<Object[]> objectsList = page.getContent();
-        for (int i = 0; i < objectsList.size(); i++) {
-            Object[] objects = objectsList.get(i);
-            FansVO vo = new FansVO();
-//            vo.setFansUid(parseLong(objects[0]));
-            vo.setFollowedUid(parseLong(objects[1]));
-            vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
-            vo.setNickname(parseString(objects[3]));
-            vo.setHeadIconUrl(parseString(objects[4]));
-            vo.setIntroduce(parseString(objects[5]));
-            vo.setIdentificationIds(parseBytesToLongList(objects[6]));
-            fansVOS.add(vo);
-        }
-        return new PageImpl(fansVOS, pageable, page.getTotalElements());
+        return new PageImpl(transferToFansVOIgnoreFansUid(page.getContent()), pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page findPageByFansUidWithFullIdentificationInfo(Long fansUid, Pageable pageable) {
+        Page<Object[]> page = fansRepository.findItByFansUidWithFullIdentificationInfo(fansUid, pageable);
+        return new PageImpl(transferToFansVOIgnoreFansUidWithFullIdentificationInfo(page.getContent()), pageable, page.getTotalElements());
     }
 
     @Override
@@ -119,13 +126,86 @@ public class FansServiceImpl implements FansService {
         }
     }
 
+    // 找到自己的粉丝们
     @Override
     public Page findPageByFollowedUid(Long followedUid, Pageable pageable) {
         Page<Object[]> page = fansRepository.findItByFollowedUid(followedUid, pageable);
+        return new PageImpl(transferToFansVOIgnoreFollowedUid(page.getContent()), pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page findPageByFollowedUidWithFullIdentificationInfo(Long followedUid, Pageable pageable) {
+        Page<Object[]> page = fansRepository.findItByFollowedUidWithFullIdentificationInfo(followedUid, pageable);
+        return new PageImpl(transferToFansVOIgnoreFollowedUidWithFullIdentificationInfo(page.getContent()), pageable, page.getTotalElements());
+    }
+
+    @Override
+    public List<Fans> findAllByFansUid(Long uid) {
+        return fansRepository.findAllByFansUid(uid);
+    }
+
+    private List<FansVO> transferToFansVOIgnoreFansUidWithFullIdentificationInfo(List<Object[]> objectsList) {
         List<FansVO> fansVOS = new ArrayList<>();
-        List<Object[]> objectsList = page.getContent();
         for (int i = 0; i < objectsList.size(); i++) {
             Object[] objects = objectsList.get(i);
+            if (objects == null || objects.length != 8) continue;// 数据长度不一致
+            FansVO vo = new FansVO();
+//            vo.setFansUid(parseLong(objects[0]));
+            vo.setFollowedUid(parseLong(objects[1]));
+            vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
+            vo.setNickname(parseString(objects[3]));
+            vo.setHeadIconUrl(parseString(objects[4]));
+            vo.setIntroduce(parseString(objects[5]));
+            vo.setIdentificationIds(null); // 必须为空，否则 VO 显示就会多余数据
+            vo.setIdentifications(parseToFansIdentificationVOs(objects[6], objects[7]));
+            fansVOS.add(vo);
+        }
+        return fansVOS;
+    }
+
+    private List<FansVO> transferToFansVOIgnoreFansUid(List<Object[]> objectsList) {
+        List<FansVO> fansVOS = new ArrayList<>();
+        for (int i = 0; i < objectsList.size(); i++) {
+            Object[] objects = objectsList.get(i);
+            if (objects == null || objects.length != 7) continue;// 数据长度不一致
+            FansVO vo = new FansVO();
+//            vo.setFansUid(parseLong(objects[0]));
+            vo.setFollowedUid(parseLong(objects[1]));
+            vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
+            vo.setNickname(parseString(objects[3]));
+            vo.setHeadIconUrl(parseString(objects[4]));
+            vo.setIntroduce(parseString(objects[5]));
+            vo.setIdentificationIds(parseBytesToLongList(objects[6]));
+            vo.setIdentifications(null);
+            fansVOS.add(vo);
+        }
+        return fansVOS;
+    }
+
+    private List<FansVO> transferToFansVOIgnoreFollowedUidWithFullIdentificationInfo(List<Object[]> objectsList) {
+        List<FansVO> fansVOS = new ArrayList<>();
+        for (int i = 0; i < objectsList.size(); i++) {
+            Object[] objects = objectsList.get(i);
+            if (objects == null || objects.length != 8) continue;// 数据长度不一致
+            FansVO vo = new FansVO();
+            vo.setFansUid(parseLong(objects[0]));
+//            vo.setFollowedUid(parseLong(objects[1]));
+            vo.setFollowEach(parseEnumFOLLOW_EACH(objects[2]));
+            vo.setNickname(parseString(objects[3]));
+            vo.setHeadIconUrl(parseString(objects[4]));
+            vo.setIntroduce(parseString(objects[5]));
+            vo.setIdentificationIds(null); // 必须为空，否则 VO 显示就会多余数据
+            vo.setIdentifications(parseToFansIdentificationVOs(objects[6], objects[7]));
+            fansVOS.add(vo);
+        }
+        return fansVOS;
+    }
+
+    private List<FansVO> transferToFansVOIgnoreFollowedUid(List<Object[]> objectsList) {
+        List<FansVO> fansVOS = new ArrayList<>();
+        for (int i = 0; i < objectsList.size(); i++) {
+            Object[] objects = objectsList.get(i);
+            if (objects == null || objects.length != 7) continue;// 数据长度不一致
             FansVO vo = new FansVO();
             vo.setFansUid(parseLong(objects[0]));
 //            vo.setFollowedUid(parseLong(objects[1]));
@@ -134,14 +214,27 @@ public class FansServiceImpl implements FansService {
             vo.setHeadIconUrl(parseString(objects[4]));
             vo.setIntroduce(parseString(objects[5]));
             vo.setIdentificationIds(parseBytesToLongList(objects[6]));
+            vo.setIdentifications(null);
             fansVOS.add(vo);
         }
-        return new PageImpl(fansVOS, pageable, page.getTotalElements());
+        return fansVOS;
     }
 
-    @Override
-    public List<Fans> findAllByFansUid(Long uid) {
-        return fansRepository.findAllByFansUid(uid);
+    //// parse
+
+    private List<FansIdentificationVO> parseToFansIdentificationVOs(Object ids, Object urls) {
+        if (ids == null || urls == null) return new ArrayList<>();
+        String[] idsStrs = String.valueOf(ids).split(",");
+        String[] urlsStrs = String.valueOf(urls).split("@@");
+        if (idsStrs == null || urlsStrs == null || idsStrs.length != urlsStrs.length) return new ArrayList<>();
+        List<FansIdentificationVO> vos = new ArrayList<>();
+        for (int i = 0; i < idsStrs.length; i++) {
+            FansIdentificationVO vo = new FansIdentificationVO();
+            vo.setIdentificationId(parseLong(idsStrs[i]));
+            vo.setIconActiveUrl(urlsStrs[i]);
+            vos.add(vo);
+        }
+        return vos;
     }
 
     private List<Long> parseBytesToLongList(Object object) {

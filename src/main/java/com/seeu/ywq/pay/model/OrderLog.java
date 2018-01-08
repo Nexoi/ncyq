@@ -15,13 +15,41 @@ import java.util.Date;
 public class OrderLog {
 
     public enum EVENT {
-        REWARD,
-        RECEIVE_REWARD,
-        RECHARGE,
-        WITHDRAW,
-        UNLOCK_PUBLISH,
-        UNLOCK_WECHAT,
-        BIND_SHARE
+        REWARD_EXPENSE(true),
+        REWARD_RECEIVE(false),
+        RECHARGE(false),
+        WITHDRAW(true),
+        UNLOCK_PUBLISH(true),
+        RECEIVE_PUBLISH(false),
+        UNLOCK_WECHAT(true),
+        RECEIVE_WECHAT(false),
+        UNLOCK_PHONE(true),
+        RECEIVE_PHONE(false),
+        BIND_SHARED_EXPENSE(true),
+        BIND_SHARED_RECEIVE(false),
+        DIAMOND_TO_COIN(true);
+
+        boolean expense;
+
+        EVENT(boolean expense) {
+            this.expense = expense;
+        }
+
+        public boolean isExpense() {
+            return true;
+        }
+
+        public boolean canShareBind() {
+            switch (this) {
+                case REWARD_EXPENSE:
+                case UNLOCK_WECHAT:
+                case UNLOCK_PHONE:
+                case UNLOCK_PUBLISH:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum TYPE {

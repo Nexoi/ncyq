@@ -31,6 +31,8 @@ public class PublishLiteVO {
     // 用户个人信息
     private SimpleUserVO user;
 
+    private Boolean likedIt;
+
     public Long getId() {
         return id;
     }
@@ -125,5 +127,13 @@ public class PublishLiteVO {
 
     public void setUser(SimpleUserVO user) {
         this.user = user;
+    }
+
+    public Boolean getLikedIt() {
+        return likedIt;
+    }
+
+    public void setLikedIt(Boolean likedIt) {
+        this.likedIt = likedIt;
     }
 }

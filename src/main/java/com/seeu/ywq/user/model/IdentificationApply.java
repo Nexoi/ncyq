@@ -9,15 +9,19 @@ import java.util.Date;
 
 @Entity
 @IdClass(IdentificationApplyPKeys.class)
-@Table(name = "ywq_identification_apply")
+@Table(name = "ywq_identification_apply", indexes = {
+        @Index(name = "identification_apply_index1", columnList = "uid,identification_id")
+})
 public class IdentificationApply {
 
     @ApiParam(hidden = true)
     @Id
+    @Column(name = "uid",unique = false)
     private Long uid;
 
     @Id
     @NotNull
+    @Column(name = "identification_id",unique = false)
     private Long identificationId;
     @NotNull
     private String name;

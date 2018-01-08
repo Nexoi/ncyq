@@ -17,17 +17,29 @@ public class Balance {
     @Column(name = "balance")
     private Long balance;
 
+    private Long coin; // 金币
+
     private Long recharge; // 充值额总计
 
     private Long withdraw;  // 提现额总计
 
-    private Long reward;    // 打赏额总计
+    private Long rewardExpense;// 打赏额总计
 
     private Long rewardReceive;// 被打赏总计
 
+    private Long publishExpense;
+
     private Long publishReceive; // 相册收入
 
+    private Long wechatExpense;
+
     private Long wechatReceive; // 微信解锁收入
+
+    private Long phoneExpense;     // 电话解锁支出
+
+    private Long phoneReceive; // 电话解锁收入
+
+    private Long sharedExpense;
 
     private Long sharedReceive; // 分红收入（用户一对一绑定，10 % 提成）
 
@@ -47,6 +59,14 @@ public class Balance {
 
     public void setBalance(Long balance) {
         this.balance = balance;
+    }
+
+    public Long getCoin() {
+        return coin;
+    }
+
+    public void setCoin(Long coin) {
+        this.coin = coin;
     }
 
     public Date getUpdateTime() {
@@ -81,12 +101,12 @@ public class Balance {
         this.withdraw = withdraw;
     }
 
-    public Long getReward() {
-        return reward;
+    public Long getRewardExpense() {
+        return rewardExpense;
     }
 
-    public void setReward(Long reward) {
-        this.reward = reward;
+    public void setRewardExpense(Long rewardExpense) {
+        this.rewardExpense = rewardExpense;
     }
 
     public Long getRewardReceive() {
@@ -119,5 +139,45 @@ public class Balance {
 
     public void setSharedReceive(Long sharedReceive) {
         this.sharedReceive = sharedReceive;
+    }
+
+    public Long getPublishExpense() {
+        return publishExpense;
+    }
+
+    public void setPublishExpense(Long publishExpense) {
+        this.publishExpense = publishExpense;
+    }
+
+    public Long getWechatExpense() {
+        return wechatExpense;
+    }
+
+    public void setWechatExpense(Long wechatExpense) {
+        this.wechatExpense = wechatExpense;
+    }
+
+    public Long getPhoneExpense() {
+        return phoneExpense;
+    }
+
+    public void setPhoneExpense(Long phoneExpense) {
+        this.phoneExpense = phoneExpense;
+    }
+
+    public Long getPhoneReceive() {
+        return phoneReceive;
+    }
+
+    public void setPhoneReceive(Long phoneReceive) {
+        this.phoneReceive = phoneReceive;
+    }
+
+    public Long getSharedExpense() {
+        return sharedExpense;
+    }
+
+    public void setSharedExpense(Long sharedExpense) {
+        this.sharedExpense = sharedExpense;
     }
 }

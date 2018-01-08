@@ -1,6 +1,8 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.exception.IdentificationApplyRepeatException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dvo.UserIdentificationWithFullListVO;
 import com.seeu.ywq.user.model.Identification;
 import com.seeu.ywq.user.model.IdentificationApply;
@@ -77,8 +79,12 @@ public class IdentificationServiceImpl implements IdentificationService {
     }
 
     @Override
-    public IdentificationApply apply(Long identificationId, Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage, MultipartFile transferVoucherImage) throws IOException {
+    public IdentificationApply apply(Long identificationId, Long uid, IdentificationApply applyData, MultipartFile frontImage, MultipartFile backImage, MultipartFile transferVoucherImage) throws IOException, IdentificationApplyRepeatException, ResourceNotFoundException {
         if (applyData == null) return null;
+        if (!identificationRepository.exists(identificationId))
+            throw new ResourceNotFoundException("认证信息不存在");
+        if (identificationApplyRepository.exists(new IdentificationApplyPKeys(identificationId, uid)))
+            throw new IdentificationApplyRepeatException();
         applyData.setIdentificationId(identificationId);
         applyData.setUid(uid);
         applyData.setCreateTime(new Date());
@@ -102,5 +108,14 @@ public class IdentificationServiceImpl implements IdentificationService {
     @Override
     public IdentificationApply findMyRecentInfo(Long uid) {
         return identificationApplyRepository.findFirstByUidOrderByCreateTimeDesc(uid);
+    }
+
+    @Override
+    public void deleteApply(Long uid, Long identificationId) throws ResourceNotFoundException {
+        // 查找
+        IdentificationApplyPKeys pKeys = new IdentificationApplyPKeys(identificationId, uid);
+        if (!identificationApplyRepository.exists(pKeys))
+            throw new ResourceNotFoundException("资源不存在或未进行该认证申请");
+        identificationApplyRepository.delete(pKeys);
     }
 }

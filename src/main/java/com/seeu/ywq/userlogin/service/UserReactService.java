@@ -4,6 +4,7 @@ import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +15,12 @@ public interface UserReactService {
     STATUS likeMe(Long myUid, Long hisUid);
 
     STATUS cancelLikeMe(Long myUid, Long hisUid);
+
+    Boolean hasLikedHer(Long uid, Long herUid);
+
+    BigDecimal calculateDistanceFromHer(BigDecimal longitude, BigDecimal latitude, Long herUid);
+
+    BigDecimal calculateDistance(BigDecimal fromLongitude, BigDecimal fromLatitude, BigDecimal toLongitude, BigDecimal toLatitude);
 
     Boolean exists(Long uid);
 

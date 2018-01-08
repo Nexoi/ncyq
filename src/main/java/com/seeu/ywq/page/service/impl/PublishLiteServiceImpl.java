@@ -41,7 +41,8 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
     @Override
     public Page<PublishLiteVO> findAllByTagIds(Long visitorUid, Pageable pageable, Long... ids) {
-        List list = publishLiteRepository.queryItUseMyTags(Arrays.asList(ids), pageable.getPageNumber()*pageable.getPageSize(), pageable.getPageSize());
+        if (ids == null || ids.length == 0) return new PageImpl<>(new ArrayList<>());
+        List list = publishLiteRepository.queryItUseMyTags(visitorUid, Arrays.asList(ids), pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = publishLiteRepository.countItUseMyTags(Arrays.asList(ids));
         list = appVOService.formPublishLite(list);
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片
@@ -52,7 +53,8 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
     @Override
     public Page<PublishLiteVO> findAllByFollowedUids(Long visitorUid, Pageable pageable, Long... uids) {
-        List list = publishLiteRepository.queryItUseFollowedUids(Arrays.asList(uids), pageable.getPageNumber()*pageable.getPageSize(), pageable.getPageSize());
+        if (uids == null || uids.length == 0) return new PageImpl<>(new ArrayList<>());
+        List list = publishLiteRepository.queryItUseFollowedUids(visitorUid, Arrays.asList(uids), pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = publishLiteRepository.countItUseFollowedUids(Arrays.asList(uids));
         list = appVOService.formPublishLite(list);
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片
@@ -79,6 +81,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         List<Long> ids = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (PublishLite vo : vos) {
+            vo.setPictures(new ArrayList<>()); // 清空原有图片数据
             ids.add(vo.getId());
             userIds.add(vo.getUid());
             map.put(vo.getId(), vo);

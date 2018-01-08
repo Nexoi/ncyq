@@ -1,8 +1,10 @@
 package com.seeu.ywq.api.release.gift;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.exception.RewardAmountCannotBeNegitiveException;
 import com.seeu.ywq.exception.RewardResourceNotFoundException;
+import com.seeu.ywq.gift.model.GiftOrder;
 import com.seeu.ywq.gift.service.RewardService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
@@ -42,7 +44,7 @@ public class SendRewardApi {
                                     @RequestParam Long rewardResourceId,
                                     @RequestParam Integer amount) {
         try {
-            OrderLog log = orderService.createReward(authUser.getUid(), uid, rewardResourceId, amount);
+            GiftOrder log = orderService.createReward(authUser.getUid(), uid, rewardResourceId, amount);
             return ResponseEntity.ok(log);
         } catch (BalanceNotEnoughException e) {
             return ResponseEntity.badRequest().body(R.code(4000).message("余额不足").build());
@@ -50,6 +52,8 @@ public class SendRewardApi {
             return ResponseEntity.badRequest().body(R.code(4001).message("找不到该物品可以赠送").build());
         } catch (RewardAmountCannotBeNegitiveException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("赠送数量只能为正整数").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("资源设定异常，请联系管理员解决").build());
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.Balance;
 import com.seeu.ywq.pay.model.OrderLog;
@@ -9,6 +10,7 @@ import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.utils.DateFormatterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -20,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,8 +82,14 @@ public class UserBalanceApi {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity recharge(@AuthenticationPrincipal UserLogin authUser,
                                    Long diamonds) {
-        balanceService.plus(authUser.getUid(), diamonds, OrderLog.EVENT.RECHARGE);
-        return ResponseEntity.ok(R.code(200).message("充值成功！"));
+        try {
+            balanceService.update(dateFormatterService.getyyyyMMddHHmmssS().format(new Date()), authUser.getUid(), OrderLog.EVENT.RECHARGE, diamonds);
+            return ResponseEntity.ok(R.code(200).message("充值成功！"));
+        } catch (BalanceNotEnoughException e) {
+            return null; // 不可能发生的事情
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("充值额度不能为负数！"));
+        }
     }
 
     @ApiOperation(value = "提现", notes = "提现操作会被视作申请提现操作。管理员后台同意之后会打款至对应的账号")
@@ -94,11 +103,15 @@ public class UserBalanceApi {
                                            String accountName,
                                    Long diamonds) {
         try {
-            balanceService.minus(authUser.getUid(), diamonds);
+            balanceService.update(dateFormatterService.getyyyyMMddHHmmssS().format(new Date()), authUser.getUid(), OrderLog.EVENT.WITHDRAW, diamonds);
             return ResponseEntity.ok(R.code(200).message("提现成功！"));
         } catch (BalanceNotEnoughException e) {
-            e.printStackTrace();
-            return ResponseEntity.ok(R.code(200).message("余额不足！"));
+            return ResponseEntity.badRequest().body(R.code(4000).message("余额不足！"));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("提现额度不能为负数！"));
         }
     }
+
+    @Autowired
+    DateFormatterService dateFormatterService;
 }
