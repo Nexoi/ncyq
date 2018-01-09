@@ -18,4 +18,8 @@ public interface UserPhotoWallRepository extends JpaRepository<PhotoWall, Long> 
 
     // 当前照片数量
     Integer countAllByUidAndDeleteFlag(@Param("uid") Long uid, @Param("deleteFlag") PhotoWall.PHOTO_WALL_DELETE_FLAG deleteFlag);
+
+    PhotoWall findByUidAndId(@Param("uid") Long uid, @Param("id") Long id);
+
+    void deleteByUidAndId(@Param("uid") Long uid, @Param("id") Long id);
 }

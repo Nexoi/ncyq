@@ -43,6 +43,14 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (unlockWeChat != null)
             return unlockWeChat;
         String diamonds = findOne(KEY_UNLOCK_WECHAT);
+        if (diamonds == null) {
+            // reset by a default suitable value
+            try {
+                setUnlockWeChat(66L);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
         unlockWeChat = diamonds == null ? 0L : Long.parseLong(diamonds);
         return unlockWeChat;
     }
@@ -60,6 +68,14 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (bindUserShareDiamondsPercent != null)
             return bindUserShareDiamondsPercent;
         String percent = findOne(KEY_BIND_USER_DIAMOND_PERCENT);
+        if (percent == null) {
+            // reset
+            try {
+                setBindUserShareDiamondsPercent(0.0F);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
         bindUserShareDiamondsPercent = percent == null ? 0.00f : Float.parseFloat(percent);
         return bindUserShareDiamondsPercent;
     }
@@ -77,6 +93,13 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (userDiamondsPercent != null)
             return userDiamondsPercent;
         String percent = findOne(KEY_USER_DIAMOND_PERCENT);
+        if (percent == null) {
+            try {
+                setUserDiamondsPercent(0.00F);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
         userDiamondsPercent = percent == null ? 0.00f : Float.parseFloat(percent);
         return userDiamondsPercent;
     }
@@ -94,6 +117,13 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (diamondToCoinRatio != null)
             return diamondToCoinRatio;
         String coin = findOne(KEY_DIAMOND_2_COIN_RATIO);
+        if (coin == null) {
+            try {
+                setDiamondToCoinRatio(0);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
         diamondToCoinRatio = coin == null ? 0 : Integer.parseInt(coin);
         return diamondToCoinRatio;
     }
@@ -112,7 +142,6 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (configurer == null) {
             configurer = new GlobalConfigurer();
             configurer.setAttrKey(key);
-            configurer.setAttrValue("0");
         }
         configurer.setAttrKey(String.valueOf(value));
         repository.save(configurer);

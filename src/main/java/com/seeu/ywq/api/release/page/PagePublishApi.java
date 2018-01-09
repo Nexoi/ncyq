@@ -62,7 +62,7 @@ public class PagePublishApi {
     public ResponseEntity getMines(@AuthenticationPrincipal UserLogin authUser,
                                    @RequestParam(defaultValue = "0") Integer page,
                                    @RequestParam(defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(appPublishPageService.getWhose(authUser.getUid(), authUser.getUid(), new PageRequest(page, size)));
+        return ResponseEntity.ok(appPublishPageService.getWhose(authUser.getUid(), authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime"))));
     }
 
     @ApiOperation(value = "用户所有动态", notes = "列出个人用户的动态列表")
@@ -73,6 +73,6 @@ public class PagePublishApi {
                                    @RequestParam(defaultValue = "10") Integer size) {
         Long visitorUid = 0L;
         if (authUser != null) visitorUid = authUser.getUid();
-        return ResponseEntity.ok(appPublishPageService.getWhose(visitorUid, uid, new PageRequest(page, size)));
+        return ResponseEntity.ok(appPublishPageService.getWhose(visitorUid, uid, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime"))));
     }
 }

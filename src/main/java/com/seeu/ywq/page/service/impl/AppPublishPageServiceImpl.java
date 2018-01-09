@@ -43,7 +43,7 @@ public class AppPublishPageServiceImpl implements AppPublishPageService {
             ids = new Long[myTags.size()];
             for (int i = 0; i < ids.length; i++) {
                 UserTagVO tag = myTags.get(i);
-                ids[i] = tag.getTagId();
+                ids[i] = tag.getId();
             }
         } else {
             // 如果用户未关注任何标签

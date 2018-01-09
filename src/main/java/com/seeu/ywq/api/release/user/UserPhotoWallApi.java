@@ -46,6 +46,23 @@ public class UserPhotoWallApi {
         return ResponseEntity.ok(albumWalls);
     }
 
+    @ApiOperation(value = "删除照片（单张）")
+    @DeleteMapping("/photo-wall/{id}")
+    public ResponseEntity deleteByUidAndId(@AuthenticationPrincipal UserLogin authUser,
+                                           @PathVariable Long id) {
+        if (!userPhotoWallService.exist(authUser.getUid(), id))
+            return ResponseEntity.status(404).body(R.code(404).message("无此照片，无法删除"));
+        userPhotoWallService.delete(authUser.getUid(), id);
+        return ResponseEntity.ok(R.code(200).message("删除成功"));
+    }
+
+    @ApiOperation(value = "删除照片（多张）")
+    @DeleteMapping("/photo-wall")
+    public ResponseEntity deleteByUidAndIds(@AuthenticationPrincipal UserLogin authUser,
+                                            @RequestParam Long[] ids) {
+        //...
+    }
+
     /**
      * 查看用户照片墙信息
      *

@@ -1,16 +1,16 @@
 package com.seeu.ywq.user.dvo;
 
 public class UserTagVO {
-    private Long tagId;
+    private Long id ;
 
     private String tagName;
 
-    public Long getTagId() {
-        return tagId;
+    public Long getId() {
+        return id;
     }
 
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTagName() {

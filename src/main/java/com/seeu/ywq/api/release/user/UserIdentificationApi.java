@@ -33,7 +33,7 @@ public class UserIdentificationApi {
     @GetMapping("/list")
     public ResponseEntity listAll() {
         List list = identificationService.findAll();
-        return list == null || list.size() == 0 ? ResponseEntity.status(404).body(R.code(404).message("无认证列表可用").build()) : ResponseEntity.ok(list);
+        return list == null || list.size() == 0 ? ResponseEntity.status(204).body(R.code(204).message("无认证列表可用").build()) : ResponseEntity.ok(list);
     }
 
     @ApiOperation("查看某用户的认证信息（仅能看到已经审核通过的）")

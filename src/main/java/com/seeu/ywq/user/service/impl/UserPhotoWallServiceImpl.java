@@ -28,6 +28,17 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
 
 
     @Override
+    public PhotoWall findOne(Long id) {
+        return userPhotoWallRepository.findOne(id);
+    }
+
+    @Override
+    public Boolean exist(Long uid, Long id) {
+        PhotoWall photoWall = userPhotoWallRepository.findByUidAndId(uid, id);
+        return !(photoWall == null || photoWall.getDeleteFlag() == PhotoWall.PHOTO_WALL_DELETE_FLAG.delete);
+    }
+
+    @Override
     public List<PhotoWallVO> findAllByUid(Long uid) {
         List<PhotoWall> photoWalls = userPhotoWallRepository.findAllByUidAndDeleteFlag(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
         List<PhotoWallVO> photoWallVOS = new ArrayList<>();
@@ -42,6 +53,7 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
     @Override
     public PhotoWallVO findCoverPhoto(Long uid) {
         PhotoWall photoWall = userPhotoWallRepository.findFirstByUidAndDeleteFlagOrderByCreateTimeDesc(uid, PhotoWall.PHOTO_WALL_DELETE_FLAG.show);
+        if (photoWall == null) return null;
         PhotoWallVO vo = new PhotoWallVO();
         BeanUtils.copyProperties(photoWall, vo);
         return vo;
@@ -78,6 +90,15 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
             photoWallVOS.add(photoWallVO);
         }
         return photoWallVOS;
+    }
+
+    @Override
+    public void delete(Long uid, Long id) {
+        PhotoWall photoWall = userPhotoWallRepository.findByUidAndId(uid, id);
+        if (photoWall != null) {
+            photoWall.setDeleteFlag(PhotoWall.PHOTO_WALL_DELETE_FLAG.delete);
+            userPhotoWallRepository.save(photoWall);
+        }
     }
 
     @Override

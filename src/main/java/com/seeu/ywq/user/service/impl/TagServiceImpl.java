@@ -106,7 +106,7 @@ public class TagServiceImpl implements TagService {
         for (Object[] objects : mines) {
             if (objects == null) continue;
             UserTagVO vo = new UserTagVO();
-            vo.setTagId(Long.parseLong(objects[0].toString()));
+            vo.setId(Long.parseLong(objects[0].toString()));
             vo.setTagName(objects[1].toString());
             vos.add(vo);
         }
