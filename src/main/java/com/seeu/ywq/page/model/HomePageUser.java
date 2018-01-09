@@ -11,22 +11,9 @@ import java.util.Date;
 })
 public class HomePageUser {
 
-    public enum CATEGORY {
-        HomePage_HotsPerson,
-        HomePage_Actor,
-        YouWuPage_New,
-        YouWuPage_Suggest,
-        HotsPerson_New,
-        HotsPerson_Suggest
-    }
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-//    private Long id;
     @Id
     @Column(name = "category")
-    @Enumerated
-    private CATEGORY category;
+    private Integer category;
     @Id
     @Column(name = "uid")
     private Long uid;
@@ -34,11 +21,11 @@ public class HomePageUser {
     private Integer orderId;
     private Date createTime;
 
-    public CATEGORY getCategory() {
+    public Integer getCategory() {
         return category;
     }
 
-    public void setCategory(CATEGORY category) {
+    public void setCategory(Integer category) {
         this.category = category;
     }
 

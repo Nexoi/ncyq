@@ -107,7 +107,8 @@ public class UserInfoApi {
         UserVO user = userInfoService.findOne(uid);
         if (user == null)
             return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
-
+        user.setWechat(null);
+        user.setPhone(null);
         // 其余信息
         List<PhotoWallVO> userAlbums = userPhotoWallService.findAllByUid(uid);
         List<UserTagVO> tagVOS = tagService.findAllVO(uid);
@@ -170,7 +171,11 @@ public class UserInfoApi {
     @GetMapping("/{uid}")
     public ResponseEntity get(@PathVariable("uid") Long uid) {
         UserVO user = userInfoService.findOne(uid);
-        return user == null ? ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build()) : ResponseEntity.ok(user);
+        if (user == null)
+            return ResponseEntity.status(404).body(R.code(404).message("无此用户信息 [UID = " + uid + "]").build());
+        user.setWechat(null);
+        user.setPhone(null);
+        return ResponseEntity.ok(user);
     }
 
     /**
@@ -186,14 +191,14 @@ public class UserInfoApi {
     public ResponseEntity saveOrUpdate(@ApiParam(hidden = true) @AuthenticationPrincipal UserLogin authUser,
                                        UserDTO user,
                                        @RequestParam(required = false) String nickname) {
-//        User sourceUser = userInfoService.findOneInfo(authUser.getUid());
+//        User sourceUser = userInfoService.findOneInfo(authUser.getPage());
 //        user.setPhone(null); // 电话号码不可修改
 //        user.setFansNum(null);
 //        user.setFollowNum(null);
 //        user.setPublishNum(null);
 ////        user.setTags(null);
 ////        user.setSkills(null);
-//        user.setUid(authUser.getUid());
+//        user.setPage(authUser.getPage());
 //        BeanUtils.copyProperties(user, sourceUser);
         User savedUser = userInfoService.saveInfo(authUser.getUid(), user);
         // 昵称修改

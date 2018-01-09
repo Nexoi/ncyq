@@ -3,29 +3,27 @@ package com.seeu.ywq.page.service.impl;
 import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
-import com.seeu.ywq.exception.ResourceDeleteException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
-import com.seeu.ywq.resource.model.Image;
-import com.seeu.ywq.resource.model.Video;
-import com.seeu.ywq.page.model.Advertisement;
-import com.seeu.ywq.page.model.HomePageUser;
-import com.seeu.ywq.page.model.HomePageUserPKeys;
-import com.seeu.ywq.page.model.HomePageVideo;
-import com.seeu.ywq.resource.repository.ImageRepository;
-import com.seeu.ywq.resource.repository.VideoRepository;
+import com.seeu.ywq.page.model.*;
 import com.seeu.ywq.page.repository.HomePageUserRepository;
 import com.seeu.ywq.page.repository.HomePageVideoRepository;
 import com.seeu.ywq.page.repository.PageAdvertisementRepository;
 import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page.service.AppVOService;
+import com.seeu.ywq.page.service.HomePageCategoryService;
+import com.seeu.ywq.resource.model.Image;
+import com.seeu.ywq.resource.model.Video;
+import com.seeu.ywq.resource.repository.ImageRepository;
+import com.seeu.ywq.resource.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +37,8 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     @Resource
     private HomePageVideoRepository homePageVideoRepository;
     @Autowired
+    private HomePageCategoryService homePageCategoryService;
+    @Autowired
     private AppVOService appVOService;
     @Autowired
     private FileUploadService fileUploadService;
@@ -48,7 +48,7 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     private ImageRepository imageRepository; // 存储图片之用
 
     @Override
-    public void addUserConfigurer(HomePageUser.CATEGORY category, Long uid, Integer orderId) throws ResourceAlreadyExistedException {
+    public void addUserConfigurer(Integer category, Long uid, Integer orderId) throws ResourceAlreadyExistedException {
         if (homePageUserRepository.exists(new HomePageUserPKeys(category, uid)))
             throw new ResourceAlreadyExistedException("Resource: [category:" + category + ",uid:" + uid + "] already exist.");
         HomePageUser config = new HomePageUser();
@@ -60,7 +60,7 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     }
 
     @Override
-    public void deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid) throws ResourceNotFoundException {
+    public void deleteUserConfigurer(Integer category, Long uid) throws ResourceNotFoundException {
         if (!homePageUserRepository.exists(new HomePageUserPKeys(category, uid)))
             throw new ResourceNotFoundException("Can not found Resource: [category:" + category + ",uid:" + uid + "]");
         homePageUserRepository.delete(new HomePageUserPKeys(category, uid));
@@ -134,47 +134,67 @@ public class AppHomePageServiceImpl implements AppHomePageService {
         return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.HomePage);
     }
 
+
     @Override
     public List<Advertisement> getVideo_Advertisements() {
         return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.VideoPage);
     }
 
     @Override
-    public List<HomePageVOUser> getHomePage_NewHotsPerson() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_HotsPerson.ordinal());
-        return appVOService.formUserVO(list);
+    public List<HomePageCategory> queryAllByPage(HomePageCategory.PAGE page) {
+        List<HomePageCategory> categoryList = homePageCategoryService.findAllByPage(HomePageCategory.PAGE.home);
+        if (categoryList == null || categoryList.size() == 0) return new ArrayList<>();
+        for (HomePageCategory category : categoryList) {
+            if (category == null) continue;
+            category.setData(this.getHomePageUsers(category.getCategory()));
+            category.setCategory(null); // 置空
+        }
+        return categoryList;
     }
 
     @Override
-    public List<HomePageVOUser> getHomePage_NewActors() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_Actor.ordinal());
+    public List<HomePageVOUser> getHomePageUsers(Integer category) {
+        if (category == null) return new ArrayList<>();
+        List list = homePageUserRepository.findUserVOByCategory(category);
         return appVOService.formUserVO(list);
     }
 
-    @Override
-    public List<HomePageVOUser> getYouWuPage_New() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_New.ordinal());
-        return appVOService.formUserVO(list);
-    }
-
-    @Override
-    public List<HomePageVOUser> getYouWuPage_Suggestion() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_Suggest.ordinal());
-        return appVOService.formUserVO(list);
-    }
-
-
-    @Override
-    public List<HomePageVOUser> getHotsPerson_New() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_New.ordinal());
-        return appVOService.formUserVO(list);
-    }
-
-    @Override
-    public List<HomePageVOUser> getHotsPerson_Suggestion() {
-        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_Suggest.ordinal());
-        return appVOService.formUserVO(list);
-    }
+//    @Override
+//    public List<HomePageVOUser> getHomePage_NewHotsPerson() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_HotsPerson.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
+//
+//    @Override
+//    public List<HomePageVOUser> getHomePage_NewActors() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_Actor.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
+//
+//    @Override
+//    public List<HomePageVOUser> getYouWuPage_New() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_New.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
+//
+//    @Override
+//    public List<HomePageVOUser> getYouWuPage_Suggestion() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_Suggest.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
+//
+//
+//    @Override
+//    public List<HomePageVOUser> getHotsPerson_New() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_New.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
+//
+//    @Override
+//    public List<HomePageVOUser> getHotsPerson_Suggestion() {
+//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_Suggest.ordinal());
+//        return appVOService.formUserVO(list);
+//    }
 
     @Override
     public List<HomePageVOVideo> getVideo_HD() {

@@ -8,8 +8,10 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.third.util.gaussion.GaussianFilter;
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.resource.model.Video;
+import com.seeu.ywq.trend.model.Picture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class QiniuUploadServiceImpl implements FileUploadService {
@@ -63,6 +63,32 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         return images;
     }
 
+    @Override
+    public List<Map<Picture.ALBUM_TYPE, Image>> uploadImagesWithDetialMap(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException {
+        if (files == null || types == null) return new ArrayList<>();
+        if (files.length != types.length) return new ArrayList<>();
+        List<Map<Picture.ALBUM_TYPE, Image>> list = new ArrayList<>();
+        for (int i = 0; i < files.length; i++) {
+            // 获取宽高
+            BufferedImage bufferedImg = ImageIO.read(files[i].getInputStream());
+            list.add(uploadWithJudgeHazyJPEGWithMap(bufferedImg, types[i]));
+        }
+        return list;
+    }
+
+    @Override
+    public List<Image> uploadImagesWithSeqList(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException {
+        if (files == null || types == null) return new ArrayList<>();
+        if (files.length != types.length) return new ArrayList<>();
+        List<Image> list = new ArrayList<>();
+        for (int i = 0; i < files.length; i++) {
+            // 获取宽高
+            BufferedImage bufferedImg = ImageIO.read(files[i].getInputStream());
+            list.addAll(uploadWithJudgeHazyJPEGWithList(bufferedImg, types[i]));
+        }
+        return list;
+    }
+
 
     @Override
     public Video uploadVideo(MultipartFile videoFile, MultipartFile coverImage) throws IOException {
@@ -89,11 +115,22 @@ public class QiniuUploadServiceImpl implements FileUploadService {
 
     @Override
     public String upload(MultipartFile file) throws IOException {
+        ByteArrayInputStream byteInputStream = new ByteArrayInputStream(file.getBytes());
+        return upload(byteInputStream);
+    }
+
+    /**
+     * 七牛专用方法
+     *
+     * @param byteInputStream
+     * @return
+     * @throws IOException
+     */
+    private String upload(ByteArrayInputStream byteInputStream) throws IOException {
         String key = "ywq" + UUID.randomUUID();
         //构造一个带指定Zone对象的配置类
         Configuration cfg = new Configuration(Zone.zone0());
         UploadManager uploadManager = new UploadManager(cfg);
-        ByteArrayInputStream byteInputStream = new ByteArrayInputStream(file.getBytes());
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
 
@@ -103,5 +140,53 @@ public class QiniuUploadServiceImpl implements FileUploadService {
 //        System.out.println(putRet.key);
 //        System.out.println(putRet.hash);
         return "http://o7k6tx0fl.bkt.clouddn.com/" + key;
+    }
+
+    private Map<Picture.ALBUM_TYPE, Image> uploadWithJudgeHazyJPEGWithMap(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws IOException {
+        Map<Picture.ALBUM_TYPE, Image> map = new HashMap<>();
+        // upload open image
+        Image openImage = uploadImage(bufferedImage);
+        map.put(Picture.ALBUM_TYPE.open, openImage);
+        if (album_type == Picture.ALBUM_TYPE.close) {
+            // upload close image
+            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
+            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
+            Image closeImage = uploadImage(hazyImage);
+            map.put(Picture.ALBUM_TYPE.close, closeImage);
+        }
+        return map;
+    }
+
+    private List<Image> uploadWithJudgeHazyJPEGWithList(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws IOException {
+        List<Image> images = new ArrayList<>();
+        // upload open image
+        Image openImage = uploadImage(bufferedImage);
+        images.add(openImage);
+        if (album_type == Picture.ALBUM_TYPE.close) {
+            // upload close image
+            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
+            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
+            Image closeImage = uploadImage(hazyImage);
+            images.add(closeImage);
+        }
+        return images;
+    }
+
+    private Image uploadImage(BufferedImage bufferedImg) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImg, "jpeg", os);
+        String url = upload(new ByteArrayInputStream(os.toByteArray()));
+        int imgWidth = bufferedImg.getWidth();
+        int imgHeight = bufferedImg.getHeight();
+        Image image = new Image();
+        image.setCreateDate(new Date());
+        image.setHeight(imgHeight);
+        image.setWidth(imgWidth);
+        image.setImageUrl(url);
+        image.setThumbImage100pxUrl(url + "?imageView2/2/w/100");
+        image.setThumbImage200pxUrl(url + "?imageView2/2/w/200");
+        image.setThumbImage300pxUrl(url + "?imageView2/2/w/300");
+        image.setThumbImage500pxUrl(url + "?imageView2/2/w/500");
+        return image;
     }
 }

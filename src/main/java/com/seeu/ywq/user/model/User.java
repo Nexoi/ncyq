@@ -6,6 +6,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -48,12 +50,20 @@ public class User {
     @Id
     private Long uid;
     @ApiParam(hidden = true)
+    @NotNull
+    @Min(0)
     private Long fansNum;   // 粉丝数
     @ApiParam(hidden = true)
+    @NotNull
+    @Min(0)
     private Long followNum; // 关注人数
     @ApiParam(hidden = true)
+    @NotNull
+    @Min(0)
     private Long publishNum; // 动态发布数
     @ApiParam(hidden = true)
+    @NotNull
+    @Min(0)
     private Long likeNum;   // 喜欢数
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

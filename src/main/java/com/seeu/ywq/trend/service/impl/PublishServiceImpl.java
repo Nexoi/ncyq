@@ -158,9 +158,10 @@ public class PublishServiceImpl implements PublishService {
     @Override
     public PublishVO viewIt(Long publishId, Long uid) {
         Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
-        if (publish == null) return null;
+        if (publish == null || publish.getUid() == null) return null;
         publishRepository.viewItOnce(publishId);
-        return transferToVO(publish, resourceAuthService.canVisit(uid, publishId));
+        boolean canVisit = publish.getUid() == uid || resourceAuthService.canVisit(uid, publishId);
+        return transferToVO(publish, canVisit);
     }
 
     @Transactional
@@ -178,8 +179,8 @@ public class PublishServiceImpl implements PublishService {
 //        publishLikedUserRepository.removeAllByPublishId(publishId);
 //        publishCommentRepository.deleteAllByPublishId(publishId);
 //        // 用户发布数量减一
-//        if (publish.getUid() != null)
-//            userInfoService.publishMinsOne(publish.getUid());
+//        if (publish.getPage() != null)
+//            userInfoService.publishMinsOne(publish.getPage());
     }
 
     @Override

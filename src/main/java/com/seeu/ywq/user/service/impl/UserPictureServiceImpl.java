@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserPictureServiceImpl implements UserPictureService {
@@ -121,7 +118,7 @@ public class UserPictureServiceImpl implements UserPictureService {
 //        }
 
         // 存储在 七牛 服务器
-        List<Image> imageList = fileUploadService.uploadImages(images);
+        List<Image> imageList = fileUploadService.uploadImagesWithSeqList(images, albumTypes);
         List<Picture> pictures = new ArrayList<>();
 
         // 数据持久化到数据库，以后根据此信息进行访问图片
@@ -224,7 +221,7 @@ public class UserPictureServiceImpl implements UserPictureService {
 //        for (Picture picture : pictures) {
 //            PublishPictureVO vo = new PublishPictureVO();
 //            BeanUtils.copyProperties(picture, vo);
-//            if (picture.getUid().equals(uid)) {
+//            if (picture.getPage().equals(uid)) {
 //                // 由于此处是存储操作，用户自己可见，所以返回信息为清晰图片地址即可
 //                vo.setImage(picture.getImageOpen());
 //                vo.setAlbumType(Picture.ALBUM_TYPE.open);

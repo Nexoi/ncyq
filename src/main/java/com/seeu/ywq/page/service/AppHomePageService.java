@@ -7,6 +7,7 @@ import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
 import com.seeu.ywq.page.model.Advertisement;
+import com.seeu.ywq.page.model.HomePageCategory;
 import com.seeu.ywq.page.model.HomePageUser;
 import com.seeu.ywq.page.model.HomePageVideo;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,9 +23,9 @@ public interface AppHomePageService {
 
     void deleteAdvertisement(Long advertisementId) throws ResourceNotFoundException;
 
-    void addUserConfigurer(HomePageUser.CATEGORY category, Long srcId, Integer order) throws ResourceAlreadyExistedException;
+    void addUserConfigurer(Integer category, Long srcId, Integer order) throws ResourceAlreadyExistedException;
 
-    void deleteUserConfigurer(HomePageUser.CATEGORY category, Long uid) throws ResourceNotFoundException;
+    void deleteUserConfigurer(Integer category, Long uid) throws ResourceNotFoundException;
 
     HomePageVideo addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer order) throws ResourceAddException;
 
@@ -33,23 +34,28 @@ public interface AppHomePageService {
     // 查看首页广告列表
     List<Advertisement> getHomePage_Advertisements();
 
-    // 新晋网红
-    List<HomePageVOUser> getHomePage_NewHotsPerson();
+    // 查询该页信息
+    List<HomePageCategory> queryAllByPage(HomePageCategory.PAGE page);
 
-    // 新晋演员
-    List<HomePageVOUser> getHomePage_NewActors();
+    List<HomePageVOUser> getHomePageUsers(Integer category);
 
-    // 新晋尤物
-    List<HomePageVOUser> getYouWuPage_New();
-
-    // 推荐尤物
-    List<HomePageVOUser> getYouWuPage_Suggestion();
-
-    // 新晋网红
-    List<HomePageVOUser> getHotsPerson_New();
-
-    // 推荐网红
-    List<HomePageVOUser> getHotsPerson_Suggestion();
+//    // 新晋网红
+//    List<HomePageVOUser> getHomePage_NewHotsPerson();
+//
+//    // 新晋演员
+//    List<HomePageVOUser> getHomePage_NewActors();
+//
+//    // 新晋尤物
+//    List<HomePageVOUser> getYouWuPage_New();
+//
+//    // 推荐尤物
+//    List<HomePageVOUser> getYouWuPage_Suggestion();
+//
+//    // 新晋网红
+//    List<HomePageVOUser> getHotsPerson_New();
+//
+//    // 推荐网红
+//    List<HomePageVOUser> getHotsPerson_Suggestion();
 
     // 广告
     List<Advertisement> getVideo_Advertisements();

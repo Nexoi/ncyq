@@ -86,6 +86,15 @@ public class PublishLiteServiceImpl implements PublishLiteService {
             userIds.add(vo.getUid());
             map.put(vo.getId(), vo);
         }
+        // Users
+        List<SimpleUserVO> simpleUsers = userReactService.findAllSimpleUsers(visitorUid, userIds);
+        HashMap<Long, SimpleUserVO> userMap = new HashMap();
+        for (SimpleUserVO vo : simpleUsers) {
+            userMap.put(vo.getUid(), vo);
+        }
+        for (PublishLite vo : vos) {
+            vo.setUser(userMap.get(vo.getUid()));
+        }
         // Pictures
         List<Picture> pictures = userPictureService.findAllByPublishIds(ids);
         if (pictures == null || pictures.size() == 0)
@@ -96,15 +105,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
             if (pictureList == null) map.get(picture.getPublishId()).setPictures(pictureList = new ArrayList<>());
             pictureList.add(picture);
         }
-        // Users
-        List<SimpleUserVO> simpleUsers = userReactService.findAllSimpleUsers(visitorUid, userIds);
-        HashMap<Long, SimpleUserVO> userMap = new HashMap();
-        for (SimpleUserVO vo : simpleUsers) {
-            userMap.put(vo.getUid(), vo);
-        }
-        for (PublishLite vo : vos) {
-            vo.setUser(userMap.get(vo.getUid()));
-        }
+
     }
 
     private PublishLiteVO transferToVO(PublishLite publish, boolean canVisitClosedResource) {

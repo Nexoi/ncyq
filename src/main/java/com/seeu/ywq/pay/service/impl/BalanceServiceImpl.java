@@ -62,7 +62,7 @@ public class BalanceServiceImpl implements BalanceService {
         // 更新账户
         eventUpdate(balance, event, diamondsDelta);
         payBalanceRepository.saveAndFlush(balance);
-        if (event.canShareBind())
+        if (event.canShareBind() && balance.getBindUid() != null)
             orderService.createBindShare(balance.getBindUid(), diamondsDelta);// 上家分成
         // 消费/收入记录
         return writeLog(orderId, uid, event, diamondsDelta);
@@ -100,14 +100,19 @@ public class BalanceServiceImpl implements BalanceService {
             balance.setUid(uid);
             balance.setBindUid(bindUid);
             balance.setBalance(0L);
+            balance.setCoin(0L);
             balance.setSharedReceive(0L);
+            balance.setSharedExpense(0L);
             balance.setWechatReceive(0L);
+            balance.setWechatExpense(0L);
+            balance.setPhoneReceive(0L);
+            balance.setPhoneExpense(0L);
+            balance.setPublishExpense(0L);
             balance.setPublishReceive(0L);
             balance.setRewardReceive(0L);
             balance.setRewardExpense(0L);
             balance.setWithdraw(0L);
             balance.setRecharge(0L);
-            balance.setCoin(0L);
             payBalanceRepository.save(balance);
         }
     }

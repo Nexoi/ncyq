@@ -2,16 +2,16 @@ package com.seeu.ywq.page.model;
 
 import java.io.Serializable;
 
-public class HomePageUserPKeys implements Serializable {
+public class HomePageCategoryPKeys implements Serializable {
+    private HomePageCategory.PAGE page;
     private Integer category;
-    private Long uid;
 
-    public HomePageUserPKeys() {
+    public HomePageCategoryPKeys() {
     }
 
-    public HomePageUserPKeys(Integer category, Long uid) {
+    public HomePageCategoryPKeys(HomePageCategory.PAGE page, Integer category) {
+        this.page = page;
         this.category = category;
-        this.uid = uid;
     }
 
     public Integer getCategory() {
@@ -22,19 +22,19 @@ public class HomePageUserPKeys implements Serializable {
         this.category = category;
     }
 
-    public Long getUid() {
-        return uid;
+    public HomePageCategory.PAGE getPage() {
+        return page;
     }
 
-    public void setUid(Long uid) {
-        this.uid = uid;
+    public void setPage(HomePageCategory.PAGE page) {
+        this.page = page;
     }
 
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
+        result = PRIME * result + ((page == null) ? 0 : page.hashCode());
         result = PRIME * result + ((category == null) ? 0 : category.hashCode());
         return result;
     }
@@ -51,12 +51,12 @@ public class HomePageUserPKeys implements Serializable {
             return false;
         }
 
-        final HomePageUserPKeys other = (HomePageUserPKeys) obj;
-        if (uid == null) {
-            if (other.uid != null) {
+        final HomePageCategoryPKeys other = (HomePageCategoryPKeys) obj;
+        if (page == null) {
+            if (other.page != null) {
                 return false;
             }
-        } else if (!uid.equals(other.uid)) {
+        } else if (!page.equals(other.page)) {
             return false;
         }
         if (category == null) {

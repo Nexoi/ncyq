@@ -5,9 +5,11 @@ import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.model.Advertisement;
+import com.seeu.ywq.page.model.HomePageCategory;
 import com.seeu.ywq.page.model.HomePageUser;
 import com.seeu.ywq.page.model.HomePageVideo;
 import com.seeu.ywq.page.service.AppHomePageService;
+import com.seeu.ywq.page.service.HomePageCategoryService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,17 +28,71 @@ public class AppPageConfigApi {
 
     @Autowired
     private AppHomePageService appHomePageService;
+    @Autowired
+    private HomePageCategoryService homePageCategoryService;
+
+
+    @ApiOperation(value = "查看所有分类信息", notes = "首页、网红、尤物页面下的分类信息")
+    @GetMapping("/categories")
+    public ResponseEntity listCategory(@AuthenticationPrincipal UserLogin authUser) {
+        return ResponseEntity.ok(homePageCategoryService.findAll());
+    }
+
+    @ApiOperation(value = "添加分类信息")
+    @PostMapping("/{page}/categories")
+    public ResponseEntity addCategory(@AuthenticationPrincipal UserLogin authUser,
+                                      @PathVariable HomePageCategory.PAGE page,
+                                      String title) {
+        // 新建分类
+        HomePageCategory categoryNew = new HomePageCategory();
+        categoryNew.setPage(page);
+        categoryNew.setPageName(page.name());
+        categoryNew.setCategoryTitle(title);
+        return ResponseEntity.ok(homePageCategoryService.save(categoryNew));
+    }
+
+    @ApiOperation(value = "修改分类信息")
+    @PutMapping("/{page}/categories/{category}")
+    public ResponseEntity updateCategory(@AuthenticationPrincipal UserLogin authUser,
+                                         @PathVariable HomePageCategory.PAGE page,
+                                         @PathVariable Integer category,
+                                         String title) {
+        // 先找到 page
+        HomePageCategory categoryModel = homePageCategoryService.findById(page, category);
+        if (categoryModel == null)
+            return ResponseEntity.badRequest().body(R.code(4001).message("无此页面，不可修改"));
+        // 新建分类
+        categoryModel.setCategoryTitle(title);
+        return ResponseEntity.ok(homePageCategoryService.save(categoryModel));
+    }
+
+    @ApiOperation(value = "删除分类信息")
+    @DeleteMapping("/{page}/categories/{category}")
+    public ResponseEntity deleteCategory(@AuthenticationPrincipal UserLogin authUser,
+                                         @PathVariable HomePageCategory.PAGE page,
+                                         @PathVariable Integer category) {
+        // 先找到 page
+        HomePageCategory categoryModel = homePageCategoryService.findFirstByPage(page);
+        if (categoryModel == null)
+            return ResponseEntity.ok().body(R.code(200).message("删除成功"));
+        homePageCategoryService.delete(page, category);
+        return ResponseEntity.ok().body(R.code(200).message("删除成功"));
+    }
 
     @ApiOperation(value = "首页、尤物、网红信息增添")
-    @PostMapping("/person")
+    @PostMapping("/person/{page}/{category}")
     public ResponseEntity addPerson(@AuthenticationPrincipal UserLogin authUser,
-                                    HomePageUser.CATEGORY category,
+                                    @PathVariable HomePageCategory.PAGE page,
+                                    @PathVariable Integer category,
                                     @RequestParam(required = true) Integer order,
                                     @RequestParam(required = false) Long uid) {
         if (order == null || order < 0)
             return ResponseEntity.status(400).body(R.code(4000).message("序号不能为空或负数").build());
         // add user
         try {
+            // 查看是否有该分类
+            if (null == homePageCategoryService.findById(page, category))
+                return ResponseEntity.badRequest().body(R.code(4001).message("无此分类信息，请先添加分类").build());
             appHomePageService.addUserConfigurer(category, uid, order);
             return ResponseEntity.status(201).body(R.code(201).message("添加成功！").build());
         } catch (ResourceAlreadyExistedException e) {
@@ -83,7 +139,7 @@ public class AppPageConfigApi {
 
     @ApiOperation(value = "删除该尤物、网红配置记录")
     @DeleteMapping("/person/{category}/{uid}")
-    public ResponseEntity deletePerson(@PathVariable HomePageUser.CATEGORY category, @PathVariable Long uid) {
+    public ResponseEntity deletePerson(@PathVariable Integer category, @PathVariable Long uid) {
         try {
             appHomePageService.deleteUserConfigurer(category, uid);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());

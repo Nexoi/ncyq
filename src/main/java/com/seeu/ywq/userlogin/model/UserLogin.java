@@ -66,8 +66,8 @@ public class UserLogin implements UserDetails {
     @Column(name = "last_login_time")
     private Date lastLoginTime;
 
-    @ApiParam(hidden = true)
-    private Long likeNum;   // 点赞人数
+//    @ApiParam(hidden = true)
+//    private Long likeNum;   // 点赞人数（@see User.class）
     // 最近登陆坐标
     @ApiParam(hidden = true)
     @Column(name = "longitude", precision = 19, scale = 10)
@@ -196,14 +196,6 @@ public class UserLogin implements UserDetails {
 
     public void setGender(GENDER gender) {
         this.gender = gender;
-    }
-
-    public Long getLikeNum() {
-        return likeNum;
-    }
-
-    public void setLikeNum(Long likeNum) {
-        this.likeNum = likeNum;
     }
 
     public Long getPositionBlockY() {
