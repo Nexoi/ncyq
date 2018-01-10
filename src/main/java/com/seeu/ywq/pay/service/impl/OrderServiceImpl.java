@@ -11,10 +11,12 @@ import com.seeu.ywq.gift.service.RewardService;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.repository.OrderLogRepository;
 import com.seeu.ywq.pay.service.BalanceService;
+import com.seeu.ywq.pay.service.ExchangeTableService;
 import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.trend.model.Publish;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -53,6 +56,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderLogRepository orderLogRepository;
     @Autowired
     private GlobalConfigurerService globalConfigurerService;
+    @Autowired
+    private ExchangeTableService exchangeTableService;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -81,9 +86,10 @@ public class OrderServiceImpl implements OrderService {
     // 钻石换金币
     @Override
     public OrderLog createTransferDiamondsToCoins(Long uid, Long diamonds) throws BalanceNotEnoughException, ActionNotSupportException {
-        Long coin = globalConfigurerService.getCoinsRatioToDiamonds(diamonds);
-        if (coin == 0) throw new ActionNotSupportException("操作不被允许，兑换的额度不能为 0 ");
-        return balanceService.update(genOrderID(), uid, OrderLog.EVENT.DIAMOND_TO_COIN, diamonds, coin);
+        ExchangeTable exchangeTable = queryExchange(uid, ExchangeTable.TYPE.DIAMOND2COIN, diamonds);
+        if (exchangeTable == null || exchangeTable.getTo() == null || exchangeTable.getTo().compareTo(BigDecimal.ZERO) == 0)
+            throw new ActionNotSupportException("操作不被允许，兑换的额度不能为 0 ");
+        return balanceService.update(genOrderID(), uid, OrderLog.EVENT.DIAMOND_TO_COIN, diamonds, exchangeTable.getTo().longValue());
     }
 
 
@@ -213,6 +219,41 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderLog> queryAll(Long uid, Pageable pageable) {
         return orderLogRepository.findAllByUid(uid, pageable);
+    }
+
+    @Override
+    public ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException {
+        if (type == null || fromPrice == null) return null;
+        ExchangeTable exchangeTable = exchangeTableService.findByTypeAndFromPrice(type, fromPrice);
+        if (exchangeTable != null) {
+            exchangeTable.setId(null);
+            exchangeTable.setUpdateTime(null);
+            exchangeTable.setType(null);
+            return exchangeTable;
+        }
+        if (type == ExchangeTable.TYPE.RMB2DIAMOND) {
+            // 如果查找不到配置表，则按比例汇算
+            exchangeTable = new ExchangeTable();
+            exchangeTable.setFrom(fromPrice);
+            exchangeTable.setTo(BigDecimal.valueOf(globalConfigurerService.getDiamondsRatioToRMB(fromPrice)));
+            return exchangeTable;
+        }
+        if (type == ExchangeTable.TYPE.DIAMOND2COIN) {
+            BigDecimal fromPriceLong = BigDecimal.valueOf(fromPrice.longValue());
+            if (fromPriceLong.compareTo(fromPrice) != 0)
+                throw new ActionNotSupportException("传入钻石数必须为整数");
+            // 如果查找不到配置表，则按比例汇算
+            exchangeTable = new ExchangeTable();
+            exchangeTable.setFrom(fromPrice);
+            exchangeTable.setTo(BigDecimal.valueOf(globalConfigurerService.getCoinsRatioToDiamonds(fromPrice.longValue())));
+            return exchangeTable;
+        }
+        return null;
+    }
+
+    @Override
+    public ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, Long fromPrice) throws ActionNotSupportException {
+        return queryExchange(uid, type, BigDecimal.valueOf(fromPrice));
     }
 
 

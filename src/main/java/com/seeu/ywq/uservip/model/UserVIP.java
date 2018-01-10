@@ -1,4 +1,4 @@
-package com.seeu.ywq.userlogin.model;
+package com.seeu.ywq.uservip.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

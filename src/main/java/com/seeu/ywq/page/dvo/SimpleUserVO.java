@@ -1,11 +1,8 @@
 package com.seeu.ywq.page.dvo;
 
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.model.UserVIP;
-import io.swagger.annotations.ApiParam;
+import com.seeu.ywq.uservip.model.UserVIP;
 
-import javax.persistence.Column;
-import javax.persistence.Enumerated;
 import java.util.List;
 
 public class SimpleUserVO {

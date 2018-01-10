@@ -60,7 +60,10 @@ public class UserPhotoWallApi {
     @DeleteMapping("/photo-wall")
     public ResponseEntity deleteByUidAndIds(@AuthenticationPrincipal UserLogin authUser,
                                             @RequestParam Long[] ids) {
-        //...
+        if (ids == null || ids.length == 0)
+            return ResponseEntity.badRequest().body(R.code(4001).message("传入参数不能为空"));
+        userPhotoWallService.delete(authUser.getUid(), ids);
+        return ResponseEntity.ok(R.code(200).message("删除成功"));
     }
 
     /**

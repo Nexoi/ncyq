@@ -4,20 +4,14 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "ywq_task_day")
-public class DayFlushTask {
-    public enum TYPE {
-        signin,
-        share,
-        comment,
-        like
+@Table(name = "ywq_task_static")
+public class StaticTask {
+    public enum TYPE{
+        xinrenlibao
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(length = 8)
-    private Long day;// 20180101
     private Long uid;
     @Enumerated
     private TYPE type;
@@ -31,14 +25,6 @@ public class DayFlushTask {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getDay() {
-        return day;
-    }
-
-    public void setDay(Long day) {
-        this.day = day;
     }
 
     public Long getUid() {

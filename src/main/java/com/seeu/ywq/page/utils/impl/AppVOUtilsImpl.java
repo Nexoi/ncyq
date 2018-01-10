@@ -4,7 +4,7 @@ import com.seeu.ywq.page.model.HomePageVideo;
 import com.seeu.ywq.page.utils.AppVOUtils;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.model.UserVIP;
+import com.seeu.ywq.uservip.model.UserVIP;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 

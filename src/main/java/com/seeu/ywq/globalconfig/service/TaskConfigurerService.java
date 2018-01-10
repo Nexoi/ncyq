@@ -1,19 +1,28 @@
 package com.seeu.ywq.globalconfig.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
+
 public interface TaskConfigurerService {
-    void setTaskClickLikeProgress(Integer taskClickLikeProgress);
 
     Integer getTaskClickLikeProgress();
 
+    void setTaskClickLikeProgress(Integer taskClickLikeProgress) throws ActionNotSupportException;
+
     Integer getTaskCommentProgress();
 
-    void setTaskCommentProgress(Integer taskCommentProgress);
+    void setTaskCommentProgress(Integer taskCommentProgress) throws ActionNotSupportException;
 
     Integer getTaskShareProgress();
 
-    void setTaskShareProgress(Integer taskShareProgress);
+    void setTaskShareProgress(Integer taskShareProgress) throws ActionNotSupportException;
 
     Integer getTaskSignInProgress();
 
-    void setTaskSignInProgress(Integer taskSignInProgress);
+    void setTaskSignInProgress(Integer taskSignInProgress) throws ActionNotSupportException;
+
+
+    // 新人礼包数量
+    void setTaskNewHerePackageNumber(Integer number) throws ActionNotSupportException;
+
+    Integer getTaskNewHerePackageNumber();
 }

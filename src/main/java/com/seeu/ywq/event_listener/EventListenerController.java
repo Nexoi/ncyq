@@ -7,6 +7,8 @@ import com.seeu.third.push.PushService;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
+import com.seeu.ywq.task.model.DayFlushTask;
+import com.seeu.ywq.task.service.DayFlushTaskService;
 import com.seeu.ywq.user.service.AddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,14 @@ public class EventListenerController {
     Logger logger = LoggerFactory.getLogger(EventListenerController.class);
     @Autowired
     private PushService pushService;
+    @Autowired
+    private DayFlushTaskService dayFlushTaskService;
 
 
     @EventListener
     public void clickMe(ClickLikeEvent event) {
+        // 任务
+        dayFlushTaskService.update(event.getUid(), DayFlushTask.TYPE.like);
         // 推送
         try {
             pushService.likePublish(
@@ -45,6 +51,9 @@ public class EventListenerController {
 
     @EventListener
     public void commentPublish(PublishCommentEvent event) {
+        // 任务
+        dayFlushTaskService.update(event.getUid(), DayFlushTask.TYPE.comment);
+        // 推送
         try {
             pushService.commentPublish(
                     event.getHerUid(),

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -99,6 +100,17 @@ public class UserPhotoWallServiceImpl implements UserPhotoWallService {
             photoWall.setDeleteFlag(PhotoWall.PHOTO_WALL_DELETE_FLAG.delete);
             userPhotoWallRepository.save(photoWall);
         }
+    }
+
+    @Override
+    public void delete(Long uid, Long[] ids) {
+        List<PhotoWall> photoWalls = userPhotoWallRepository.findAllByUidAndIdIn(uid, Arrays.asList(ids));
+        if (photoWalls == null || photoWalls.size() == 0) return;
+        for (PhotoWall photoWall : photoWalls) {
+            if (photoWall != null)
+                photoWall.setDeleteFlag(PhotoWall.PHOTO_WALL_DELETE_FLAG.delete);
+        }
+        userPhotoWallRepository.save(photoWalls);
     }
 
     @Override

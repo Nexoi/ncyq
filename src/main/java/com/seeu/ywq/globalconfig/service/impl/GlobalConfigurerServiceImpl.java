@@ -7,6 +7,7 @@ import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @Service
 public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
@@ -15,11 +16,13 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
     private static final String KEY_BIND_USER_DIAMOND_PERCENT = "binduser.diamond.percent"; // 用户上家分钱比例
     private static final String KEY_USER_DIAMOND_PERCENT = "user.diamond.percent"; // 用户分钱比例
     private static final String KEY_DIAMOND_2_COIN_RATIO = "diamond.2.coin.ratio"; // 钻石/金币汇率（ '1:20' 由 '20' 表示）
+    private static final String KEY_RMB_2_DIAMOND_RATIO = "rmb.2.diamond.ratio"; // RMB/金币汇率（ '1:20' 由 '20' 表示）
 
     private Long unlockWeChat;
     private Float bindUserShareDiamondsPercent;
     private Float userDiamondsPercent;
-    private Integer diamondToCoinRatio;
+    private Integer diamondToCoinsRatio;
+    private Integer rmbToDiamondsRatio;
 
     @Resource
     private GlobalConfigurerRepository repository;
@@ -47,6 +50,7 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
             // reset by a default suitable value
             try {
                 setUnlockWeChat(66L);
+                diamonds = findOne(KEY_UNLOCK_WECHAT);
             } catch (ActionNotSupportException e) {
                 e.printStackTrace();
             }
@@ -72,6 +76,7 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
             // reset
             try {
                 setBindUserShareDiamondsPercent(0.0F);
+                percent = findOne(KEY_BIND_USER_DIAMOND_PERCENT);
             } catch (ActionNotSupportException e) {
                 e.printStackTrace();
             }
@@ -96,6 +101,7 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         if (percent == null) {
             try {
                 setUserDiamondsPercent(0.00F);
+                percent = findOne(KEY_USER_DIAMOND_PERCENT);
             } catch (ActionNotSupportException e) {
                 e.printStackTrace();
             }
@@ -105,35 +111,70 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
     }
 
     @Override
-    public void setDiamondToCoinRatio(Integer ratio) throws ActionNotSupportException {
-        if (ratio == null || ratio <= 0)
-            throw new ActionNotSupportException("设定值不能为负数或零");
+    public void setDiamondToCoinsRatio(Integer ratio) throws ActionNotSupportException {
+        if (ratio == null || ratio < 0)
+            throw new ActionNotSupportException("设定值不能为负数");
         setValue(KEY_DIAMOND_2_COIN_RATIO, String.valueOf(ratio));
-        diamondToCoinRatio = ratio;
+        diamondToCoinsRatio = ratio;
     }
 
     @Override
-    public Integer getDiamondToCoinRatio() {
-        if (diamondToCoinRatio != null)
-            return diamondToCoinRatio;
+    public Integer getDiamondToCoinsRatio() {
+        if (diamondToCoinsRatio != null)
+            return diamondToCoinsRatio;
         String coin = findOne(KEY_DIAMOND_2_COIN_RATIO);
         if (coin == null) {
             try {
-                setDiamondToCoinRatio(0);
+                setDiamondToCoinsRatio(0);
+                coin = findOne(KEY_DIAMOND_2_COIN_RATIO);
             } catch (ActionNotSupportException e) {
                 e.printStackTrace();
             }
         }
-        diamondToCoinRatio = coin == null ? 0 : Integer.parseInt(coin);
-        return diamondToCoinRatio;
+        diamondToCoinsRatio = coin == null ? 0 : Integer.parseInt(coin);
+        return diamondToCoinsRatio;
     }
 
     @Override
     public Long getCoinsRatioToDiamonds(Long diamonds) {
         if (diamonds == null || diamonds == 0) return 0L;
-        Integer ratio = getDiamondToCoinRatio();
+        Integer ratio = getDiamondToCoinsRatio();
         if (ratio == null) return 0L;
         return ratio * diamonds;
+    }
+
+    @Override
+    public void setRMBToDiamondsRatio(Integer ratio) throws ActionNotSupportException {
+        if (ratio == null || ratio < 0)
+            throw new ActionNotSupportException("设定值不能为负数");
+        setValue(KEY_RMB_2_DIAMOND_RATIO, String.valueOf(ratio));
+        rmbToDiamondsRatio = ratio;
+    }
+
+    @Override
+    public Integer getRMBToDiamondsRatio() {
+        if (rmbToDiamondsRatio != null)
+            return rmbToDiamondsRatio;
+        String diamonds = findOne(KEY_RMB_2_DIAMOND_RATIO);
+        if (diamonds == null) {
+            try {
+                setRMBToDiamondsRatio(0);
+                diamonds = findOne(KEY_RMB_2_DIAMOND_RATIO);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
+        rmbToDiamondsRatio = diamonds == null ? 0 : Integer.parseInt(diamonds);
+        return rmbToDiamondsRatio;
+    }
+
+    @Override
+    public Long getDiamondsRatioToRMB(BigDecimal price) {
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
+            return 0L;
+        Integer ratio = getRMBToDiamondsRatio();
+        if (ratio == null) return 0L;
+        return price.multiply(BigDecimal.valueOf(ratio)).longValue(); // 降一法
     }
 
 
@@ -143,7 +184,7 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
             configurer = new GlobalConfigurer();
             configurer.setAttrKey(key);
         }
-        configurer.setAttrKey(String.valueOf(value));
+        configurer.setAttrValue(String.valueOf(value));
         repository.save(configurer);
     }
 }

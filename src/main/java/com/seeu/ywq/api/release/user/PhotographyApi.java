@@ -47,7 +47,7 @@ public class PhotographyApi {
             Map map = new HashMap();
             map.put("terminateTime", day.getTerminateTime());
             map.put("terminateDay", Long.valueOf((day.getTerminateTime().getTime() - new Date().getTime()) / 86400000));
-            map.put("photographs", page);
+            map.put("photographs", photoPage);
             return ResponseEntity.ok(map);
         }
     }

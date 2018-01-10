@@ -4,6 +4,7 @@ import com.seeu.ywq.user.model.PhotoWall;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,5 +22,9 @@ public interface UserPhotoWallRepository extends JpaRepository<PhotoWall, Long> 
 
     PhotoWall findByUidAndId(@Param("uid") Long uid, @Param("id") Long id);
 
-    void deleteByUidAndId(@Param("uid") Long uid, @Param("id") Long id);
+    List<PhotoWall> findAllByUidAndIdIn(@Param("uid") Long uid, @Param("ids") Collection<Long> ids);
+
+//    void deleteByUidAndId(@Param("uid") Long uid, @Param("id") Long id);
+//
+//    void deleteAllByUidAndIdIn(@Param("uid") Long uid, @Param("ids") Collection<Long> ids);
 }

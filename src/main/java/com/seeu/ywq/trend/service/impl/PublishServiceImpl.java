@@ -8,14 +8,11 @@ import com.seeu.ywq.resource.model.*;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.dvo.PublishVOPicture;
 import com.seeu.ywq.trend.dvo.PublishVOVideo;
+import com.seeu.ywq.trend.model.*;
 import com.seeu.ywq.trend.repository.PublishCommentRepository;
 import com.seeu.ywq.trend.repository.PublishLikedUserRepository;
 import com.seeu.ywq.trend.repository.PublishRepository;
 import com.seeu.ywq.resource.service.*;
-import com.seeu.ywq.trend.model.Publish;
-import com.seeu.ywq.trend.model.PublishComment;
-import com.seeu.ywq.trend.model.PublishLikedUser;
-import com.seeu.ywq.trend.model.PublishLikedUserPKeys;
 import com.seeu.ywq.trend.service.PublishCommentService;
 import com.seeu.ywq.trend.service.PublishLikedUserService;
 import com.seeu.ywq.trend.service.PublishService;
@@ -172,6 +169,13 @@ public class PublishServiceImpl implements PublishService {
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
         // 软删除
         publish.setStatus(Publish.STATUS.delete);
+        if (publish.getPictures() != null && publish.getPictures().size() != 0) {
+            Date date = new Date();
+            for (Picture picture : publish.getPictures()) {
+                picture.setDeleteFlag(Picture.DELETE_FLAG.delete);
+                picture.setDeleteTime(date);
+            }
+        }
         publishRepository.save(publish);
         return;
         // 删除全部信息（包含点赞、评论）

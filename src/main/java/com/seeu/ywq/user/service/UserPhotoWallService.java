@@ -20,6 +20,8 @@ public interface UserPhotoWallService {
 
     void delete(Long uid, Long id);
 
+    void delete(Long uid, Long[] ids);
+
     /**
      * 未删除的照片墙数量
      *

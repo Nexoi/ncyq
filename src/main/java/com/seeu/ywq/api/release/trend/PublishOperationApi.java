@@ -50,7 +50,6 @@ public class PublishOperationApi {
             publishService.likeIt(publishId, authUser);
             return ResponseEntity.ok().body(R.code(200).message("点赞成功").build());
         } catch (ResourceNotFoundException e) {
-            e.printStackTrace();
             return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法点赞").build());
         } catch (ActionNotSupportException e) {
             return ResponseEntity.status(400).body(R.code(400).message("您已经点过赞了").build());

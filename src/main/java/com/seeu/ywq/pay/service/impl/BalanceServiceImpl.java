@@ -136,6 +136,7 @@ public class BalanceServiceImpl implements BalanceService {
                 balance.setBalance(balance.getBalance() - diamondsDelta); // 提现额度需要减少余额
                 break;
             case REWARD_EXPENSE:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
                 diamonds = balance.getRewardExpense();
                 if (diamonds == null) diamonds = 0L;
                 balance.setRewardExpense(diamonds + diamondsDelta);

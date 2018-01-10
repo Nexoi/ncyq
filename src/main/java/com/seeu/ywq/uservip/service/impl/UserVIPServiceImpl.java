@@ -1,8 +1,8 @@
-package com.seeu.ywq.userlogin.service.impl;
+package com.seeu.ywq.uservip.service.impl;
 
-import com.seeu.ywq.userlogin.model.UserVIP;
-import com.seeu.ywq.userlogin.repository.UserVIPRepository;
-import com.seeu.ywq.userlogin.service.UserVIPService;
+import com.seeu.ywq.uservip.model.UserVIP;
+import com.seeu.ywq.uservip.repository.UserVIPRepository;
+import com.seeu.ywq.uservip.service.UserVIPService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +30,16 @@ public class UserVIPServiceImpl implements UserVIPService {
         if (vip.getVipLevel() == null || vip.getVipLevel() == UserVIP.VIP.none)
             return null;
         return vip;
+    }
+
+    @Override
+    public boolean isActive(Long uid) {
+        UserVIP vip = repository.findOne(uid);
+        return !(vip == null
+                || vip.getVipLevel() == null
+                || vip.getVipLevel() == UserVIP.VIP.none
+                || vip.getTerminationDate() == null
+                || vip.getTerminationDate().before(new Date()));
     }
 
     @Override

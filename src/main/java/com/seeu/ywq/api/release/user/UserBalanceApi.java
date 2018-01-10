@@ -4,6 +4,7 @@ import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.Balance;
+import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.service.BalanceService;
@@ -22,11 +23,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "用户账户", description = "充值/提现/交易记录/账户信息")
+@Api(tags = "用户账户", description = "充值/提现/金币兑换/交易记录/账户信息")
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserBalanceApi {
@@ -76,6 +78,44 @@ public class UserBalanceApi {
         return ResponseEntity.ok(map);
     }
 
+    @ApiOperation(value = "获取可以兑换的金币数", notes = "传入钻石额度，获取可以得到的金币数量")
+    @GetMapping("/balance/exchange")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getExchange(@AuthenticationPrincipal UserLogin authUser,
+                                      Long diamonds) {
+        try {
+            return ResponseEntity.ok(orderService.queryExchange(authUser.getUid(), ExchangeTable.TYPE.DIAMOND2COIN, diamonds));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为整数"));
+        }
+    }
+
+
+    @ApiOperation(value = "兑换", notes = "将钻石兑换为金币")
+    @PostMapping("/balance/exchange")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity exchange(@AuthenticationPrincipal UserLogin authUser,
+                                   Long diamonds) {
+        try {
+            return ResponseEntity.ok(orderService.createTransferDiamondsToCoins(authUser.getUid(),diamonds));
+        } catch (BalanceNotEnoughException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message("余额不足"));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("操作不被允许，兑换的额度不能为 0 "));
+        }
+    }
+
+    @ApiOperation(value = "获取可以充值的钻石数", notes = "传入RMB额度，获取可以得到的钻石数量")
+    @GetMapping("/balance/recharge")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getExcharge(@AuthenticationPrincipal UserLogin authUser,
+                                      BigDecimal price) {
+        try {
+            return ResponseEntity.ok(orderService.queryExchange(authUser.getUid(), ExchangeTable.TYPE.RMB2DIAMOND, price));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为整数"));
+        }
+    }
 
     @ApiOperation(value = "充值", notes = "给自己充值一定额度的钻石，服务器创建订单，客户端将订单信息发送到支付宝/微信进行支付，完成后服务器会自动校验支付情况。重新刷新余额即可查看结果")
     @PostMapping("/balance/recharge")

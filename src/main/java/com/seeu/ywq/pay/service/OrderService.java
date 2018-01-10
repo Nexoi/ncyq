@@ -5,11 +5,14 @@ import com.seeu.ywq.exception.*;
 import com.seeu.ywq.gift.model.GiftOrder;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.math.BigDecimal;
 
 /**
  * 各种订单的创建/查询，创建之后会自动进行后续处理（链接支付宝等）
@@ -44,4 +47,8 @@ public interface OrderService {
     OrderLog createBindShare(Long bindUid, Long diamonds) throws ActionNotSupportException;
 
     Page<OrderLog> queryAll(Long uid, Pageable pageable);
+
+    ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException;
+
+    ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, Long fromPrice) throws ActionNotSupportException;
 }

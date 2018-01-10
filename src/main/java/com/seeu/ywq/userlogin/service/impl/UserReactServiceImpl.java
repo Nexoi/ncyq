@@ -1,7 +1,6 @@
 package com.seeu.ywq.userlogin.service.impl;
 
 import com.seeu.ywq.page.dvo.SimpleUserVO;
-import com.seeu.ywq.page.service.AppVOService;
 import com.seeu.ywq.page.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.model.UserLike;
@@ -11,7 +10,7 @@ import com.seeu.ywq.user.repository.UserInfoRepository;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
-import com.seeu.ywq.userlogin.model.UserVIP;
+import com.seeu.ywq.uservip.model.UserVIP;
 import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
