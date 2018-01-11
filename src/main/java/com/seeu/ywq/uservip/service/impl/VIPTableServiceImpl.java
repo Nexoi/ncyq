@@ -28,6 +28,7 @@ public class VIPTableServiceImpl implements VIPTableService {
 
     @Override
     public VIPTable findByDay(Long day) throws ResourceNotFoundException {
+        if (day == null) throw new ResourceNotFoundException("Can not found VIP配置资源[day:" + day + "]");
         VIPTable table = repository.findOne(day);
         if (table == null) throw new ResourceNotFoundException("Can not found VIP配置资源[day:" + day + "]");
         table.setPrice(table.getPrice().setScale(2, BigDecimal.ROUND_UP));

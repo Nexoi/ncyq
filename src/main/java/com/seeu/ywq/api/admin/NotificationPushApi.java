@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "发布系统通知", description = "管理员为所有用户发布通知")
 @RestController
 @RequestMapping("/api/admin/v1/notification")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class NotificationPushApi {
 
     @Autowired

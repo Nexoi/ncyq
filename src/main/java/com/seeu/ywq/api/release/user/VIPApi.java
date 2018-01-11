@@ -65,7 +65,7 @@ public class VIPApi {
     @PostMapping("/buy-usediamond")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity buyUseDiamond(@AuthenticationPrincipal UserLogin authUser,
-                                        Long day) {
+                                        @RequestParam(required = true) Long day) {
         try {
             // 传回支付订单信息，完成支付
             // TODO...

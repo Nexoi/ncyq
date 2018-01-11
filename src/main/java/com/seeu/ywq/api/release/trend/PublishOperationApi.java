@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -52,7 +53,9 @@ public class PublishOperationApi {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该动态，无法点赞").build());
         } catch (ActionNotSupportException e) {
-            return ResponseEntity.status(400).body(R.code(400).message("您已经点过赞了").build());
+            return ResponseEntity.status(400).body(R.code(4000).message("不能点赞自己的动态").build());
+        } catch (ResourceAlreadyExistedException e) {
+            return ResponseEntity.status(400).body(R.code(4001).message("您已经点过赞了").build());
         }
     }
 

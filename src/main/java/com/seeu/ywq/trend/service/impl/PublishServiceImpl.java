@@ -3,6 +3,7 @@ package com.seeu.ywq.trend.service.impl;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.resource.model.*;
 import com.seeu.ywq.trend.dvo.PublishVO;
@@ -193,13 +194,15 @@ public class PublishServiceImpl implements PublishService {
     }
 
     @Override
-    public void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException {
+    public void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException, ResourceAlreadyExistedException {
         Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null)
             throw new ResourceNotFoundException("Can not found Resource[Publish ID: " + publishId + " ]");
+        if (publish.getUid() == user.getUid())
+            throw new ActionNotSupportException("点赞操作不可用，不可点赞自己的动态 Resource[Publish ID: " + publishId + " ]");
         // 是否点赞过
         if (publishLikedUserRepository.exists(new PublishLikedUserPKeys(publishId, user.getUid())))
-            throw new ActionNotSupportException("点赞操作不可用，已经点赞过 Resource[Publish ID: " + publishId + " ]");
+            throw new ResourceAlreadyExistedException("点赞操作不可用，已经点赞过 Resource[Publish ID: " + publishId + " ]");
         PublishLikedUser like = new PublishLikedUser();
         like.setUid(user.getUid());
         like.setHeadIconUrl(user.getHeadIconUrl());

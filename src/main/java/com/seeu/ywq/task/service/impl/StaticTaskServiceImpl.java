@@ -89,10 +89,10 @@ public class StaticTaskServiceImpl implements StaticTaskService {
         StaticTask task = repository.findByUidAndCategory(uid, category);
         if (task == null) {
             task = new StaticTask();
-            task.setUid(uid);
+//            task.setUid(uid);
+//            task.setUpdateTime(new Date());
             task.setCurrentProgress(0);
             task.setTotalProgress(category.getTotalProgress());
-            task.setUpdateTime(new Date());
         }
         if (task.getCurrentProgress() >= task.getTotalProgress()) // 表示不可以再领取了
             throw new NewHerePackageReceiveEmptyException(uid);

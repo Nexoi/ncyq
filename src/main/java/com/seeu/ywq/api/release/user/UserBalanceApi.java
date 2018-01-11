@@ -3,12 +3,10 @@ package com.seeu.ywq.api.release.user;
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
-import com.seeu.ywq.pay.model.Balance;
-import com.seeu.ywq.pay.model.ExchangeTable;
-import com.seeu.ywq.pay.model.OrderLog;
-import com.seeu.ywq.pay.model.OrderRecharge;
+import com.seeu.ywq.pay.model.*;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.pay.service.OrderService;
+import com.seeu.ywq.pay.service.RechargeTableService;
 import com.seeu.ywq.userlogin.exception.NoSuchUserException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.utils.DateFormatterService;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Api(tags = "用户账户", description = "充值/提现/金币兑换/交易记录/账户信息")
@@ -36,6 +35,8 @@ public class UserBalanceApi {
     private BalanceService balanceService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private RechargeTableService rechargeTableService;
 
     @ApiOperation(value = "查看交易记录", notes = "查看自己的余额系统收支情况")
     @GetMapping("/transactions")
@@ -121,7 +122,7 @@ public class UserBalanceApi {
     @GetMapping("/balance/recharge/reverse")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getRechargeReverse(@AuthenticationPrincipal UserLogin authUser,
-                                       Long diamonds) {
+                                             Long diamonds) {
         try {
             return ResponseEntity.ok(orderService.queryExchangeReverse(authUser.getUid(), diamonds));
         } catch (ActionNotSupportException e) {
@@ -129,14 +130,25 @@ public class UserBalanceApi {
         }
     }
 
+    @ApiOperation(value = "获取充值列表")
+    @GetMapping("/balance/recharge/list")
+    public ResponseEntity listRechargeTable() {
+        List list = rechargeTableService.findAll();
+        if (list == null || list.size() == 0)
+            return ResponseEntity.status(204).body(R.code(204).message("资源为空，找不到充值列表信息"));
+        return ResponseEntity.ok(list);
+    }
 
     @ApiOperation(value = "充值", notes = "给自己充值一定额度的钻石，服务器创建订单，客户端将订单信息发送到支付宝/微信进行支付，完成后服务器会自动校验支付情况。重新刷新余额即可查看结果")
     @PostMapping("/balance/recharge")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity recharge(@AuthenticationPrincipal UserLogin authUser,
-                                   Long diamonds) {
+                                   @RequestParam(required = true) Double price) {
         try {
-            balanceService.update(dateFormatterService.getyyyyMMddHHmmssS().format(new Date()), authUser.getUid(), OrderLog.EVENT.RECHARGE, diamonds);
+            if (null == rechargeTableService.findOne(BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_UP)))
+                return ResponseEntity.badRequest().body(R.code(400).message("无法充值该额度"));
+            // 当然不能如下这样操作：
+            balanceService.update(dateFormatterService.getyyyyMMddHHmmssS().format(new Date()), authUser.getUid(), OrderLog.EVENT.RECHARGE, 1000L);
             return ResponseEntity.ok(R.code(200).message("充值成功！"));
         } catch (BalanceNotEnoughException e) {
             return null; // 不可能发生的事情
@@ -172,7 +184,7 @@ public class UserBalanceApi {
     @GetMapping("/balance/withdraw")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity getWithdraw(@AuthenticationPrincipal UserLogin authUser,
-                                             Long diamonds) {
+                                      Long diamonds) {
         try {
             return ResponseEntity.ok(orderService.queryExchangeReverse(authUser.getUid(), diamonds));
         } catch (ActionNotSupportException e) {

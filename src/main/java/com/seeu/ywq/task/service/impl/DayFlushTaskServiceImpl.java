@@ -1,7 +1,13 @@
 package com.seeu.ywq.task.service.impl;
 
+import com.seeu.ywq.event_listener.publish_react.ShareEvent;
+import com.seeu.ywq.event_listener.task.SignInTodayEvent;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.NewHerePackageReceiveEmptyException;
+import com.seeu.ywq.exception.SignInTodayAlreadyFinishedException;
 import com.seeu.ywq.globalconfig.service.TaskConfigurerService;
 import com.seeu.ywq.task.model.DayFlushTask;
+import com.seeu.ywq.task.model.StaticTask;
 import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.repository.DayFlushTaskRepository;
 import com.seeu.ywq.task.service.DayFlushTaskService;
@@ -9,6 +15,8 @@ import com.seeu.ywq.task.service.TaskCategoryService;
 import com.seeu.ywq.utils.DateFormatterService;
 import javafx.concurrent.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +32,8 @@ public class DayFlushTaskServiceImpl implements DayFlushTaskService {
     private DateFormatterService dateFormatterService;
     @Autowired
     private TaskCategoryService taskCategoryService;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Async
     @Override
@@ -89,5 +99,31 @@ public class DayFlushTaskServiceImpl implements DayFlushTaskService {
             flushTasks.add(task);
         }
         return flushTasks;
+    }
+
+    @Override
+    public DayFlushTask signToday(Long uid) throws SignInTodayAlreadyFinishedException {
+        Long today = dateFormatterService.getyyyyMMdd(new Date());
+        TaskCategory category = taskCategoryService.findOne(TaskCategory.CATEGORY.signin);
+        DayFlushTask task = repository.findByDayAndUidAndCategory(today, uid, category);
+        if (task == null) {
+            task = new DayFlushTask();
+//            task.setUid(uid);
+//            task.setDay(today);
+//            task.setUpdateTime(new Date());
+            task.setCurrentProgress(0);
+            task.setTotalProgress(category.getTotalProgress());
+        }
+        if (task.getCurrentProgress() >= task.getTotalProgress()) // 表示不可以再领取了
+            throw new SignInTodayAlreadyFinishedException(uid);
+        DayFlushTask dayFlushTask = update(uid, TaskCategory.CATEGORY.signin);
+        if (dayFlushTask != null) {
+            // 消除不必要显示的数据
+            dayFlushTask.setId(null);
+            dayFlushTask.setUid(null);
+        }
+        // 通知
+        applicationContext.publishEvent(new SignInTodayEvent(this, uid));
+        return dayFlushTask;
     }
 }

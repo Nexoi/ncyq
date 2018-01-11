@@ -20,7 +20,7 @@ import java.util.*;
 @Api(tags = "配置文件", description = "每日任务/账户交易系统")
 @RestController
 @RequestMapping("/api/admin/v1/configurer")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class ConfigurerApi {
 
     @Autowired

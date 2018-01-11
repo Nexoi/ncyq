@@ -23,7 +23,7 @@ import java.util.List;
 @Api(tags = "摄影集（下载作品）", description = "管理员根据用户 uid 上传摄影作品")
 @RestController("adminPhotographyApi")
 @RequestMapping("/api/admin/v1/photographs")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class PhotographyApi {
     @Autowired
     private PhotographyService photographyService;

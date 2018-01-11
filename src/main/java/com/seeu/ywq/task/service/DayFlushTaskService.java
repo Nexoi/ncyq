@@ -1,5 +1,7 @@
 package com.seeu.ywq.task.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.SignInTodayAlreadyFinishedException;
 import com.seeu.ywq.task.model.DayFlushTask;
 import com.seeu.ywq.task.model.TaskCategory;
 import org.springframework.scheduling.annotation.Async;
@@ -20,5 +22,7 @@ public interface DayFlushTaskService {
      * @return
      */
     List<DayFlushTask> list(Long uid, Long day);
+
+    DayFlushTask signToday(Long uid)throws SignInTodayAlreadyFinishedException;
 
 }

@@ -1,9 +1,12 @@
 package com.seeu.ywq.api.release.task;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.exception.NewHerePackageReceiveEmptyException;
+import com.seeu.ywq.exception.SignInTodayAlreadyFinishedException;
 import com.seeu.ywq.task.model.DayFlushTask;
 import com.seeu.ywq.task.model.StaticTask;
+import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.service.DayFlushTaskService;
 import com.seeu.ywq.task.service.StaticTaskService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -18,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
-@Api(tags = {"任务"}, description = "查看每日任务/新人礼包", position = 10)
+@Api(tags = {"任务"}, description = "查看每日任务/新人礼包/每日签到", position = 10)
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskApi {
@@ -65,4 +68,14 @@ public class TaskApi {
         }
     }
 
+    @ApiOperation(value = "每日签到")
+    @PostMapping("/sign")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity signinToday(@AuthenticationPrincipal UserLogin authUser) {
+        try {
+            return ResponseEntity.ok(dayFlushTaskService.signToday(authUser.getUid()));
+        } catch (SignInTodayAlreadyFinishedException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("您今天已经签过到了"));
+        }
+    }
 }

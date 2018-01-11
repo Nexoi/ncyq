@@ -1,6 +1,7 @@
 package com.seeu.ywq.trend.service;
 
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.model.Publish;
@@ -47,7 +48,7 @@ public interface PublishService {
 
     Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable);
 
-    void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException;
+    void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException,ResourceAlreadyExistedException;
 
     void dislikeIt(Long publishId, Long uid) throws ResourceNotFoundException, ActionNotSupportException;
 
