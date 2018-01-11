@@ -198,7 +198,14 @@ public class BalanceServiceImpl implements BalanceService {
                 balance.setBalance(balance.getBalance() + diamondsDelta); // 收获
                 break;
             case DIAMOND_TO_COIN:
-
+                // do nothing @see function #eventUpdate(Balance balance, OrderLog.EVENT event, Long diamondsDelta, Long coinDelta) throws BalanceNotEnoughException
+                break;
+            case BUY_VIP:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
+                diamonds = balance.getVipBuyExpenseDiamonds();
+                if (diamonds == null) diamonds = 0L;
+                balance.setVipBuyExpenseDiamonds(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // 购买VIP支出
             default:
                 break;
         }

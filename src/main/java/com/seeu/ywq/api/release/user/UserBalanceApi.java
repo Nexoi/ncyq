@@ -97,7 +97,7 @@ public class UserBalanceApi {
     public ResponseEntity exchange(@AuthenticationPrincipal UserLogin authUser,
                                    Long diamonds) {
         try {
-            return ResponseEntity.ok(orderService.createTransferDiamondsToCoins(authUser.getUid(),diamonds));
+            return ResponseEntity.ok(orderService.createTransferDiamondsToCoins(authUser.getUid(), diamonds));
         } catch (BalanceNotEnoughException e) {
             return ResponseEntity.badRequest().body(R.code(4000).message("余额不足"));
         } catch (ActionNotSupportException e) {
@@ -108,7 +108,7 @@ public class UserBalanceApi {
     @ApiOperation(value = "获取可以充值的钻石数", notes = "传入RMB额度，获取可以得到的钻石数量")
     @GetMapping("/balance/recharge")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity getExcharge(@AuthenticationPrincipal UserLogin authUser,
+    public ResponseEntity getRecharge(@AuthenticationPrincipal UserLogin authUser,
                                       BigDecimal price) {
         try {
             return ResponseEntity.ok(orderService.queryExchange(authUser.getUid(), ExchangeTable.TYPE.RMB2DIAMOND, price));
@@ -116,6 +116,19 @@ public class UserBalanceApi {
             return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为整数"));
         }
     }
+
+    @ApiOperation(value = "获取充值需要花费的RMB", notes = "传入钻石数，获取需要花费的RMB")
+    @GetMapping("/balance/recharge/reverse")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getRechargeReverse(@AuthenticationPrincipal UserLogin authUser,
+                                       Long diamonds) {
+        try {
+            return ResponseEntity.ok(orderService.queryExchangeReverse(authUser.getUid(), diamonds));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为正整数"));
+        }
+    }
+
 
     @ApiOperation(value = "充值", notes = "给自己充值一定额度的钻石，服务器创建订单，客户端将订单信息发送到支付宝/微信进行支付，完成后服务器会自动校验支付情况。重新刷新余额即可查看结果")
     @PostMapping("/balance/recharge")
@@ -154,4 +167,16 @@ public class UserBalanceApi {
 
     @Autowired
     DateFormatterService dateFormatterService;
+
+    @ApiOperation(value = "获取可以提现的RMB数", notes = "传入钻石数，获取提现可得的RMB数")
+    @GetMapping("/balance/withdraw")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity getWithdraw(@AuthenticationPrincipal UserLogin authUser,
+                                             Long diamonds) {
+        try {
+            return ResponseEntity.ok(orderService.queryExchangeReverse(authUser.getUid(), diamonds));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为正整数"));
+        }
+    }
 }

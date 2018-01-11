@@ -6,12 +6,6 @@ import java.util.Date;
 @Entity
 @Table(name = "ywq_task_day")
 public class DayFlushTask {
-    public enum TYPE {
-        signin,
-        share,
-        comment,
-        like
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,8 +13,12 @@ public class DayFlushTask {
     @Column(length = 8)
     private Long day;// 20180101
     private Long uid;
-    @Enumerated
-    private TYPE type;
+    @JoinColumn(
+            name = "category_id",
+            foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT)
+    )//注意这里的@ForeignKey是javax.persistence包中类，不要使用org.hibernate的
+    @ManyToOne
+    private TaskCategory category;
     private Integer currentProgress;
     private Integer totalProgress;
     private Date updateTime;
@@ -49,12 +47,12 @@ public class DayFlushTask {
         this.uid = uid;
     }
 
-    public TYPE getType() {
-        return type;
+    public TaskCategory getCategory() {
+        return category;
     }
 
-    public void setType(TYPE type) {
-        this.type = type;
+    public void setCategory(TaskCategory category) {
+        this.category = category;
     }
 
     public Integer getCurrentProgress() {

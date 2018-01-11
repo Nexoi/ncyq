@@ -177,6 +177,15 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         return price.multiply(BigDecimal.valueOf(ratio)).longValue(); // 降一法
     }
 
+    @Override
+    public BigDecimal getRMBRatioToDiamonds(Long diamonds) {
+        if (diamonds == null || diamonds <= 0)
+            return BigDecimal.ZERO;
+        Integer ratio = getRMBToDiamondsRatio();
+        if (ratio == null) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(diamonds.doubleValue() / ratio.doubleValue()).setScale(2, BigDecimal.ROUND_UP); // 加一法
+    }
+
 
     private void setValue(String key, String value) {
         GlobalConfigurer configurer = repository.findOne(key);

@@ -2,9 +2,12 @@ package com.seeu.ywq.task.service.impl;
 
 import com.seeu.ywq.exception.NewHerePackageReceiveEmptyException;
 import com.seeu.ywq.globalconfig.service.TaskConfigurerService;
+import com.seeu.ywq.task.model.DayFlushTask;
 import com.seeu.ywq.task.model.StaticTask;
+import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.repository.StaticTaskRepository;
 import com.seeu.ywq.task.service.StaticTaskService;
+import com.seeu.ywq.task.service.TaskCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,29 +19,25 @@ public class StaticTaskServiceImpl implements StaticTaskService {
     @Resource
     private StaticTaskRepository repository;
     @Autowired
-    private TaskConfigurerService taskConfigurerService;
+    private TaskCategoryService taskCategoryService;
 
     @Override
-    public StaticTask update(Long uid, StaticTask.TYPE type) {
-        if (type == null || type != StaticTask.TYPE.xinrenlibao)
+    public StaticTask update(Long uid, TaskCategory.CATEGORY categoryId) {
+        TaskCategory category = taskCategoryService.findOne(categoryId);
+        if (category == null)//
             return null;
-        Integer totalProgress = 0;
-        switch (type) {
-            case xinrenlibao:
-                totalProgress = taskConfigurerService.getTaskNewHerePackageNumber();
-                break;
-        }
-        StaticTask task = repository.findByUidAndType(uid, type);
+        StaticTask task = repository.findByUidAndCategory(uid, category);
         if (task == null) {
             task = new StaticTask();
-            task.setType(type);
+            task.setCategory(category);
             task.setUid(uid);
             task.setUpdateTime(new Date());
             task.setCurrentProgress(0);
-            task.setTotalProgress(totalProgress); // 说明最大值设定对当天状态不修改，管理员修改配置后需要在第二天生效
+            task.setTotalProgress(category.getTotalProgress());
         }
         if (null == task.getCurrentProgress()) task.setCurrentProgress(0);
         task.setCurrentProgress(task.getCurrentProgress() + 1);
+        task.setUpdateTime(new Date());
         return repository.save(task);
     }
 
@@ -46,43 +45,37 @@ public class StaticTaskServiceImpl implements StaticTaskService {
     public List<StaticTask> list(Long uid) {
         List<StaticTask> list = repository.findAllByUid(uid);
         if (list == null) list = new ArrayList<>();
-        Map<StaticTask.TYPE, StaticTask> map = new HashMap();
+        // hash
+        Map<TaskCategory.CATEGORY, StaticTask> map = new HashMap();
         for (StaticTask task : list) {
-            if (task == null) continue;
-            map.put(task.getType(), task);
+            map.put(task.getCategory().getCategory(), task);
         }
-        // check 4 task
+        // 匹配
+        List<TaskCategory> taskCategories = taskCategoryService.findByType(TaskCategory.TYPE.LONGTIME);
         List<StaticTask> flushTasks = new ArrayList<>();
-        flushTasks.add(formStaticTask(StaticTask.TYPE.xinrenlibao, map));
-        return flushTasks;
-    }
-
-
-    private StaticTask formStaticTask(StaticTask.TYPE type, Map<StaticTask.TYPE, StaticTask> map) {
-        StaticTask task = map.get(type);
-        if (task != null) {
-            task.setUid(null);
+        for (TaskCategory category : taskCategories) {
+            StaticTask task = map.get(category.getCategory());
+            if (task == null) {
+                task = new StaticTask();
+                task.setCategory(category);
+                task.setCurrentProgress(0);
+                task.setUpdateTime(new Date());
+            }
+            task.setTotalProgress(category.getTotalProgress());
+            // 消去字段
+            category.setTotalProgress(null);
             task.setId(null);
+            task.setUid(null);
+            // 最大值设定
             Integer current = task.getCurrentProgress();
             Integer total = task.getTotalProgress();
             if (current > total) // 不能超过最大值
                 task.setCurrentProgress(total);
-            return task;
+            flushTasks.add(task);
         }
-        Date date = new Date();
-        Integer totalProgress = 0;
-        switch (type) {
-            case xinrenlibao:
-                totalProgress = taskConfigurerService.getTaskClickLikeProgress();
-                break;
-        }
-        task = new StaticTask();
-        task.setType(type);
-        task.setUpdateTime(date);
-        task.setTotalProgress(totalProgress);
-        task.setCurrentProgress(0);
-        return task;
+        return flushTasks;
     }
+
 
     /**
      * 领取新人礼包
@@ -92,18 +85,24 @@ public class StaticTaskServiceImpl implements StaticTaskService {
      */
     @Override
     public StaticTask receiveNewHerePackage(Long uid) throws NewHerePackageReceiveEmptyException {
-        StaticTask task = repository.findByUidAndType(uid, StaticTask.TYPE.xinrenlibao);
+        TaskCategory category = taskCategoryService.findOne(TaskCategory.CATEGORY.newpackage);
+        StaticTask task = repository.findByUidAndCategory(uid, category);
         if (task == null) {
             task = new StaticTask();
             task.setUid(uid);
             task.setCurrentProgress(0);
-            task.setTotalProgress(taskConfigurerService.getTaskNewHerePackageNumber());
-            task.setType(StaticTask.TYPE.xinrenlibao);
+            task.setTotalProgress(category.getTotalProgress());
             task.setUpdateTime(new Date());
         }
         if (task.getCurrentProgress() >= task.getTotalProgress()) // 表示不可以再领取了
             throw new NewHerePackageReceiveEmptyException(uid);
         //TODO many many things here (receive package to uid account)
-        return update(uid, StaticTask.TYPE.xinrenlibao);
+        StaticTask staticTask = update(uid, TaskCategory.CATEGORY.newpackage);
+        if (staticTask != null) {
+            // 消除不必要显示的数据
+            staticTask.setId(null);
+            staticTask.setUid(null);
+        }
+        return staticTask;
     }
 }

@@ -13,12 +13,17 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "ywq_user_vip_table")
 public class VIPTable {
+
     @Id
+    @NotNull
     private Long day;
+    @NotNull
     private String title;
     @NotNull
     @Column(precision = 12, scale = 2)
     private BigDecimal price;
+    @NotNull
+    private Long diamonds;
 
     public Long getDay() {
         return day;
@@ -42,5 +47,13 @@ public class VIPTable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Long getDiamonds() {
+        return diamonds;
+    }
+
+    public void setDiamonds(Long diamonds) {
+        this.diamonds = diamonds;
     }
 }

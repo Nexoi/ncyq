@@ -2,9 +2,12 @@ package com.seeu.ywq.task.service.impl;
 
 import com.seeu.ywq.globalconfig.service.TaskConfigurerService;
 import com.seeu.ywq.task.model.DayFlushTask;
+import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.repository.DayFlushTaskRepository;
 import com.seeu.ywq.task.service.DayFlushTaskService;
+import com.seeu.ywq.task.service.TaskCategoryService;
 import com.seeu.ywq.utils.DateFormatterService;
+import javafx.concurrent.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,40 +23,29 @@ public class DayFlushTaskServiceImpl implements DayFlushTaskService {
     @Autowired
     private DateFormatterService dateFormatterService;
     @Autowired
-    private TaskConfigurerService taskConfigurerService;
+    private TaskCategoryService taskCategoryService;
 
     @Async
     @Override
-    public DayFlushTask update(Long uid, DayFlushTask.TYPE type) {
+    public DayFlushTask update(Long uid, TaskCategory.CATEGORY categoryId) {
         //
         Long today = dateFormatterService.getyyyyMMdd(new Date());
-        Integer totalProgress = 0;
-        switch (type) {
-            case like:
-                totalProgress = taskConfigurerService.getTaskClickLikeProgress();
-                break;
-            case share:
-                totalProgress = taskConfigurerService.getTaskShareProgress();
-                break;
-            case signin:
-                totalProgress = taskConfigurerService.getTaskSignInProgress();
-                break;
-            case comment:
-                totalProgress = taskConfigurerService.getTaskCommentProgress();
-                break;
-        }
-        DayFlushTask task = repository.findByDayAndUidAndType(today, uid, type);
+        TaskCategory category = taskCategoryService.findOne(categoryId);
+        if (category == null)//
+            return null;
+        DayFlushTask task = repository.findByDayAndUidAndCategory(today, uid, category);
         if (task == null) {
             task = new DayFlushTask();
-            task.setType(type);
+            task.setCategory(category);
             task.setUid(uid);
             task.setUpdateTime(new Date());
             task.setDay(today);
             task.setCurrentProgress(0);
-            task.setTotalProgress(totalProgress);
+            task.setTotalProgress(category.getTotalProgress());
         }
         if (null == task.getCurrentProgress()) task.setCurrentProgress(0);
         task.setCurrentProgress(task.getCurrentProgress() + 1);
+        task.setUpdateTime(new Date());
         return repository.save(task);
     }
 
@@ -67,53 +59,35 @@ public class DayFlushTaskServiceImpl implements DayFlushTaskService {
     public List<DayFlushTask> list(Long uid, Long day) {
         List<DayFlushTask> list = repository.findAllByUidAndDay(uid, day);
         if (list == null) list = new ArrayList<>();
-        Map<DayFlushTask.TYPE, DayFlushTask> map = new HashMap();
+        // hash
+        Map<TaskCategory.CATEGORY, DayFlushTask> map = new HashMap();
         for (DayFlushTask task : list) {
-            if (task == null) continue;
-            map.put(task.getType(), task);
+            map.put(task.getCategory().getCategory(), task);
         }
-        // check 4 task and flush pojo data
+        // 匹配
+        List<TaskCategory> taskCategories = taskCategoryService.findByType(TaskCategory.TYPE.DAYFLUSH);
         List<DayFlushTask> flushTasks = new ArrayList<>();
-        flushTasks.add(formDayFlushTask(DayFlushTask.TYPE.like, map));
-        flushTasks.add(formDayFlushTask(DayFlushTask.TYPE.comment, map));
-        flushTasks.add(formDayFlushTask(DayFlushTask.TYPE.share, map));
-        flushTasks.add(formDayFlushTask(DayFlushTask.TYPE.signin, map));
-        return flushTasks;
-    }
-
-    private DayFlushTask formDayFlushTask(DayFlushTask.TYPE type, Map<DayFlushTask.TYPE, DayFlushTask> map) {
-        DayFlushTask task = map.get(type);
-        if (task != null) {
-            task.setUid(null);
+        for (TaskCategory category : taskCategories) {
+            DayFlushTask task = map.get(category.getCategory());
+            if (task == null) {
+                task = new DayFlushTask();
+                task.setCategory(category);
+                task.setDay(day);
+                task.setCurrentProgress(0);
+                task.setUpdateTime(new Date());
+            }
+            task.setTotalProgress(category.getTotalProgress());
+            // 消去字段
+            category.setTotalProgress(null);
             task.setId(null);
+            task.setUid(null);
+            // 最大值设定
             Integer current = task.getCurrentProgress();
             Integer total = task.getTotalProgress();
             if (current > total) // 不能超过最大值
                 task.setCurrentProgress(total);
-            return task;
+            flushTasks.add(task);
         }
-        Date date = new Date();
-        Integer totalProgress = 0;
-        switch (type) {
-            case like:
-                totalProgress = taskConfigurerService.getTaskClickLikeProgress();
-                break;
-            case share:
-                totalProgress = taskConfigurerService.getTaskShareProgress();
-                break;
-            case signin:
-                totalProgress = taskConfigurerService.getTaskSignInProgress();
-                break;
-            case comment:
-                totalProgress = taskConfigurerService.getTaskCommentProgress();
-                break;
-        }
-        task = new DayFlushTask();
-        task.setType(type);
-        task.setUpdateTime(date);
-        task.setDay(dateFormatterService.getyyyyMMdd(date));
-        task.setTotalProgress(totalProgress);
-        task.setCurrentProgress(0);
-        return task;
+        return flushTasks;
     }
 }

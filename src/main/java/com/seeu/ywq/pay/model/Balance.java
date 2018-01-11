@@ -1,6 +1,7 @@
 package com.seeu.ywq.pay.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -42,6 +43,10 @@ public class Balance {
     private Long sharedExpense;
 
     private Long sharedReceive; // 分红收入（用户一对一绑定，10 % 提成）
+
+    private BigDecimal vipBuyExpenseRMB; // 购买VIP花费人民币
+
+    private Long vipBuyExpenseDiamonds;  // 购买VIP花费钻石
 
     private Date updateTime = new Date();
 
@@ -171,6 +176,22 @@ public class Balance {
 
     public void setPhoneReceive(Long phoneReceive) {
         this.phoneReceive = phoneReceive;
+    }
+
+    public BigDecimal getVipBuyExpenseRMB() {
+        return vipBuyExpenseRMB;
+    }
+
+    public void setVipBuyExpenseRMB(BigDecimal vipBuyExpenseRMB) {
+        this.vipBuyExpenseRMB = vipBuyExpenseRMB;
+    }
+
+    public Long getVipBuyExpenseDiamonds() {
+        return vipBuyExpenseDiamonds;
+    }
+
+    public void setVipBuyExpenseDiamonds(Long vipBuyExpenseDiamonds) {
+        this.vipBuyExpenseDiamonds = vipBuyExpenseDiamonds;
     }
 
     public Long getSharedExpense() {

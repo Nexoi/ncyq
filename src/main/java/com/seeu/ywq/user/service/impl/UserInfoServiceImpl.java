@@ -1,6 +1,9 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ActionParameterException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.UserIdentificationVO;
 import com.seeu.ywq.user.dvo.UserVO;
@@ -136,15 +139,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public STATUS setGender(Long uid, UserLogin.GENDER gender) {
+    public UserLogin setGender(Long uid, UserLogin.GENDER gender) throws ActionParameterException, ActionNotSupportException, ResourceNotFoundException {
+        if (gender == null)
+            throw new ActionParameterException("gender");
         UserLogin ul = userReactService.findOne(uid);
         if (ul == null)
-            return STATUS.failure;
+            throw new ResourceNotFoundException("Can not found Resource [UID:" + uid + "]");
         if (ul.getGender() != null)
-            return STATUS.has_set;
+            throw new ActionNotSupportException("性别已经设定了！不可修改");
         ul.setGender(gender);
-        userReactService.save(ul);
-        return STATUS.success;
+        return userReactService.save(ul);
     }
 
     private UserVO transferToVO(User user) {

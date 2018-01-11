@@ -9,4 +9,6 @@ public interface ExchangeTableService {
     List<ExchangeTable> findAllByType(ExchangeTable.TYPE type);
 
     ExchangeTable findByTypeAndFromPrice(ExchangeTable.TYPE type, BigDecimal price);
+
+    ExchangeTable findByTypeAndToDiamonds(ExchangeTable.TYPE type, Long diamonds);
 }

@@ -26,4 +26,10 @@ public class ExchangeTableServiceImpl implements ExchangeTableService {
         if (type == null || price == null) return null;
         return repository.findByTypeAndFrom(type, price);
     }
+
+    @Override
+    public ExchangeTable findByTypeAndToDiamonds(ExchangeTable.TYPE type, Long diamonds) {
+        if (type == null || diamonds == null) return null;
+        return repository.findByTypeAndTo(type, BigDecimal.valueOf(diamonds));
+    }
 }

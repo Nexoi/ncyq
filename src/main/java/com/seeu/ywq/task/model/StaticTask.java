@@ -6,15 +6,16 @@ import java.util.Date;
 @Entity
 @Table(name = "ywq_task_static")
 public class StaticTask {
-    public enum TYPE{
-        xinrenlibao
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long uid;
-    @Enumerated
-    private TYPE type;
+    @JoinColumn(
+            name = "category_id",
+            foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT)
+    )//注意这里的@ForeignKey是javax.persistence包中类，不要使用org.hibernate的
+    @ManyToOne
+    private TaskCategory category;
     private Integer currentProgress;
     private Integer totalProgress;
     private Date updateTime;
@@ -33,14 +34,6 @@ public class StaticTask {
 
     public void setUid(Long uid) {
         this.uid = uid;
-    }
-
-    public TYPE getType() {
-        return type;
-    }
-
-    public void setType(TYPE type) {
-        this.type = type;
     }
 
     public Integer getCurrentProgress() {
@@ -65,5 +58,13 @@ public class StaticTask {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public TaskCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TaskCategory category) {
+        this.category = category;
     }
 }

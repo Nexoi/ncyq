@@ -1,5 +1,8 @@
 package com.seeu.ywq.user.service;
 
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ActionParameterException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.model.User;
@@ -39,7 +42,7 @@ public interface UserInfoService {
      */
     String updateHeadIcon(Long uid, MultipartFile image);
 
-    STATUS setGender(Long uid, UserLogin.GENDER gender);
+    UserLogin setGender(Long uid, UserLogin.GENDER gender) throws ActionParameterException, ActionNotSupportException, ResourceNotFoundException;
 
     public enum STATUS {
         has_set,

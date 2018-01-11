@@ -12,4 +12,7 @@ public interface VIPTableService {
     VIPTable findByDay(Long day) throws ResourceNotFoundException;
 
     BigDecimal getPriceByDay(Long day) throws ResourceNotFoundException;
+
+
+    VIPTable save(VIPTable table);
 }

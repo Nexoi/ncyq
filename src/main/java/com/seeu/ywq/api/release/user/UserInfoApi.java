@@ -1,6 +1,9 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ActionParameterException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
 import com.seeu.ywq.user.dvo.UserTagVO;
@@ -21,7 +24,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -228,15 +235,19 @@ public class UserInfoApi {
     @PostMapping("/gender")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity setGender(@AuthenticationPrincipal UserLogin authUser, UserLogin.GENDER gender) {
-        UserInfoService.STATUS status = userInfoService.setGender(authUser.getUid(), gender);
-        switch (status) {
-            case success:
-                return ResponseEntity.ok(R.code(200).message("设置成功！").build());
-            case has_set:
-                return ResponseEntity.badRequest().body(R.code(4000).message("性别设定之后不可修改").build());
-            case failure:
-            default:
-                return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，请稍后再试").build());
+        try {
+            UserLogin userLogin = userInfoService.setGender(authUser.getUid(), gender);
+            // 刷新性别
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication auth = new UsernamePasswordAuthenticationToken(userLogin, authUser.getPassword(), authUser.getAuthorities());
+            context.setAuthentication(auth); //重新设置上下文中存储的用户权限
+            return ResponseEntity.ok(R.code(200).message("设置成功！").build());
+        } catch (ActionParameterException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，请稍后再试").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message("性别设定之后不可修改").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，请稍后再试").build());
         }
     }
 

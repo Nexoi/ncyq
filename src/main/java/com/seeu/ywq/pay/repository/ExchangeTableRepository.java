@@ -11,4 +11,7 @@ public interface ExchangeTableRepository extends JpaRepository<ExchangeTable, Lo
     List<ExchangeTable> findAllByType(@Param("type") ExchangeTable.TYPE type);
 
     ExchangeTable findByTypeAndFrom(@Param("type") ExchangeTable.TYPE type, @Param("from") BigDecimal from);
+
+    ExchangeTable findByTypeAndTo(@Param("type") ExchangeTable.TYPE type, @Param("to") BigDecimal to);
+
 }

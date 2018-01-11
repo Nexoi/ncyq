@@ -27,7 +27,8 @@ public class OrderLog {
         RECEIVE_PHONE(false),
         BIND_SHARED_EXPENSE(true),
         BIND_SHARED_RECEIVE(false),
-        DIAMOND_TO_COIN(true);
+        DIAMOND_TO_COIN(true),
+        BUY_VIP(true);
 
         boolean expense;
 

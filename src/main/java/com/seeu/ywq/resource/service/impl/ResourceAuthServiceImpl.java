@@ -4,6 +4,8 @@ import com.seeu.ywq.resource.model.ResourceAuth;
 import com.seeu.ywq.resource.model.ResourceAuthPKeys;
 import com.seeu.ywq.resource.repository.ResourceAuthRepository;
 import com.seeu.ywq.resource.service.ResourceAuthService;
+import com.seeu.ywq.uservip.service.UserVIPService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,10 +15,13 @@ import java.util.Date;
 public class ResourceAuthServiceImpl implements ResourceAuthService {
     @Resource
     private ResourceAuthRepository resourceAuthRepository;
+    @Autowired
+    private UserVIPService userVIPService;
 
     @Override
     public boolean canVisit(Long uid, Long publishId, Date currentTime) {
-        return 0 != resourceAuthRepository.countAllByUidAndResourceIdAndOutTimeAfter(uid, publishId, currentTime);
+        return userVIPService.isActive(uid) || // 会员全部放行
+                0 != resourceAuthRepository.countAllByUidAndResourceIdAndOutTimeAfter(uid, publishId, currentTime);
     }
 
     @Override

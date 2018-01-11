@@ -37,4 +37,6 @@ public interface GlobalConfigurerService {
 
     // RMB转换为钻石
     Long getDiamondsRatioToRMB(BigDecimal price);
+    // 钻石转换为RMB
+    BigDecimal getRMBRatioToDiamonds(Long diamonds);
 }

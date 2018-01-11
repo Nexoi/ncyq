@@ -23,6 +23,10 @@ import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.userlogin.service.UserReactService;
+import com.seeu.ywq.uservip.model.UserVIP;
+import com.seeu.ywq.uservip.model.VIPTable;
+import com.seeu.ywq.uservip.service.UserVIPService;
+import com.seeu.ywq.uservip.service.VIPTableService;
 import com.seeu.ywq.utils.DateFormatterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +76,11 @@ public class OrderServiceImpl implements OrderService {
     private RewardService rewardService;
     @Autowired
     private GiftOrderService giftOrderService;
+    // VIP
+    @Autowired
+    private VIPTableService vipTableService;
+    @Autowired
+    private UserVIPService userVIPService;
 
     @Override
     public OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds) {
@@ -81,6 +90,48 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderLog createWithdraw(Long uid, Long diamonds, OrderRecharge.PAY_METHOD payMethod, String payId, String payName) {
         return null;
+    }
+
+    @Override
+    public OrderLog createVIPCardUseDiamond(Long uid, Long day) throws ResourceNotFoundException, BalanceNotEnoughException {
+        // 查找资源
+        VIPTable vipTable = vipTableService.findByDay(day);
+        if (vipTable == null)
+            throw new ResourceNotFoundException("Can not found Resource [VIP: " + day + " day ]");
+        // 本地支付
+        Long diamonds = vipTable.getDiamonds();
+        try {
+            OrderLog log = balanceService.update(genOrderID(), uid, OrderLog.EVENT.BUY_VIP, diamonds);
+            // 激活会员
+            Date date = new Date();
+            UserVIP vip = userVIPService.findOne(uid);
+            if (vip == null) {
+                vip.setVipLevel(UserVIP.VIP.none);
+                vip.setTerminationDate(date);
+                vip.setUid(uid);
+            }
+            if (vip.getTerminationDate() == null || vip.getTerminationDate().before(date))// 在今天之前（表示过期了）
+                vip.setTerminationDate(date);
+            vip.setUpdateTime(date);
+            vip.setVipLevel(UserVIP.VIP.vip);
+            long time = vipTable.getDay() * 24 * 60 * 60 * 1000;
+            vip.setTerminationDate(new Date(vip.getTerminationDate().getTime() + time));
+            userVIPService.save(vip);
+            return log;
+        } catch (ActionNotSupportException e) {
+            e.printStackTrace();// 不可能事件
+            return null;
+        }
+    }
+
+    @Override
+    public void createVIPCardUseAliPay(Long uid, Long day) {
+
+    }
+
+    @Override
+    public void createVIPCardUseWeChat(Long uid, Long day) {
+
     }
 
     // 钻石换金币
@@ -225,6 +276,7 @@ public class OrderServiceImpl implements OrderService {
     public ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException {
         if (type == null || fromPrice == null) return null;
         ExchangeTable exchangeTable = exchangeTableService.findByTypeAndFromPrice(type, fromPrice);
+
         if (exchangeTable != null) {
             exchangeTable.setId(null);
             exchangeTable.setUpdateTime(null);
@@ -249,6 +301,25 @@ public class OrderServiceImpl implements OrderService {
             return exchangeTable;
         }
         return null;
+    }
+
+    // 钻石换金币
+    @Override
+    public ExchangeTable queryExchangeReverse(Long uid, Long diamonds) throws ActionNotSupportException {
+        if (diamonds == null || diamonds <= 0)
+            throw new ActionNotSupportException("传入钻石数必须为正整数");
+        ExchangeTable exchangeTable = exchangeTableService.findByTypeAndToDiamonds(ExchangeTable.TYPE.RMB2DIAMOND, diamonds);
+        if (exchangeTable != null) {
+            exchangeTable.setId(null);
+            exchangeTable.setType(null);
+            exchangeTable.setUpdateTime(null);
+            return exchangeTable;
+        }
+        // 如果查找不到配置表，则按比例汇算
+        exchangeTable = new ExchangeTable();
+        exchangeTable.setFrom(globalConfigurerService.getRMBRatioToDiamonds(diamonds));
+        exchangeTable.setTo(BigDecimal.valueOf(diamonds));
+        return exchangeTable;
     }
 
     @Override

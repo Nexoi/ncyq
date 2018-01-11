@@ -9,6 +9,7 @@ import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
+import com.seeu.ywq.uservip.model.VIPTable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,6 +33,13 @@ public interface OrderService {
      */
     OrderLog createWithdraw(Long uid, Long diamonds, OrderRecharge.PAY_METHOD payMethod, String payId, String payName);
 
+    // 购买VIP卡
+    OrderLog createVIPCardUseDiamond(Long uid, Long day) throws ResourceNotFoundException, BalanceNotEnoughException;
+
+    void createVIPCardUseAliPay(Long uid, Long day);
+
+    void createVIPCardUseWeChat(Long uid, Long day);
+
     // 将钻石转化为金币
     OrderLog createTransferDiamondsToCoins(Long uid, Long diamonds) throws BalanceNotEnoughException, ActionNotSupportException;
 
@@ -50,5 +58,7 @@ public interface OrderService {
 
     ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException;
 
-    ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, Long fromPrice) throws ActionNotSupportException;
+    ExchangeTable queryExchangeReverse(Long uid, Long diamonds) throws ActionNotSupportException;
+
+    ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, Long diamonds) throws ActionNotSupportException;
 }
