@@ -17,7 +17,9 @@ public interface FileUploadService {
 
     List<Image> uploadImages(MultipartFile[] files) throws IOException;
 
-    List<Map<Picture.ALBUM_TYPE, Image>> uploadImagesWithDetialMap(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException;
+    Map<Picture.ALBUM_TYPE, Image> uploadImageWithPictureType(MultipartFile file, Picture.ALBUM_TYPE type) throws IOException;
+
+    List<Map<Picture.ALBUM_TYPE, Image>> uploadImagesWithPictureTypes(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException;
 
     List<Image> uploadImagesWithSeqList(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException;
 

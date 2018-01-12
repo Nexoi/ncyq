@@ -13,12 +13,14 @@ import java.math.BigDecimal;
 public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
 
     private static final String KEY_UNLOCK_WECHAT = "unlock.wechat"; // 解锁微信消耗钻石数
+    private static final String KEY_UNLOCK_PHONE = "unlock.phone"; // 解锁手机号码消耗钻石数
     private static final String KEY_BIND_USER_DIAMOND_PERCENT = "binduser.diamond.percent"; // 用户上家分钱比例
     private static final String KEY_USER_DIAMOND_PERCENT = "user.diamond.percent"; // 用户分钱比例
     private static final String KEY_DIAMOND_2_COIN_RATIO = "diamond.2.coin.ratio"; // 钻石/金币汇率（ '1:20' 由 '20' 表示）
     private static final String KEY_RMB_2_DIAMOND_RATIO = "rmb.2.diamond.ratio"; // RMB/金币汇率（ '1:20' 由 '20' 表示）
 
     private Long unlockWeChat;
+    private Long unlockPhone;
     private Float bindUserShareDiamondsPercent;
     private Float userDiamondsPercent;
     private Integer diamondToCoinsRatio;
@@ -57,6 +59,32 @@ public class GlobalConfigurerServiceImpl implements GlobalConfigurerService {
         }
         unlockWeChat = diamonds == null ? 0L : Long.parseLong(diamonds);
         return unlockWeChat;
+    }
+
+    @Override
+    public void setUnlockPhone(Long diamonds) throws ActionNotSupportException {
+        if (diamonds < 0)
+            throw new ActionNotSupportException("设定值不能为负数");
+        setValue(KEY_UNLOCK_PHONE, String.valueOf(diamonds));
+        unlockPhone = diamonds;
+    }
+
+    @Override
+    public Long getUnlockPhone() {
+        if (unlockPhone != null)
+            return unlockPhone;
+        String diamonds = findOne(KEY_UNLOCK_PHONE);
+        if (diamonds == null) {
+            // reset by a default suitable value
+            try {
+                setUnlockPhone(66L);
+                diamonds = findOne(KEY_UNLOCK_PHONE);
+            } catch (ActionNotSupportException e) {
+                e.printStackTrace();
+            }
+        }
+        unlockPhone = diamonds == null ? 0L : Long.parseLong(diamonds);
+        return unlockPhone;
     }
 
     @Override

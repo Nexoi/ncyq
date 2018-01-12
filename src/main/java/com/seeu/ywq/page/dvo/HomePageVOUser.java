@@ -19,6 +19,9 @@ public class HomePageVOUser {
     private String nickname;  //
     private String headIconUrl;
 
+    // 是否喜欢该用户
+    private Boolean likeIt;
+
     ////////
 
     public Long getUid() {
@@ -67,5 +70,13 @@ public class HomePageVOUser {
 
     public void setHeadIconUrl(String headIconUrl) {
         this.headIconUrl = headIconUrl;
+    }
+
+    public Boolean getLikeIt() {
+        return likeIt;
+    }
+
+    public void setLikeIt(Boolean likeIt) {
+        this.likeIt = likeIt;
     }
 }

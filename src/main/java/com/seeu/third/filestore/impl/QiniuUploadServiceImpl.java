@@ -64,7 +64,7 @@ public class QiniuUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public List<Map<Picture.ALBUM_TYPE, Image>> uploadImagesWithDetialMap(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException {
+    public List<Map<Picture.ALBUM_TYPE, Image>> uploadImagesWithPictureTypes(MultipartFile[] files, Picture.ALBUM_TYPE[] types) throws IOException {
         if (files == null || types == null) return new ArrayList<>();
         if (files.length != types.length) return new ArrayList<>();
         List<Map<Picture.ALBUM_TYPE, Image>> list = new ArrayList<>();
@@ -117,6 +117,11 @@ public class QiniuUploadServiceImpl implements FileUploadService {
     public String upload(MultipartFile file) throws IOException {
         ByteArrayInputStream byteInputStream = new ByteArrayInputStream(file.getBytes());
         return upload(byteInputStream);
+    }
+
+    @Override
+    public Map<Picture.ALBUM_TYPE, Image> uploadImageWithPictureType(MultipartFile file, Picture.ALBUM_TYPE type) throws IOException {
+        return uploadWithJudgeHazyJPEGWithMap(ImageIO.read(file.getInputStream()), type);
     }
 
     /**

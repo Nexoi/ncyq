@@ -37,8 +37,11 @@ public interface AppHomePageService {
     // 查询该页信息
     List<HomePageCategory> queryAllByPage(HomePageCategory.PAGE page);
 
+    List<HomePageCategory> queryAllByPage(Long visitorUid, HomePageCategory.PAGE page);
+
     List<HomePageVOUser> getHomePageUsers(Integer category);
 
+    List<HomePageVOUser> getHomePageUsers(Long visitorUid, Integer category);
 //    // 新晋网红
 //    List<HomePageVOUser> getHomePage_NewHotsPerson();
 //
@@ -63,7 +66,13 @@ public interface AppHomePageService {
     // 高清视频
     List<HomePageVOVideo> getVideo_HD();
 
+    // 高清视频
+    List<HomePageVOVideo> getVideo_HD(Long visitorUid);
+
     // VR 视频
     List<HomePageVOVideo> getVideo_VR();
+
+    // VR 视频
+    List<HomePageVOVideo> getVideo_VR(Long visitorUid);
 
 }

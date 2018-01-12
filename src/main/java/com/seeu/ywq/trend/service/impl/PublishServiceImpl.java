@@ -52,6 +52,8 @@ public class PublishServiceImpl implements PublishService {
     private ResourceAuthService resourceAuthService;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private ImageService imageService;
 
     /* 以下两个数据源只在此类使用 **/
     @Resource
@@ -71,12 +73,30 @@ public class PublishServiceImpl implements PublishService {
         return publishRepository.findByIdAndUidAndStatus(publishId, uid, Publish.STATUS.normal);
     }
 
+    @Transactional
     @Override
     public Publish save(Publish publish) {
         if (publish == null) return null;
         // 用户发布数量加一
         if (publish.getUid() != null)
             userInfoService.publishPlusOne(publish.getUid());
+        return publishRepository.save(publish);
+    }
+
+    @Override
+    public Publish saveWithImage(Publish publish) {
+        if (publish == null) return null;
+        List<Picture> list = publish.getPictures();
+        if (list != null && list.size() != 0) {
+            for (Picture picture : list) {
+                Image openImage = picture.getImageOpen();
+                Image closeImage = picture.getImageClose();
+                if (openImage != null)
+                    picture.setImageOpen(imageService.save(openImage));
+                if (closeImage != null)
+                    picture.setImageClose(imageService.save(closeImage));
+            }
+        }
         return publishRepository.save(publish);
     }
 

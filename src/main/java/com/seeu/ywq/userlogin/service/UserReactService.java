@@ -1,5 +1,6 @@
 package com.seeu.ywq.userlogin.service;
 
+import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -24,13 +25,18 @@ public interface UserReactService {
 
     Boolean exists(Long uid);
 
+    /**
+     * 会返回所有信息
+     * @param uid
+     * @return
+     */
     UserLogin findOne(Long uid);
 
     UserLoginVO findOneWithSafety(Long uid);
 
     UserLogin findByPhone(String phone);
 
-    SimpleUserVO findOneAndTransferToVO(Long uid);
+    SimpleUserVO findOneAndTransferToVO(Long visitorUid, Long uid);
 
     List<SimpleUserVO> findAllSimpleUsers(Long uid, Collection<Long> uids);
 

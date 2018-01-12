@@ -8,6 +8,7 @@ import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.page.model.PublishLite;
 import com.seeu.ywq.page.repository.PublishLiteRepository;
 import com.seeu.ywq.resource.service.ResourceAuthService;
+import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.page.service.AppVOService;
 import com.seeu.ywq.page.service.PublishLiteService;
@@ -64,7 +65,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
     @Override
     public Page<PublishLiteVO> findAllByUid(Long visitorUid, Long uid, Pageable pageable) {
-        Page page = publishLiteRepository.findAllByUid(uid, pageable);
+        Page page = publishLiteRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
         List<PublishLite> list = page.getContent();
         // TODO
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片
@@ -138,6 +139,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         for (PublishLite publish : publishs) {
             if (publish == null) continue;
             boolean canVisit = visitorUid == publish.getUid() || resourceAuthService.canVisit(visitorUid, publish.getId());
+            publish.setStatus(null); // 消除不必要的数据
             vos.add(transferToVO(publish, canVisit));
         }
         return vos;

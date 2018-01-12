@@ -21,6 +21,7 @@ import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.service.PublishService;
+import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.uservip.model.UserVIP;
@@ -217,7 +218,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException, GlobalConfigSettingException {
+    public OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException, GlobalConfigSettingException, ActionParameterException {
+        if (uid == null || herUid == null || uid == herUid)
+            throw new ActionParameterException("user ids can not be empty or same");
         // 查询微信号
         String wechat = userReactService.getWeChatID(herUid);
         if (wechat == null)
@@ -243,11 +246,40 @@ public class OrderServiceImpl implements OrderService {
         // 发布者用户收钱 （百分比配）
         diamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
         try {
-            balanceService.update(orderId, herUid, OrderLog.EVENT.UNLOCK_WECHAT, diamonds);
+            balanceService.update(orderId, herUid, OrderLog.EVENT.RECEIVE_WECHAT, diamonds);
         } catch (ActionNotSupportException e) {
             e.printStackTrace(); // 不可能的
         }
         return log;
+    }
+
+    @Override
+    public String createUnlockPhoneNumber(Long uid, Long herUid) throws BalanceNotEnoughException, GlobalConfigSettingException, PhoneNumberNetSetException, ActionParameterException {
+        if (uid == null || herUid == null || uid == herUid)
+            throw new ActionParameterException("user ids can not be empty or same");
+        // 查询手机号
+        String phone = userReactService.getPhone(herUid);
+        if (phone == null)
+            throw new PhoneNumberNetSetException(herUid);
+
+        // 记录账单
+        Long diamonds = globalConfigurerService.getUnlockWeChat();
+        String orderId = genOrderID();
+        try {
+            // 观看者用户扣钱
+            balanceService.update(orderId, uid, OrderLog.EVENT.UNLOCK_PHONE, diamonds);
+        } catch (ActionNotSupportException e) {
+            throw new GlobalConfigSettingException("系统设置异常！手机号码解锁金额设定错误");
+        }
+
+        // 发布者用户收钱 （百分比配）
+        diamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
+        try {
+            balanceService.update(orderId, herUid, OrderLog.EVENT.RECEIVE_PHONE, diamonds);
+        } catch (ActionNotSupportException e) {
+            e.printStackTrace(); // 不可能的
+        }
+        return phone;
     }
 
     @Override

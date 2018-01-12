@@ -1,5 +1,6 @@
 package com.seeu.ywq.trend.dvo;
 
+import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.trend.model.Publish;
 
 import java.util.Date;
@@ -30,6 +31,9 @@ public class PublishVO {
     private List<String> labels;//标签（逗号隔开）
 
     private String text;    // 文本内容
+
+    // 查询详情信息时使用
+    private SimpleUserVO user;
 
 
     public Long getId() {
@@ -126,5 +130,13 @@ public class PublishVO {
 
     public void setComments(List<PublishCommentVO> comments) {
         this.comments = comments;
+    }
+
+    public SimpleUserVO getUser() {
+        return user;
+    }
+
+    public void setUser(SimpleUserVO user) {
+        this.user = user;
     }
 }

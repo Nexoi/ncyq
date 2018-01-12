@@ -4,6 +4,7 @@ import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
+import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
 import com.seeu.ywq.user.dvo.UserTagVO;
@@ -57,6 +58,18 @@ public class UserInfoApi {
     private TagService tagService;
     @Autowired
     private FansService fansService;
+
+    @ApiOperation(value = "查看用户头像、关注、喜欢状态等信息")
+    @GetMapping("/{uid}/bar")
+    public ResponseEntity getOne(@AuthenticationPrincipal UserLogin authUser,
+                                 @PathVariable Long uid) {
+        Long visitorUid = null;
+        if (authUser != null) visitorUid = authUser.getUid();
+        SimpleUserVO vo = userReactService.findOneAndTransferToVO(visitorUid, uid);
+        return vo == null ? ResponseEntity.status(404).body(R.code(404).message("找不到该用户")) : ResponseEntity.ok(vo
+        );
+    }
+
 
     /**
      * 查看用户所有信息【本人】

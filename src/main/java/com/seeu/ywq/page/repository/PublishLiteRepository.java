@@ -1,6 +1,7 @@
 package com.seeu.ywq.page.repository;
 
 import com.seeu.ywq.page.model.PublishLite;
+import com.seeu.ywq.trend.model.Publish;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,6 +46,7 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
             "where p.status = 0 and p.uid in (:labels)", nativeQuery = true)
     Integer countItUseFollowedUids(@Param("labels") Collection<Long> labels);
 
-    Page findAllByUid(@Param("uid") Long uid, Pageable pageable);
+    // find my/her trend
+    Page findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") Publish.STATUS status, Pageable pageable);
 
 }

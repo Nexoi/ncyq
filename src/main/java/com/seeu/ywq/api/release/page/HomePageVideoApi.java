@@ -52,17 +52,19 @@ public class HomePageVideoApi {
                               @ApiParam(value = "详情页评论每页数量，默认 10 条")
                               @RequestParam(defaultValue = "6") Integer commentSize
     ) {
+        Long visitorUid = null;
+        if (authUser != null) visitorUid = authUser.getUid();
         HomePageVideo video = homePageVideoService.findOne(videoId); // 已经保护浏览次数 +1 操作
         if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
             return ResponseEntity.status(404).body(R.code(404).message("找不到该视频").build());
         // 注入发布者用户信息
         Long uid = video.getUid();
-        SimpleUserVO userVO = userReactService.findOneAndTransferToVO(uid);
+        SimpleUserVO userVO = userReactService.findOneAndTransferToVO(visitorUid, uid);
         userVO.setFollowed(false); // 默认关注为 false
-        // 检查关注情况
-        if (authUser != null) {
-            userVO.setFollowed(fansService.hasFollowedHer(authUser.getUid(), uid));
-        }
+        // 检查关注情况（vo 已经含有了）
+//        if (authUser != null) {
+//            userVO.setFollowed(fansService.hasFollowedHer(authUser.getUid(), uid));
+//        }
         // 查看发布者最近发布的视频信息（按时间最新排序）
         Page page = homePageVideoService.findAllByUid(uid, new PageRequest(suggestPage, suggestSize, new Sort(Sort.Direction.DESC, "createTime")));
         // 评论信息（按时间最新排序）

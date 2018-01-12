@@ -3,10 +3,12 @@ package com.seeu.ywq.api.release.page;
 import com.seeu.ywq.page.model.HomePageCategory;
 import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page.service.HomePageCategoryService;
+import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +27,12 @@ public class HomePageApi {
 
     @ApiOperation(value = "首页")
     @GetMapping("/homepage")
-    public ResponseEntity homePage() {
-        List<HomePageCategory> categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.home);
+    public ResponseEntity homePage(@AuthenticationPrincipal UserLogin authUser) {
+        List<HomePageCategory> categoryList = null;
+        if (authUser == null)
+            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.home);
+        else
+            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.home);
         return ResponseEntity.ok(categoryList);
 //        Map map = new HashMap();
 //        map.put("newHotPerson", appHomePageService.getHomePage_NewHotsPerson());
@@ -42,8 +48,12 @@ public class HomePageApi {
 
     @ApiOperation(value = "网红")
     @GetMapping("/hot-person")
-    public ResponseEntity hotPerson() {
-        List<HomePageCategory> categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.hotsperson);
+    public ResponseEntity hotPerson(@AuthenticationPrincipal UserLogin authUser) {
+        List<HomePageCategory> categoryList = null;
+        if (authUser == null)
+            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.hotsperson);
+        else
+            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.hotsperson);
         return ResponseEntity.ok(categoryList);
 //        Map map = new HashMap();
 //        map.put("news", appHomePageService.getHotsPerson_New());
@@ -53,8 +63,12 @@ public class HomePageApi {
 
     @ApiOperation(value = "尤物")
     @GetMapping("/youwu")
-    public ResponseEntity youwu() {
-        List<HomePageCategory> categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.youwu);
+    public ResponseEntity youwu(@AuthenticationPrincipal UserLogin authUser) {
+        List<HomePageCategory> categoryList = null;
+        if (authUser == null)
+            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.youwu);
+        else
+            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.youwu);
         return ResponseEntity.ok(categoryList);
 //        Map map = new HashMap();
 //        map.put("news", appHomePageService.getYouWuPage_New());
@@ -64,10 +78,12 @@ public class HomePageApi {
 
     @ApiOperation(value = "视频", notes = "字段：hd 表示“高清视频”；字段：vr 表示“VR视频”")
     @GetMapping("/video")
-    public ResponseEntity video() {
+    public ResponseEntity video(@AuthenticationPrincipal UserLogin authUser) {
+        Long visitorUid = null;
+        if (authUser != null) visitorUid = authUser.getUid();
         Map map = new HashMap();
-        map.put("hd", appHomePageService.getVideo_HD());
-        map.put("vr", appHomePageService.getVideo_VR());
+        map.put("hd", appHomePageService.getVideo_HD(visitorUid));
+        map.put("vr", appHomePageService.getVideo_VR(visitorUid));
         return ResponseEntity.ok(map);
     }
 

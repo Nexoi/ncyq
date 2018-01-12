@@ -8,6 +8,7 @@ import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
+import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.uservip.model.VIPTable;
 import org.springframework.data.domain.Page;
@@ -50,7 +51,16 @@ public interface OrderService {
 
     OrderLog createUnlockPublish(Long uid, Long publishId) throws PublishNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException, ActionNotSupportException;
 
-    OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException, GlobalConfigSettingException;
+    OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException, GlobalConfigSettingException, ActionParameterException;
+
+    /**
+     * @param uid
+     * @param herUid
+     * @return phoneNumber
+     * @throws BalanceNotEnoughException
+     * @throws GlobalConfigSettingException
+     */
+    String createUnlockPhoneNumber(Long uid, Long herUid) throws BalanceNotEnoughException, GlobalConfigSettingException, PhoneNumberNetSetException, ActionParameterException;
 
     OrderLog createBindShare(Long bindUid, Long diamonds) throws ActionNotSupportException;
 

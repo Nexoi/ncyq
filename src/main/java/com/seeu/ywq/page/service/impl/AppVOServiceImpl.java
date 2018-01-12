@@ -23,7 +23,7 @@ public class AppVOServiceImpl implements AppVOService {
 
     @Override
     public HomePageVOUser formUserVO(Object[] objects) {
-        if (objects == null || objects.length != 13) return null;// 长度必须是 13 个
+        if (objects == null || objects.length != 13 && objects.length != 14) return null;// 长度必须是 13 或 14 个
         HomePageVOUser vo = new HomePageVOUser();
         vo.setUid(parseLong(objects[0]));
         vo.setNickname(parseString(objects[1]));
@@ -39,6 +39,8 @@ public class AppVOServiceImpl implements AppVOService {
         image.setThumbImage200pxUrl(parseString(objects[10]));
         image.setThumbImage300pxUrl(parseString(objects[11]));
         image.setThumbImage500pxUrl(parseString(objects[12]));
+        if (objects.length > 13)
+            vo.setLikeIt(1 == parseInt(objects[13]));
         vo.setCoverImage(image);
         return vo;
     }

@@ -6,6 +6,7 @@ import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
+import com.seeu.ywq.page.dvo.SimpleUserVO;
 import com.seeu.ywq.page.model.*;
 import com.seeu.ywq.page.repository.HomePageUserRepository;
 import com.seeu.ywq.page.repository.HomePageVideoRepository;
@@ -17,15 +18,14 @@ import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.resource.model.Video;
 import com.seeu.ywq.resource.repository.ImageRepository;
 import com.seeu.ywq.resource.repository.VideoRepository;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AppHomePageServiceImpl implements AppHomePageService {
@@ -42,6 +42,8 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     private AppVOService appVOService;
     @Autowired
     private FileUploadService fileUploadService;
+    @Autowired
+    private UserReactService userReactService;
     @Resource
     private VideoRepository videoRepository;
     @Resource
@@ -141,25 +143,34 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     }
 
     @Override
-    public List<HomePageCategory> queryAllByPage(HomePageCategory.PAGE page) {
-        List<HomePageCategory> categoryList = homePageCategoryService.findAllByPage(HomePageCategory.PAGE.home);
+    public List<HomePageCategory> queryAllByPage(Long visitorUid, HomePageCategory.PAGE page) {
+        List<HomePageCategory> categoryList = homePageCategoryService.findAllByPage(page);
         if (categoryList == null || categoryList.size() == 0) return new ArrayList<>();
         for (HomePageCategory category : categoryList) {
             if (category == null) continue;
-            category.setData(this.getHomePageUsers(category.getCategory()));
+            category.setData(this.getHomePageUsers(visitorUid, category.getCategory()));
             category.setCategory(null); // 置空
         }
         return categoryList;
     }
 
     @Override
-    public List<HomePageVOUser> getHomePageUsers(Integer category) {
-        if (category == null) return new ArrayList<>();
-        List list = homePageUserRepository.findUserVOByCategory(category);
-        return appVOService.formUserVO(list);
+    public List<HomePageCategory> queryAllByPage(HomePageCategory.PAGE page) {
+        return queryAllByPage(null, page);
     }
 
-//    @Override
+    @Override
+    public List<HomePageVOUser> getHomePageUsers(Long visitorUid, Integer category) {
+        if (category == null) return new ArrayList<>();
+        return appVOService.formUserVO(visitorUid == null ? homePageUserRepository.findUserVOByCategory(category) : homePageUserRepository.findUserVOByCategory(visitorUid, category));
+    }
+
+    @Override
+    public List<HomePageVOUser> getHomePageUsers(Integer category) {
+        return getHomePageUsers(null, category);
+    }
+
+    //    @Override
 //    public List<HomePageVOUser> getHomePage_NewHotsPerson() {
 //        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_HotsPerson.ordinal());
 //        return appVOService.formUserVO(list);
@@ -195,18 +206,48 @@ public class AppHomePageServiceImpl implements AppHomePageService {
 //        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_Suggest.ordinal());
 //        return appVOService.formUserVO(list);
 //    }
-
     @Override
     public List<HomePageVOVideo> getVideo_HD() {
-        List list = homePageVideoRepository.findThemByCategory(HomePageVideo.CATEGORY.hd.ordinal());
-        return appVOService.formVideoVO(list);
+        return getVideo_HD(null);
     }
 
     @Override
     public List<HomePageVOVideo> getVideo_VR() {
-        List list = homePageVideoRepository.findThemByCategory(HomePageVideo.CATEGORY.vr.ordinal());
-        return appVOService.formVideoVO(list);
+        return getVideo_VR(null);
     }
 
+    @Override
+    public List<HomePageVOVideo> getVideo_HD(Long visitorUid) {
+        return formVOs(visitorUid, HomePageVideo.CATEGORY.hd.ordinal());
+    }
+
+    @Override
+    public List<HomePageVOVideo> getVideo_VR(Long visitorUid) {
+        return formVOs(visitorUid, HomePageVideo.CATEGORY.vr.ordinal());
+    }
+
+    private List<HomePageVOVideo> formVOs(Long visitorUid, Integer category) {
+        List list = homePageVideoRepository.findThemByCategory(category);
+        List<HomePageVOVideo> voVideos = appVOService.formVideoVO(list);
+        if (voVideos == null || voVideos.size() == 0) return new ArrayList<>();
+        List<Long> uids = new ArrayList<>();
+        for (HomePageVOVideo voVideo : voVideos) {
+            Long uid = voVideo.getUid();
+            if (uid != null) uids.add(uid);
+        }
+        // 查询用户信息
+        List<SimpleUserVO> users = userReactService.findAllSimpleUsers(visitorUid, uids);
+        if (users == null || users.size() == 0) return voVideos;
+        Map<Long, SimpleUserVO> map = new HashMap<>();
+        for (SimpleUserVO vo : users) {
+            map.put(vo.getUid(), vo);
+        }
+        // 装载信息
+        for (HomePageVOVideo voVideo : voVideos) {
+            voVideo.setUser(map.get(voVideo.getUid()));
+            voVideo.setUid(null);// 清除不必要的信息
+        }
+        return voVideos;
+    }
 
 }

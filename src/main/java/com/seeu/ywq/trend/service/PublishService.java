@@ -11,6 +11,7 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface PublishService {
@@ -21,7 +22,10 @@ public interface PublishService {
 
     Publish findOne(Long uid, Long publishId);
 
+    @Transactional
     Publish save(Publish publish);
+
+    Publish saveWithImage(Publish publish);
 
     ///////////////////////////////////////////************** vo query operations ***************////////////////////////////////////////////////////
 

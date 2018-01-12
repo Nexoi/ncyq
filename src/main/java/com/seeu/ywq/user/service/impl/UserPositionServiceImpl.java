@@ -23,6 +23,19 @@ public class UserPositionServiceImpl implements UserPositionService {
     @Autowired
     private AppVOService appVOService;
 
+    @Override
+    public BigDecimal[] findMyPosition(Long uid) {
+        UserLogin userLogin = userReactService.findOne(uid);
+        if (userLogin != null) {
+            BigDecimal[] position = new BigDecimal[2];
+            position[0] = userLogin.getLongitude();
+            position[1] = userLogin.getLatitude();
+            return position;
+        }
+
+        return new BigDecimal[0];
+    }
+
     /**
      * @param uid
      * @param longitude 经度

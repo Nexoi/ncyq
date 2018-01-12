@@ -137,14 +137,19 @@ public class UserReactServiceImpl implements UserReactService {
     }
 
     @Override
-    public SimpleUserVO findOneAndTransferToVO(Long uid) {
-        UserLogin ul = userLoginRepository.findOne(uid);
-        SimpleUserVO userVO = new SimpleUserVO();
-        if (ul == null) return userVO;// if ul==null，则直接返回，不填充数据
-        BeanUtils.copyProperties(ul, userVO);
-
+    public SimpleUserVO findOneAndTransferToVO(Long visitorUid, Long uid) {
+        if (visitorUid == null) {
+            UserLogin ul = userLoginRepository.findOne(uid);
+            SimpleUserVO userVO = new SimpleUserVO();
+            if (ul == null) return userVO;// if ul==null，则直接返回，不填充数据
+            BeanUtils.copyProperties(ul, userVO);
+            return userVO;
+        } else {
+            List<Object[]> objects = userLoginRepository.queryItsByUid(visitorUid, uid);
+            if (objects == null || objects.size() == 0) return null;
+            return transferToVO(objects.get(0));
+        }
         // vip\liked\followed
-        return userVO;
     }
 
     @Override

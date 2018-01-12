@@ -13,6 +13,13 @@ import java.math.BigDecimal;
  */
 public interface UserPositionService {
 
+    /**
+     * @param uid
+     * @return [0] longitude
+     * [1] latitude
+     */
+    BigDecimal[] findMyPosition(Long uid);
+
     void updatePosition(Long uid, BigDecimal longitude, BigDecimal latitude);
 
     // 附近的人

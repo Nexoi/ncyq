@@ -53,7 +53,7 @@ public class JiGuangPush implements PushService {
         } catch (APIRequestException e) {
 //            e.printStackTrace();
             logger.warn("JiGuang Exception" + e.getMessage());
-            throw new PushException(e.getMessage());
+            // throw new PushException(e.getMessage());
         }
     }
 

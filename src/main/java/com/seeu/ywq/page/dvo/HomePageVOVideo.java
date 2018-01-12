@@ -17,6 +17,8 @@ public class HomePageVOVideo {
     private Date createTime;
     private Image coverImage;
     private Video video;
+    // ...
+    private SimpleUserVO user;
 
     public Long getId() {
         return id;
@@ -96,5 +98,13 @@ public class HomePageVOVideo {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public SimpleUserVO getUser() {
+        return user;
+    }
+
+    public void setUser(SimpleUserVO user) {
+        this.user = user;
     }
 }

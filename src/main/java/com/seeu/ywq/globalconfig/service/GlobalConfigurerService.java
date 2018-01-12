@@ -12,6 +12,10 @@ public interface GlobalConfigurerService {
 
     Long getUnlockWeChat();
 
+    void setUnlockPhone(Long diamonds) throws ActionNotSupportException;
+
+    Long getUnlockPhone();
+
     // 用户上家分成比例
     void setBindUserShareDiamondsPercent(float percent) throws ActionNotSupportException;
 
@@ -37,6 +41,7 @@ public interface GlobalConfigurerService {
 
     // RMB转换为钻石
     Long getDiamondsRatioToRMB(BigDecimal price);
+
     // 钻石转换为RMB
     BigDecimal getRMBRatioToDiamonds(Long diamonds);
 }

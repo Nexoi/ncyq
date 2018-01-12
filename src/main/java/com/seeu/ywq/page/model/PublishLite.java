@@ -24,6 +24,10 @@ public class PublishLite {
     private Long id;//主键
 
     @ApiParam(hidden = true)
+    @Enumerated
+    private Publish.STATUS status;//状态，正常/封禁/已删除
+
+    @ApiParam(hidden = true)
     private Long uid;//用户账号
 
     @ApiParam(hidden = true)
@@ -81,6 +85,14 @@ public class PublishLite {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Publish.STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(Publish.STATUS status) {
+        this.status = status;
     }
 
     public Long getUid() {
