@@ -140,7 +140,7 @@ public class PublishServiceImpl implements PublishService {
                 vod.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vod.setComments(publishCommentService.transferToVO(publish.getComments()));
                 vod.setVideo(publishVideoService.transferToVO(publish.getVideo(), canVisitClosedResource));
-                // TODO video 权限得加
+                // TODO video 权限得加 checked
                 return vod;
             case word:
             default:

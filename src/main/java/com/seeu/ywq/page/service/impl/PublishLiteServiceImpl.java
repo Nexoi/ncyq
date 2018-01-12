@@ -9,6 +9,7 @@ import com.seeu.ywq.page.model.PublishLite;
 import com.seeu.ywq.page.repository.PublishLiteRepository;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.trend.model.Publish;
+import com.seeu.ywq.trend.service.PublishVideoService;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.page.service.AppVOService;
 import com.seeu.ywq.page.service.PublishLiteService;
@@ -39,6 +40,8 @@ public class PublishLiteServiceImpl implements PublishLiteService {
     private PublishLiteRepository publishLiteRepository;
     @Autowired
     private UserReactService userReactService;
+    @Autowired
+    private PublishVideoService publishVideoService;
 
     @Override
     public Page<PublishLiteVO> findAllByTagIds(Long visitorUid, Pageable pageable, Long... ids) {
@@ -70,7 +73,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         // TODO
         completePicturesAndSimpleUsers(visitorUid, list); // 加载图片
         if (list.size() == 0) return page;
-        List transferList = transferToVO(list, uid);
+        List transferList = transferToVO(list, visitorUid);
         return new PageImpl<>(transferList, pageable, page.getTotalElements());
     }
 
@@ -123,7 +126,8 @@ public class PublishLiteServiceImpl implements PublishLiteService {
                 PublishLiteVOVideo vod = new PublishLiteVOVideo();
                 BeanUtils.copyProperties(publish, vod);
                 vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
-                // TODO video 权限得加
+                vod.setVideo(publishVideoService.transferToVO(publish.getVideo(), canVisitClosedResource));
+                // TODO video 权限得加 checked 2018-01-12 night
                 return vod;
             case word:
             default:

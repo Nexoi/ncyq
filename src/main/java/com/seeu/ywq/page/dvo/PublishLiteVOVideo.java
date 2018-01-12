@@ -1,12 +1,13 @@
 package com.seeu.ywq.page.dvo;
 
+import com.seeu.ywq.trend.dvo.PublishVideoVO;
 import com.seeu.ywq.trend.model.PublishVideo;
 
 import java.math.BigDecimal;
 
 public class PublishLiteVOVideo extends PublishLiteVO {
     private BigDecimal unlockPrice;//解锁需要金额
-    private PublishVideo video;
+    private PublishVideoVO video;
 
     public BigDecimal getUnlockPrice() {
         return unlockPrice;
@@ -16,11 +17,11 @@ public class PublishLiteVOVideo extends PublishLiteVO {
         this.unlockPrice = unlockPrice;
     }
 
-    public PublishVideo getVideo() {
+    public PublishVideoVO getVideo() {
         return video;
     }
 
-    public void setVideo(PublishVideo video) {
+    public void setVideo(PublishVideoVO video) {
         this.video = video;
     }
 }
