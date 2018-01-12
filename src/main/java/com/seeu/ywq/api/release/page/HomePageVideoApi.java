@@ -99,6 +99,7 @@ public class HomePageVideoApi {
         comment.setUid(authUser.getUid());
         comment.setUsername(authUser.getNickname());
         comment.setVideoId(videoId);
+        comment.setDeleteFlag(HomePageVideoComment.DELETE_FLAG.show);
         comment = homePageVideoCommentService.save(comment);
         return ResponseEntity.status(201).body(comment);
     }
@@ -118,6 +119,7 @@ public class HomePageVideoApi {
         comment.setUsername(authUser.getNickname());
         comment.setVideoId(videoId);
         comment.setFatherId(fatherId);
+        comment.setDeleteFlag(HomePageVideoComment.DELETE_FLAG.show);
         comment = homePageVideoCommentService.save(comment);
         return ResponseEntity.status(201).body(comment);
     }

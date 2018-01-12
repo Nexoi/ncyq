@@ -29,8 +29,9 @@ public class PublishVideoServiceImpl implements PublishVideoService {
         Video video = publishVideo.getVideo();
         if (!canVisitClosedResource) {
             video.setSrcUrl(null);
-            publishVideo.setVideoType(PublishVideo.VIDEO_TYPE.close);
+            vo.setVideoType(PublishVideo.VIDEO_TYPE.close);
         }
+        // TODO 完成视频权限机制
         return vo;
     }
 }
