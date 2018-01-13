@@ -3,6 +3,7 @@ package com.seeu.ywq.trend.service.impl;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.PublishTYPENotAllowedException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.resource.model.*;
@@ -130,8 +131,10 @@ public class PublishServiceImpl implements PublishService {
                 vop.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vop.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vop.setComments(publishCommentService.transferToVO(publish.getComments()));
+                // picture
                 vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), canVisitClosedResource));
                 vop.setPictures(userPictureService.transferToVO(publish.getPictures(), canVisitClosedResource));
+                vop.setUnlockPrice(publish.getUnlockPrice());
                 return vop;
             case video:
                 PublishVOVideo vod = new PublishVOVideo();
@@ -139,7 +142,9 @@ public class PublishServiceImpl implements PublishService {
                 vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vod.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
                 vod.setComments(publishCommentService.transferToVO(publish.getComments()));
+                // video
                 vod.setVideo(publishVideoService.transferToVO(publish.getVideo(), canVisitClosedResource));
+                vod.setUnlockPrice(publish.getUnlockPrice());
                 // TODO video 权限得加 checked
                 return vod;
             case word:
@@ -296,4 +301,13 @@ public class PublishServiceImpl implements PublishService {
         publishRepository.disCommentItOnce(comment.getPublishId());
     }
 
+    @Override
+    public Long getUnlockDiamonds(Long publishId) throws ResourceNotFoundException, PublishTYPENotAllowedException {
+        Publish p = findOne(publishId);
+        if (p == null)
+            throw new ResourceNotFoundException("Can not found Resource Publish[Id: " + publishId + " ]");
+        if (p.getType() == null || p.getType() == Publish.PUBLISH_TYPE.word)
+            throw new PublishTYPENotAllowedException(p.getType());
+        return p.getUnlockPrice();
+    }
 }

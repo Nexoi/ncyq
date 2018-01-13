@@ -6,14 +6,14 @@ import com.seeu.ywq.trend.model.PublishVideo;
 import java.math.BigDecimal;
 
 public class PublishLiteVOVideo extends PublishLiteVO {
-    private BigDecimal unlockPrice;//解锁需要金额
+    private Long unlockPrice;//解锁需要金额
     private PublishVideoVO video;
 
-    public BigDecimal getUnlockPrice() {
+    public Long getUnlockPrice() {
         return unlockPrice;
     }
 
-    public void setUnlockPrice(BigDecimal unlockPrice) {
+    public void setUnlockPrice(Long unlockPrice) {
         this.unlockPrice = unlockPrice;
     }
 

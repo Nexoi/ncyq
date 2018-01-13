@@ -3,14 +3,14 @@ package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
 import com.seeu.third.exception.SMSSendFailureException;
-import com.seeu.ywq.exception.ActionNotSupportException;
-import com.seeu.ywq.exception.ActionParameterException;
+import com.seeu.ywq.exception.*;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
+import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.service.OrderService;
-import com.seeu.ywq.exception.PublishNotFoundException;
-import com.seeu.ywq.exception.ResourceAlreadyActivedException;
+import com.seeu.ywq.trend.model.Publish;
+import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +31,10 @@ import java.util.Map;
 public class UnlockApi {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private GlobalConfigurerService globalConfigurerService;
+    @Autowired
+    private PublishService publishService;
 
     @ApiOperation(value = "解锁某一条动态", notes = "根据发布动态ID解锁动态【按天收取费用】，激活成功会返回支付订单记录信息")
     @PostMapping("/publish/{publishId}")
@@ -51,6 +52,21 @@ public class UnlockApi {
             return ResponseEntity.badRequest().body(R.code(4002).message("该资源已经被解锁，无需重复解锁").build());
         } catch (ActionNotSupportException e) {
             return ResponseEntity.badRequest().body(R.code(4003).message("该资源设定解锁价格异常，无法解锁").build());
+        }
+    }
+
+    @ApiOperation(value = "获取解锁一条动态的价格（钻石）")
+    @GetMapping("/publish/{publishId}/diamonds")
+    public ResponseEntity getUnlockPublishDiamonds(@PathVariable Long publishId) {
+        try {
+            Long diamonds = publishService.getUnlockDiamonds(publishId);
+            Map map = new HashMap();
+            map.put("diamonds", diamonds);
+            return ResponseEntity.ok(map);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该动态"));
+        } catch (PublishTYPENotAllowedException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("该动态类型不需要解锁"));
         }
     }
 
@@ -75,6 +91,19 @@ public class UnlockApi {
         }
     }
 
+    @ApiOperation(value = "获取解锁一次微信的价格（钻石）")
+    @GetMapping("/wechat/{uid}/diamonds")
+    public ResponseEntity getUnlockWeChatDiamonds(@PathVariable Long uid) {
+        Long diamonds = globalConfigurerService.getUnlockWeChat();
+        if (diamonds == null) {
+            // TODO 设定默认值为 66L ？
+            // diamonds = 0L;
+            return ResponseEntity.badRequest().body(R.code(400).message("管理员未设定解锁价格，请联系管理员解决"));
+        }
+        Map map = new HashMap();
+        map.put("diamonds", diamonds);
+        return ResponseEntity.ok(map);
+    }
 
     @ApiOperation(value = "获取用户手机号", notes = "若成功，将直接返回该用户的手机")
     @PostMapping("/phone/{uid}")
@@ -98,4 +127,17 @@ public class UnlockApi {
         }
     }
 
+    @ApiOperation(value = "获取解锁一次手机的价格（钻石）")
+    @GetMapping("/phone/{uid}/diamonds")
+    public ResponseEntity getUnlockPhoneDiamonds(@PathVariable Long uid) {
+        Long diamonds = globalConfigurerService.getUnlockPhone();
+        if (diamonds == null) {
+            // TODO 设定默认值为 66L ？
+            // diamonds = 0L;
+            return ResponseEntity.badRequest().body(R.code(400).message("管理员未设定解锁价格，请联系管理员解决"));
+        }
+        Map map = new HashMap();
+        map.put("diamonds", diamonds);
+        return ResponseEntity.ok(map);
+    }
 }

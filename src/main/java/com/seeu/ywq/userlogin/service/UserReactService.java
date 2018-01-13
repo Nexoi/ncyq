@@ -27,6 +27,7 @@ public interface UserReactService {
 
     /**
      * 会返回所有信息
+     *
      * @param uid
      * @return
      */
@@ -36,6 +37,11 @@ public interface UserReactService {
 
     UserLogin findByPhone(String phone);
 
+    /**
+     * @param visitorUid 如果为空，返回基础信息
+     * @param uid
+     * @return
+     */
     SimpleUserVO findOneAndTransferToVO(Long visitorUid, Long uid);
 
     List<SimpleUserVO> findAllSimpleUsers(Long uid, Collection<Long> uids);

@@ -1,6 +1,7 @@
 package com.seeu.ywq.trend.service;
 
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.PublishTYPENotAllowedException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.trend.dvo.PublishVO;
@@ -52,7 +53,7 @@ public interface PublishService {
 
     Page<PublishLikedUser> listLikedUser(Long publishId, Pageable pageable);
 
-    void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException,ResourceAlreadyExistedException;
+    void likeIt(Long publishId, UserLogin user) throws ResourceNotFoundException, ActionNotSupportException, ResourceAlreadyExistedException;
 
     void dislikeIt(Long publishId, Long uid) throws ResourceNotFoundException, ActionNotSupportException;
 
@@ -63,5 +64,9 @@ public interface PublishService {
     void commentIt(Long publishId, Long fatherId, UserLogin user, String text) throws ResourceNotFoundException, ActionNotSupportException;
 
     void deleteComment(Long commentId) throws ResourceNotFoundException;
+
+    // ... 获取解锁金额
+    Long getUnlockDiamonds(Long publishId) throws ResourceNotFoundException, PublishTYPENotAllowedException;
+
 
 }

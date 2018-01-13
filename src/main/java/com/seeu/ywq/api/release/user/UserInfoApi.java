@@ -155,6 +155,12 @@ public class UserInfoApi {
                 }
             }
             map.put("relation", relation);
+            // 用户关注
+            SimpleUserVO voBar = userReactService.findOneAndTransferToVO(authUser.getUid(), uid);
+            map.put("bar", voBar);
+        }else{
+            SimpleUserVO voBar = userReactService.findOneAndTransferToVO(null, uid);
+            map.put("bar", voBar);
         }
         return ResponseEntity.ok(map);
     }

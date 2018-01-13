@@ -143,6 +143,9 @@ public class UserReactServiceImpl implements UserReactService {
             SimpleUserVO userVO = new SimpleUserVO();
             if (ul == null) return userVO;// if ul==null，则直接返回，不填充数据
             BeanUtils.copyProperties(ul, userVO);
+            userVO.setLiked(false);
+            userVO.setFollowed(false);
+//            userVO.setVip(UserVIP.VIP.none);
             return userVO;
         } else {
             List<Object[]> objects = userLoginRepository.queryItsByUid(visitorUid, uid);

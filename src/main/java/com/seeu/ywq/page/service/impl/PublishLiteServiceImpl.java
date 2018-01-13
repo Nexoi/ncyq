@@ -121,12 +121,14 @@ public class PublishLiteServiceImpl implements PublishLiteService {
                 vop.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vop.setCoverPictureUrl(publish.getPictures() == null || publish.getPictures().size() == 0 ? null : userPictureService.transferToVO(publish.getPictures().get(0), canVisitClosedResource));
                 vop.setPictures(userPictureService.transferToVO(publish.getPictures(), canVisitClosedResource));
+                vop.setUnlockPrice(publish.getUnlockPrice());
                 return vop;
             case video:
                 PublishLiteVOVideo vod = new PublishLiteVOVideo();
                 BeanUtils.copyProperties(publish, vod);
                 vod.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
                 vod.setVideo(publishVideoService.transferToVO(publish.getVideo(), canVisitClosedResource));
+                vod.setUnlockPrice(publish.getUnlockPrice());
                 // TODO video 权限得加 checked 2018-01-12 night
                 return vod;
             case word:

@@ -155,13 +155,13 @@ public class PublishApi {
         publish.setLikeNum(0);
         publish.setViewNum(0);
         publish.setStatus(Publish.STATUS.normal); // 初始化为正常
-        publish.setUnlockPrice(publish.getUnlockPrice() == null ? 0l : publish.getUnlockPrice());
+        publish.setUnlockPrice(publish.getUnlockPrice() == null ? 0L : publish.getUnlockPrice());
         publish.setCreateTime(new Date());
         publish.setType(publish.getType());
         try {
             switch (publish.getType()) {
                 case word:
-                    publish.setUnlockPrice(0l);
+                    publish.setUnlockPrice(0L);
                     publish.setPictures(null);
                     publish.setVideo(null);
                     break;

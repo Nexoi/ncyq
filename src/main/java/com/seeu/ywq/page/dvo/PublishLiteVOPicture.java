@@ -6,15 +6,15 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class PublishLiteVOPicture extends PublishLiteVO{
-    private BigDecimal unlockPrice;//解锁需要金额
+    private Long unlockPrice;//解锁需要金额
     private PublishPictureVO coverPictureUrl;//动态广场中动态封面图片(不与数据库做交互)
     private List<PublishPictureVO> pictures;//图片(不与数据库做交互)
 
-    public BigDecimal getUnlockPrice() {
+    public Long getUnlockPrice() {
         return unlockPrice;
     }
 
-    public void setUnlockPrice(BigDecimal unlockPrice) {
+    public void setUnlockPrice(Long unlockPrice) {
         this.unlockPrice = unlockPrice;
     }
 
