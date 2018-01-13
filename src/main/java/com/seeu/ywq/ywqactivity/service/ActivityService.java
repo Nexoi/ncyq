@@ -1,5 +1,6 @@
 package com.seeu.ywq.ywqactivity.service;
 
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.ywqactivity.model.Activity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,4 +15,6 @@ public interface ActivityService {
     List<Activity> findTop6();
 
     Page<Activity> findAll(Pageable pageable);
+
+    void delete(Long id) throws ResourceNotFoundException;
 }

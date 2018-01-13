@@ -1,5 +1,6 @@
 package com.seeu.ywq.ywqactivity.service.impl;
 
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.ywqactivity.model.Activity;
 import com.seeu.ywq.ywqactivity.repository.ActivityRepository;
 import com.seeu.ywq.ywqactivity.service.ActivityService;
@@ -33,5 +34,12 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Page<Activity> findAll(Pageable pageable) {
         return repository.findAllByDeleteFlag(Activity.DELETE_FLAG.show, pageable);
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        Activity activity = findOne(id);
+        if (activity == null) throw new ResourceNotFoundException("该活动资源找不到 Resource [ActivityID: " + id + " ]");
+        repository.delete(id);
     }
 }

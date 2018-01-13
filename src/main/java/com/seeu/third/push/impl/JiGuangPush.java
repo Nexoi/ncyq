@@ -58,8 +58,9 @@ public class JiGuangPush implements PushService {
     }
 
     @Override
-    public void sysPush(String text, String linkUrl, Map extra) throws PushException  {
+    public void sysPush(String text, String linkUrl, Map extra) throws PushException {
         if (extra == null) extra = new HashMap();
+        extra.put("type", "systemNotify");
         extra.put("linkUrl", linkUrl);
         extra.put("text", text);
 
@@ -87,8 +88,9 @@ public class JiGuangPush implements PushService {
 
     @Async
     @Override
-    public void singlePush(Long uid, String text, String linkUrl, Map extra) throws PushException  {
+    public void singlePush(Long uid, String text, String linkUrl, Map extra) throws PushException {
         if (extra == null) extra = new HashMap();
+        extra.put("type", "notify");
         extra.put("linkUrl", linkUrl);
         extra.put("text", text);
 
@@ -102,6 +104,7 @@ public class JiGuangPush implements PushService {
                                 .addExtras(extra)
                                 .build())
                         .addPlatformNotification(IosNotification.newBuilder()
+                                .setSound("default")
                                 .setAlert("通知")
                                 .addExtras(extra)
                                 .build())
@@ -116,8 +119,9 @@ public class JiGuangPush implements PushService {
 
     @Async
     @Override
-    public void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl) throws PushException  {
+    public void likePublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String imgUrl) throws PushException {
         Map extra = new HashMap();
+        extra.put("type", "like");
         extra.put("uid", String.valueOf(uid));
         extra.put("nickname", nickname);
         extra.put("headIconUrl", headIconUrl);
@@ -134,6 +138,7 @@ public class JiGuangPush implements PushService {
                                 .addExtras(extra)
                                 .build())
                         .addPlatformNotification(IosNotification.newBuilder()
+                                .setSound("default")
                                 .setAlert(nickname + "点赞了你的动态")
                                 .addExtras(extra)
                                 .build())
@@ -148,8 +153,9 @@ public class JiGuangPush implements PushService {
 
     @Async
     @Override
-    public void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl) throws PushException  {
+    public void commentPublish(Long herUid, Long uid, String nickname, String headIconUrl, Long publishId, String text, String imgUrl) throws PushException {
         Map extra = new HashMap();
+        extra.put("type", "comment");
         extra.put("uid", String.valueOf(uid));
         extra.put("nickname", nickname);
         extra.put("headIconUrl", headIconUrl);
@@ -167,6 +173,7 @@ public class JiGuangPush implements PushService {
                                 .addExtras(extra)
                                 .build())
                         .addPlatformNotification(IosNotification.newBuilder()
+                                .setSound("default")
                                 .setAlert(nickname + "评论了你的动态")
                                 .addExtras(extra)
                                 .build())

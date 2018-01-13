@@ -12,4 +12,5 @@ public interface ActivityCheckInRepository extends JpaRepository<ActivityCheckIn
 
     Page<ActivityCheckIn> findAllByActivityId(@Param("activityId") Long activityId, Pageable pageable);
 
+    ActivityCheckIn findByActivityIdAndUid(@Param("activityId") Long activityId, @Param("uid") Long uid);
 }

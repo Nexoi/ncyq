@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.release.activity;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.ywqactivity.model.Activity;
 import com.seeu.ywq.ywqactivity.model.ActivityCheckIn;
@@ -55,7 +56,26 @@ public class ActivityApi {
         checkIn.setActivityId(activityId);
         checkIn.setHasPaid(false);
         checkIn.setUpdateTime(new Date());
-        return ResponseEntity.status(201).body(R.code(201).message("报名成功！请尽快完成支付"));
+        try {
+            ActivityCheckIn checkIn1 = activityCheckInService.save(checkIn);
+            return ResponseEntity.status(201).body(checkIn1);
+        } catch (ResourceAlreadyExistedException e) {
+            return ResponseEntity.status(400).body(R.code(400).message("您已经报过名了"));
+        }
+    }
+
+    @PostMapping("/pay/{activityId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity pay(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long activityId) {
+        ActivityCheckIn checkIn = activityCheckInService.findOneByActivityIdAndUid(activityId, authUser.getUid());
+        if (checkIn == null)
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该活动信息"));
+        // 返回支付信息（AliPay, WeChatPay...）
+
+        // demo
+        checkIn.setHasPaid(true);
+        activityCheckInService.updateIfNotExisted(checkIn);
+        return ResponseEntity.ok(R.code(200).message("支付成功！"));
     }
 
 }
