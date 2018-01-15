@@ -88,7 +88,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/hibernate/hibernate-validator/5.3.5.Final/hibernate-validator-5.3.5.Final.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/plugin/spring-plugin-core/1.2.0.RELEASE/spring-plugin-core-1.2.0.RELEASE.jar" path-in-jar="/" />
-      <element id="library" level="project" name="lib" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/security/spring-security-config/4.2.3.RELEASE/spring-security-config-4.2.3.RELEASE.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/websocket/javax-websocket-client-impl/9.4.5.v20170502/javax-websocket-client-impl-9.4.5.v20170502.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar" path-in-jar="/" />

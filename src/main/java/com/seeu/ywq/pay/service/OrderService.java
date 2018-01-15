@@ -3,6 +3,7 @@ package com.seeu.ywq.pay.service;
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.ywq.exception.*;
 import com.seeu.ywq.gift.model.GiftOrder;
+import com.seeu.ywq.gift.model.RewardOrder;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.ExchangeTable;
@@ -10,7 +11,6 @@ import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
-import com.seeu.ywq.uservip.model.VIPTable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -45,9 +45,9 @@ public interface OrderService {
     OrderLog createTransferDiamondsToCoins(Long uid, Long diamonds) throws BalanceNotEnoughException, ActionNotSupportException;
 
     // 送花（直接将花转成钻石）
-    GiftOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, RewardResourceNotFoundException, RewardAmountCannotBeNegitiveException;
+    RewardOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException;
 
-    OrderLog createSendGift();
+    GiftOrder createSendGift(Long uid, Long herUid, Long resourceId, Integer amount)throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException;
 
     OrderLog createUnlockPublish(Long uid, Long publishId) throws PublishNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException, ActionNotSupportException;
 

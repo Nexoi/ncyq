@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="com.xiaoyi.ywq" />
         <module name="ywq" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="com.xiaoyi.ywq" target="1.8" />
       <module name="ywq" target="1.8" />
     </bytecodeTargetLevel>
   </component>

@@ -1,5 +1,10 @@
 package com.seeu.ywq.userlogin.service;
 
+import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.model.ThirdUserLogin;
+import com.seeu.ywq.userlogin.model.UserLogin;
+
 /**
  * Created by neo on 25/11/2017.
  * <p>
@@ -52,6 +57,17 @@ public interface UserSignUpService {
      * @param signCheck 验证手机号码和验证码是否匹配
      */
     public SIGN_STATUS signUp(String name, String phone, String password, String code, String signCheck);
+
+    /**
+     * third part sign up
+     *
+     * @param name
+     * @param credential
+     * @param token
+     * @param nickname
+     * @return
+     */
+    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException;
 
     /**
      * 注销用户

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.seeu.third.exception.PushException;
 import com.seeu.third.push.PushService;
+import com.seeu.ywq.event_listener.order_event.ReceiveGiftEvent;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
@@ -94,6 +95,23 @@ public class EventListenerController {
             Map map = new HashMap();
             map.put("info", JSON.toJSON(event));
             pushService.singlePush(event.getUid(), text, "", map);
+        } catch (PushException e) {
+            e.printStackTrace();
+            logger.warn("通知失败！ReceiveReward 【OrderID:" + event.getOrderId() + "】");
+        }
+    }
+    @EventListener
+    public void receiveGift(ReceiveGiftEvent event) {
+        try {
+//            String text = "用户%nickname%【ID：%id%】送给您了%amount%朵%giftName%，已转换为钻石：%price%颗";
+//            text = text.replace("%nickname%", event.getHisNickname())
+//                    .replace("%id%", "" + event.getHisUid())
+//                    .replace("%amount%", "" + event.getAmount())
+//                    .replace("%giftName%", event.getRewardResourceName())
+//                    .replace("%price%", "" + event.getTransactionalDiamonds());
+//            Map map = new HashMap();
+//            map.put("info", JSON.toJSON(event));
+            pushService.singlePush(event.getUid(), null, "", null);
         } catch (PushException e) {
             e.printStackTrace();
             logger.warn("通知失败！ReceiveReward 【OrderID:" + event.getOrderId() + "】");

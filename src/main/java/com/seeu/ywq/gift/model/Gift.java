@@ -4,8 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 @Entity
-@Table(name = "ywq_reward")
-public class Reward {
+@Table(name = "ywq_gift")
+public class Gift {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

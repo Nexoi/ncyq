@@ -1,6 +1,9 @@
 package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
+import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
@@ -98,5 +101,23 @@ public class SignUpApi {
         userLogin.setPassword(md5Service.encode(password));
         userReactService.save(userLogin);
         return ResponseEntity.ok(R.code(200).message("修改密码成功").build());
+    }
+
+    @ApiOperation(value = "sign up with qq, weibo, wechat, etc.")
+    @PostMapping("/signup/{type}")
+    public ResponseEntity signUpWithThirdPart(@PathVariable ThirdUserLogin.TYPE type,
+                                              @RequestParam(required = true) String name,
+                                              @RequestParam(required = true) String credential,
+                                              @RequestParam(required = false) String token,
+                                              @RequestParam(required = true) String nickname,
+                                              @RequestParam(required = true)  String phone) {
+        try {
+            userSignUpService.signUpWithThirdPart(type,name,credential,token,nickname,phone);
+            return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
+        } catch (AccountNameAlreadyExistedException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，该帐号已经被注册").build());
+        } catch (PhoneNumberHasUsedException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码已经被注册").build());
+        }
     }
 }

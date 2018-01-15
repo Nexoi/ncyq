@@ -2,11 +2,16 @@ package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.sms.SMSService;
+import com.seeu.ywq.event_listener.order_event.ReceiveGiftEvent;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
 import com.seeu.ywq.exception.*;
+import com.seeu.ywq.gift.model.Gift;
 import com.seeu.ywq.gift.model.GiftOrder;
 import com.seeu.ywq.gift.model.Reward;
+import com.seeu.ywq.gift.model.RewardOrder;
 import com.seeu.ywq.gift.service.GiftOrderService;
+import com.seeu.ywq.gift.service.GiftService;
+import com.seeu.ywq.gift.service.RewardOrderService;
 import com.seeu.ywq.gift.service.RewardService;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
@@ -34,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -76,7 +80,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RewardService rewardService;
     @Autowired
+    private RewardOrderService rewardOrderService;
+    // gift
+    @Autowired
+    private GiftService giftService;
+    @Autowired
     private GiftOrderService giftOrderService;
+
     // VIP
     @Autowired
     private VIPTableService vipTableService;
@@ -155,17 +165,18 @@ public class OrderServiceImpl implements OrderService {
      * @return
      * @throws BalanceNotEnoughException
      * @throws RewardResourceNotFoundException
-     * @throws RewardAmountCannotBeNegitiveException
-     * @throws ActionNotSupportException             资源设定异常，价格不对（负数？）
+     * @throws AmountCannotBeNegetiveException
+     * @throws ActionNotSupportException       资源设定异常，价格不对（负数？）
      */
     @Transactional
     @Override
-    public GiftOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, RewardResourceNotFoundException, RewardAmountCannotBeNegitiveException, ActionNotSupportException {
+    public RewardOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, ResourceNotFoundException, AmountCannotBeNegetiveException, ActionNotSupportException {
         // 判断资源是否存在
         Reward reward = rewardService.findOne(rewardResourceId);
-        if (reward == null) throw new RewardResourceNotFoundException();
+        if (reward == null)
+            throw new ResourceNotFoundException("Can not found Resource [Reward ID: " + rewardResourceId + " ]");
         // 计算总价
-        if (amount <= 0) throw new RewardAmountCannotBeNegitiveException();
+        if (amount <= 0) throw new AmountCannotBeNegetiveException();
         Long price = reward.getDiamonds() * amount;
         String orderID = genOrderID();
         // 观看者用户扣钱
@@ -175,22 +186,45 @@ public class OrderServiceImpl implements OrderService {
         Long transactionPrice = (long) (price * globalConfigurerService.getUserDiamondsPercent());
         balanceService.update(orderID, herUid, OrderLog.EVENT.REWARD_RECEIVE, transactionPrice);
         // 记录订单（送礼单独的订单）
+        RewardOrder rewardOrder = new RewardOrder();
+        rewardOrder.setOrderId(orderID);
+        rewardOrder.setCreateTime(new Date());
+        rewardOrder.setDiamonds(price);
+        rewardOrder.setUid(uid);
+        rewardOrder.setHerUid(herUid);
+        rewardOrder.setRewardResourceId(rewardResourceId);
+        rewardOrder = rewardOrderService.save(rewardOrder);
+        // 通知
+        applicationContext.publishEvent(new ReceiveRewardEvent(this, herUid, uid, "", rewardResourceId, reward.getName(), amount, price, transactionPrice, orderID));
+        return rewardOrder;
+    }
+
+    @Override
+    public GiftOrder createSendGift(Long uid, Long herUid, Long resourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException {
+        // 判断资源是否存在
+        Gift gift = giftService.findOne(resourceId);
+        if (gift == null)
+            throw new ResourceNotFoundException("Can not found Resource [Reward ID: " + resourceId + " ]");
+        // 计算总价
+        if (amount <= 0) throw new AmountCannotBeNegetiveException();
+        Long price = gift.getDiamonds() * amount;
+        String orderID = genOrderID();
+        // 观看者用户扣钱
+        balanceService.update(orderID, uid, OrderLog.EVENT.SEND_GIFT, price);
+        // address
+
+        // 记录订单（送礼单独的订单）
         GiftOrder giftOrder = new GiftOrder();
         giftOrder.setOrderId(orderID);
         giftOrder.setCreateTime(new Date());
         giftOrder.setDiamonds(price);
         giftOrder.setUid(uid);
         giftOrder.setHerUid(herUid);
-        giftOrder.setRewardResourceId(rewardResourceId);
+        giftOrder.setRewardResourceId(resourceId);
         giftOrder = giftOrderService.save(giftOrder);
         // 通知
-        applicationContext.publishEvent(new ReceiveRewardEvent(this, herUid, uid, "", rewardResourceId, reward.getName(), amount, price, transactionPrice, orderID));
+        applicationContext.publishEvent(new ReceiveGiftEvent(this, herUid, uid, "", resourceId, gift.getName(), amount, price, price, orderID));
         return giftOrder;
-    }
-
-    @Override
-    public OrderLog createSendGift() {
-        return null;
     }
 
     // 解锁动态

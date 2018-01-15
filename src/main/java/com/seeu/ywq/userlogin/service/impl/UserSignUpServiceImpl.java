@@ -5,10 +5,14 @@ import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.repository.UserInfoRepository;
+import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.UserAuthRoleRepository;
+import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
@@ -36,6 +40,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     @Resource
     BalanceService balanceService;
     @Autowired
+    private ThirdUserLoginService thirdUserLoginService;
+    @Autowired
     JwtUtil jwtUtil;
     @Autowired
     JwtConstant jwtConstant;
@@ -50,8 +56,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
     public UserSignUpService.SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
-//        String code = String.valueOf(100000 + new Random().nextInt(899999));
-        String code = "123456";
+        String code = String.valueOf(100000 + new Random().nextInt(899999));
+//        String code = "123456";
         UserSignUpService.SIGN_PHONE_SEND status = null;
         try {
 //            code = iSmsSV.sendSMS(phone);
@@ -112,12 +118,45 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         phone = phone.trim();
         if (password == null || password.length() < 6) return UserSignUpService.SIGN_STATUS.signup_error_password;
 
+        try {
+            initAccount(name, phone, password);
+        } catch (PhoneNumberHasUsedException e) {
+            return UserSignUpService.SIGN_STATUS.signup_error_phone;
+        }
+        //...
+        return UserSignUpService.SIGN_STATUS.signup_success;
+    }
+
+    @Override
+    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException {
+        ThirdUserLogin thirdUserLogin = thirdUserLoginService.findByName(name);
+        if (null != thirdUserLogin)
+            throw new AccountNameAlreadyExistedException(name);
+        UserLogin ul = initAccount(nickname, phone, credential);
+        // record third part info
+        if (ul == null)
+            return null;
+        thirdUserLogin = new ThirdUserLogin();
+        thirdUserLogin.setYwqUid(ul.getUid());
+        thirdUserLogin.setCredential(credential);
+        thirdUserLogin.setName(name);
+        thirdUserLogin.setNickName(nickname);
+        thirdUserLogin.setToken(token);
+        thirdUserLogin.setType(type);
+        thirdUserLogin.setUpdateTime(new Date());
+        thirdUserLoginService.save(thirdUserLogin);
+        return ul;
+    }
+
+    private UserLogin initAccount(String name, String phone, String credential) throws PhoneNumberHasUsedException {
+        UserLogin ul = userReactService.findByPhone(phone);
+        if (null != ul)
+            throw new PhoneNumberHasUsedException(phone);
         UserLogin userLogin = new UserLogin();
         userLogin.setNickname(name);
         userLogin.setPhone(phone);
-        userLogin.setPassword(md5Service.encode(password));
+        userLogin.setPassword(md5Service.encode(credential));
         userLogin.setHeadIconUrl(headIcon);
-
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);
         // 添加权限 //
@@ -141,7 +180,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userInfoRepository.saveAndFlush(user);
         // 初始化用户余额系统 //
         balanceService.initAccount(savedUserLogin.getUid(), null);
-        return UserSignUpService.SIGN_STATUS.signup_success;
+        //...
+        return savedUserLogin;
     }
 
     /**

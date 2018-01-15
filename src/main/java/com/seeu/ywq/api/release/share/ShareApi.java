@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release.share;
 
 
 import com.seeu.ywq.event_listener.publish_react.ShareEvent;
+import com.seeu.ywq.share.service.SharePicturesService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,8 +26,13 @@ import java.util.Map;
 public class ShareApi {
     @Value("${ywq.share.url.host}")
     private String shareUrlHost;
+
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private SharePicturesService sharePicturesService;
+
 
     @ApiOperation(value = "获取分享链接", notes = "该链接针对不同用户生成不同URL，在对应URL页面内进行用户注册可生效“邀请用户”机制")
     @GetMapping("/url")
@@ -44,5 +50,11 @@ public class ShareApi {
     public ResponseEntity shareSuccess(@AuthenticationPrincipal UserLogin authUser) {
         applicationContext.publishEvent(new ShareEvent(this, authUser.getUid(), "", 0L));
         return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "get pictures", notes = "get all pictures from server")
+    @GetMapping("/pictures")
+    public ResponseEntity listPictures() {
+        return ResponseEntity.ok(sharePicturesService.findAll());
     }
 }
