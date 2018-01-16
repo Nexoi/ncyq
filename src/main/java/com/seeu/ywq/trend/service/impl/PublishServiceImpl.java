@@ -8,6 +8,7 @@ import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.resource.model.*;
 import com.seeu.ywq.trend.dvo.PublishVO;
+import com.seeu.ywq.trend.dvo.PublishVOAudio;
 import com.seeu.ywq.trend.dvo.PublishVOPicture;
 import com.seeu.ywq.trend.dvo.PublishVOVideo;
 import com.seeu.ywq.trend.model.*;
@@ -121,8 +122,7 @@ public class PublishServiceImpl implements PublishService {
 
     ///////////////////////////////////////////************** transfer operations ***************////////////////////////////////////////////////////
 
-    @Override
-    public PublishVO transferToVO(Publish publish, boolean canVisitClosedResource) {
+    private PublishVO transferToVO(Publish publish, boolean canVisitClosedResource) {
         if (publish == null) return null;
         switch (publish.getType()) {
             case picture:
@@ -147,6 +147,14 @@ public class PublishServiceImpl implements PublishService {
                 vod.setUnlockPrice(publish.getUnlockPrice());
                 // TODO video 权限得加 checked
                 return vod;
+            case audio:
+                PublishVOAudio voa = new PublishVOAudio();
+                BeanUtils.copyProperties(publish, voa);
+                voa.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
+                voa.setLikedUsers(publishLikedUserService.transferToVO(publish.getLikedUsers()));
+                voa.setComments(publishCommentService.transferToVO(publish.getComments()));
+                voa.setAudio(publish.getAudio());
+                return voa;
             case word:
             default:
                 PublishVO vo = new PublishVO();
@@ -158,8 +166,7 @@ public class PublishServiceImpl implements PublishService {
         }
     }
 
-    @Override
-    public List<PublishVO> transferToVO(List<Publish> publishs, boolean canVisitClosedResource) {
+    private List<PublishVO> transferToVO(List<Publish> publishs, boolean canVisitClosedResource) {
         List<PublishVO> vos = new ArrayList<>();
         for (Publish publish : publishs) {
             if (publish == null) continue;

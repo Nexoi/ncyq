@@ -206,6 +206,12 @@ public class BalanceServiceImpl implements BalanceService {
                 if (diamonds == null) diamonds = 0L;
                 balance.setVipBuyExpenseDiamonds(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() - diamondsDelta); // 购买VIP支出
+            case SEND_GIFT:
+                checkBalance(balance.getBalance(), diamondsDelta);  // check
+                diamonds = balance.getSendGift();
+                if (diamonds == null) diamonds = 0L;
+                balance.setSendGift(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() - diamondsDelta); // Send Gift
             default:
                 break;
         }

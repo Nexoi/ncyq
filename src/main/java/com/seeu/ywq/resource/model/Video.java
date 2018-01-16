@@ -20,6 +20,10 @@ public class Video {
     @Column(length = 1024)
     private String srcUrl;
 
+    private Integer width;
+
+    private Integer height;
+
     public Long getId() {
         return id;
     }
@@ -42,5 +46,21 @@ public class Video {
 
     public void setSrcUrl(String srcUrl) {
         this.srcUrl = srcUrl;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
 }

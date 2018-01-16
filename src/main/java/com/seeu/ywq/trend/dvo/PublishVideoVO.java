@@ -5,6 +5,9 @@ import com.seeu.ywq.trend.model.PublishVideo;
 
 import java.util.Date;
 
+/**
+ * video auth
+ */
 public class PublishVideoVO {
     private Long id;
     private Date createTime;//创建时间

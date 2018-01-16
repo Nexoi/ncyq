@@ -14,7 +14,8 @@ public class Publish {
     public enum PUBLISH_TYPE {
         word,
         picture,
-        video
+        video,
+        audio
     }
 
     public enum STATUS {
@@ -39,11 +40,14 @@ public class Publish {
     @ApiParam(hidden = true)
     private Integer weight;// 排序权重，0 时候表示不按此排序
 
+    @ApiParam(hidden = true)
+    private Long receivedDiamonds; //
+
     @NotNull
     @Enumerated
     private PUBLISH_TYPE type;//发布类型，1表示文字，2表示图片，3表示视屏，4表示拍摄
 
-    @NotNull
+    //@NotNull
     private String title;//标题
 
     @ApiParam(hidden = true)
@@ -89,6 +93,11 @@ public class Publish {
     @JoinColumn(name = "video_id")
     private PublishVideo video;
 
+    @ApiParam(hidden = true)
+    @OneToOne(targetEntity = PublishAudio.class)
+    @JoinColumn(name = "audio_id")
+    private PublishAudio audio;
+
     public Long getId() {
         return id;
     }
@@ -119,6 +128,14 @@ public class Publish {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getReceivedDiamonds() {
+        return receivedDiamonds;
+    }
+
+    public void setReceivedDiamonds(Long receivedDiamonds) {
+        this.receivedDiamonds = receivedDiamonds;
     }
 
     public Date getCreateTime() {
@@ -223,6 +240,14 @@ public class Publish {
 
     public void setComments(List<PublishComment> comments) {
         this.comments = comments;
+    }
+
+    public PublishAudio getAudio() {
+        return audio;
+    }
+
+    public void setAudio(PublishAudio audio) {
+        this.audio = audio;
     }
 
     public Publish() {

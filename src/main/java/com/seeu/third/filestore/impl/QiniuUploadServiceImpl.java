@@ -147,7 +147,7 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
 //        System.out.println(putRet.key);
 //        System.out.println(putRet.hash);
-        return protocol_host + key;
+        return protocol_host + "/" + key;
     }
 
     private Map<Picture.ALBUM_TYPE, Image> uploadWithJudgeHazyJPEGWithMap(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws IOException {

@@ -244,10 +244,14 @@ public class OrderServiceImpl implements OrderService {
         // 观看者用户扣钱
         OrderLog log = balanceService.update(orderID, uid, OrderLog.EVENT.UNLOCK_PUBLISH, diamonds);
         // 发布者用户收钱 （百分比配）
-        diamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
-        balanceService.update(orderID, herUid, OrderLog.EVENT.RECEIVE_PUBLISH, diamonds);
+        Long transactionDiamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
+        balanceService.update(orderID, herUid, OrderLog.EVENT.RECEIVE_PUBLISH, transactionDiamonds);
         // 激活权限
         resourceAuthService.activeResource(uid, publishId, timeInterval_Publish); // 默认一天
+        // publish record
+        Long pdiamonds = publish.getReceivedDiamonds();
+        if (pdiamonds == null) pdiamonds = 0L;
+        publish.setReceivedDiamonds(pdiamonds + diamonds);
         return log;
     }
 

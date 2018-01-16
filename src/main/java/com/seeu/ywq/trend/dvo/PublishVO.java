@@ -2,6 +2,7 @@ package com.seeu.ywq.trend.dvo;
 
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.trend.model.Publish;
+import io.swagger.annotations.ApiParam;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,7 @@ public class PublishVO {
     // 查询详情信息时使用
     private SimpleUserVO user;
 
+    private Long receivedDiamonds; //
 
     public Long getId() {
         return id;
@@ -138,5 +140,13 @@ public class PublishVO {
 
     public void setUser(SimpleUserVO user) {
         this.user = user;
+    }
+
+    public Long getReceivedDiamonds() {
+        return receivedDiamonds;
+    }
+
+    public void setReceivedDiamonds(Long receivedDiamonds) {
+        this.receivedDiamonds = receivedDiamonds;
     }
 }

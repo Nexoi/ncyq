@@ -48,6 +48,8 @@ public class Balance {
 
     private Long vipBuyExpenseDiamonds;  // 购买VIP花费钻石
 
+    private Long sendGift;      // gift send
+
     private Date updateTime = new Date();
 
     public Long getUid() {
@@ -200,5 +202,13 @@ public class Balance {
 
     public void setSharedExpense(Long sharedExpense) {
         this.sharedExpense = sharedExpense;
+    }
+
+    public Long getSendGift() {
+        return sendGift;
+    }
+
+    public void setSendGift(Long sendGift) {
+        this.sendGift = sendGift;
     }
 }

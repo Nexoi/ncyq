@@ -34,12 +34,6 @@ public interface PublishService {
 
     PublishVO findOneByPublishId(Long publishId, boolean canVisitClosedResource);
 
-    ///////////////////////////////////////////************** transfer operations ***************////////////////////////////////////////////////////
-
-    PublishVO transferToVO(Publish publish, boolean canVisitClosedResource);
-
-    List<PublishVO> transferToVO(List<Publish> publishs, boolean canVisitClosedResource);
-
     ///////////////////////////////////////////************** other operations ***************////////////////////////////////////////////////////
 
     /* 基于 findOneByPublishId(publishId,uid) */

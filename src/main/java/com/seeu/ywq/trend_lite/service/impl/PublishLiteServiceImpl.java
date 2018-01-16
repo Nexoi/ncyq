@@ -1,6 +1,8 @@
 package com.seeu.ywq.trend_lite.service.impl;
 
+import com.seeu.ywq.trend.dvo.PublishVOAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVO;
+import com.seeu.ywq.trend_lite.dvo.PublishLiteVOAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOPicture;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOVideo;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
@@ -133,6 +135,12 @@ public class PublishLiteServiceImpl implements PublishLiteService {
                 vod.setUnlockPrice(publish.getUnlockPrice());
                 // TODO video 权限得加 checked 2018-01-12 night
                 return vod;
+            case audio:
+                PublishLiteVOAudio voa = new PublishLiteVOAudio();
+                BeanUtils.copyProperties(publish, voa);
+                voa.setLabels(publish.getLabels() == null ? new ArrayList<>() : Arrays.asList(publish.getLabels().split(",")));
+                voa.setAudio(publish.getAudio());
+                return voa;
             case word:
             default:
                 PublishLiteVO vo = new PublishLiteVO();
