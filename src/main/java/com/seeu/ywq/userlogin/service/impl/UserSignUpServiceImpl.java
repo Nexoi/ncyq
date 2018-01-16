@@ -5,8 +5,7 @@ import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.repository.UserInfoRepository;
-import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
-import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.exception.*;
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
@@ -58,14 +57,14 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         // 此处生成 6 位验证码
         String code = String.valueOf(100000 + new Random().nextInt(899999));
 //        String code = "123456";
-        UserSignUpService.SIGN_PHONE_SEND status = null;
+        UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND status = null;
         try {
 //            code = iSmsSV.sendSMS(phone);
             smsService.send(phone, message.replace("%code%", code));
-            status = UserSignUpService.SIGN_PHONE_SEND.success;
+            status = UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND.success;
         } catch (SMSSendFailureException e) {
             code = null;
-            status = UserSignUpService.SIGN_PHONE_SEND.failure;
+            status = UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND.failure;
         }
         //...
         UserSignUpService.SignUpPhoneResult result = new UserSignUpService.SignUpPhoneResult();
@@ -96,10 +95,13 @@ public class UserSignUpServiceImpl implements UserSignUpService {
      * @param password  始末可以为空格，长度大于等于 6 即可【强制】
      * @param signCheck 验证手机号码和验证码是否匹配
      */
-    public UserSignUpService.SIGN_STATUS signUp(String name, String phone, String password, String code, String signCheck) {
+    public void signUp(String name, String phone, String password, String code, String signCheck) throws PasswordSetException,
+            NickNameSetException,
+            PhoneNumberHasUsedException,
+            JwtCodeException {
         // 验证验证码
         if (signCheck == null || signCheck.trim().length() == 0)
-            return UserSignUpService.SIGN_STATUS.signup_error_sign_check;
+            throw new JwtCodeException();
         // jwt 解析
         PhoneCodeToken phoneCodeToken = jwtUtil.parseToken(signCheck);
         if (phoneCodeToken == null
@@ -108,23 +110,23 @@ public class UserSignUpServiceImpl implements UserSignUpService {
                 || !phoneCodeToken.getPhone().equals(phone) // 电话号码不一致
                 || !phoneCodeToken.getCode().equals(code)   // 验证码不一致
                 ) {
-            return UserSignUpService.SIGN_STATUS.signup_error_sign_check;
+            throw new JwtCodeException();
         }
 
         // 规整化字符串
-        if (name == null) return UserSignUpService.SIGN_STATUS.signup_error_name;
+        if (name == null) throw new NickNameSetException(name);
         name = name.trim();
-        if (phone == null) return UserSignUpService.SIGN_STATUS.signup_error_phone;
+        if (phone == null) throw new PhoneNumberHasUsedException(phone);
         phone = phone.trim();
-        if (password == null || password.length() < 6) return UserSignUpService.SIGN_STATUS.signup_error_password;
+        if (password == null || password.length() < 6) throw new PasswordSetException(password);
 
         try {
             initAccount(name, phone, password);
         } catch (PhoneNumberHasUsedException e) {
-            return UserSignUpService.SIGN_STATUS.signup_error_phone;
+            throw new PhoneNumberHasUsedException(phone);
         }
         //...
-        return UserSignUpService.SIGN_STATUS.signup_success;
+        // success
     }
 
     @Override
@@ -138,7 +140,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
             return null;
         thirdUserLogin = new ThirdUserLogin();
         thirdUserLogin.setYwqUid(ul.getUid());
-        thirdUserLogin.setCredential(credential);
+        thirdUserLogin.setCredential(md5Service.encode(credential));
         thirdUserLogin.setName(name);
         thirdUserLogin.setNickName(nickname);
         thirdUserLogin.setToken(token);
@@ -190,18 +192,13 @@ public class UserSignUpServiceImpl implements UserSignUpService {
      * @param uid
      * @return
      */
-    public UserSignUpService.SIGN_STATUS writtenOff(Long uid) {
+    public void writtenOff(Long uid) throws NoSuchUserException {
         if (!userReactService.exists(uid))
-            return UserSignUpService.SIGN_STATUS.written_off_failure;
+            throw new NoSuchUserException(uid);
         UserLogin user = new UserLogin();
         user.setUid(uid);
         user.setMemberStatus(USER_STATUS.DISTORY);
         userReactService.save(user);
-        return UserSignUpService.SIGN_STATUS.written_off_success;
     }
 
-
-    private String genCode() {
-        return Integer.toString(100000 + (int) Math.random() * 899999);
-    }
 }

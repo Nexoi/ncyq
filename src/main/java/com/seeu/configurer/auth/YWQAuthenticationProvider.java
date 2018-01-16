@@ -41,15 +41,17 @@ public class YWQAuthenticationProvider implements AuthenticationProvider {
         }
         // third part login
         ThirdUserLogin tul = thirdUserLoginService.findByName(name);
-        if (tul != null && tul.getYwqUid() != null) {
+        if (tul != null
+                && tul.getYwqUid() != null
+                && tul.getCredential().equals(password)) {
             // start find uid
             UserLogin ul = userReactService.findOne(tul.getYwqUid());
-            if (user != null
-                    && user.getPassword().equals(password)
-                    && user.getMemberStatus() != null
-                    && user.getMemberStatus() != USER_STATUS.UNACTIVED
-                    && user.getMemberStatus() != USER_STATUS.DISTORY) {
-                return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
+            if (ul != null
+                    && ul.getPassword().equals(password)
+                    && ul.getMemberStatus() != null
+                    && ul.getMemberStatus() != USER_STATUS.UNACTIVED
+                    && ul.getMemberStatus() != USER_STATUS.DISTORY) {
+                return new UsernamePasswordAuthenticationToken(ul, password, ul.getAuthorities());
             }
         }
         return null;

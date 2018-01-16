@@ -1,7 +1,7 @@
 package com.seeu.ywq.userlogin.service.impl;
 
-import com.seeu.ywq.page.dvo.SimpleUserVO;
-import com.seeu.ywq.page.utils.AppVOUtils;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
+import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.model.UserLike;
 import com.seeu.ywq.user.model.UserLikePKeys;

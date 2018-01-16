@@ -1,15 +1,14 @@
 package com.seeu.ywq.api.admin;
 
 import com.seeu.core.R;
-import com.seeu.ywq.page.model.Photography;
-import com.seeu.ywq.page.model.PhotographyDay;
-import com.seeu.ywq.page.service.PhotographyDayService;
-import com.seeu.ywq.page.service.PhotographyService;
+import com.seeu.ywq.photography.model.Photography;
+import com.seeu.ywq.photography.model.PhotographyDay;
+import com.seeu.ywq.photography.service.PhotographyDayService;
+import com.seeu.ywq.photography.service.PhotographyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

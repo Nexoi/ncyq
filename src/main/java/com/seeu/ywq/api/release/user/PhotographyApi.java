@@ -1,9 +1,9 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
-import com.seeu.ywq.page.model.PhotographyDay;
-import com.seeu.ywq.page.service.PhotographyDayService;
-import com.seeu.ywq.page.service.PhotographyService;
+import com.seeu.ywq.photography.model.PhotographyDay;
+import com.seeu.ywq.photography.service.PhotographyDayService;
+import com.seeu.ywq.photography.service.PhotographyService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

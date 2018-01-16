@@ -2,7 +2,10 @@ package com.seeu.ywq.api.release.page;
 
 import com.seeu.ywq.page.model.HomePageCategory;
 import com.seeu.ywq.page.service.AppHomePageService;
-import com.seeu.ywq.page.service.HomePageCategoryService;
+import com.seeu.ywq.page_advertisement.model.Advertisement;
+import com.seeu.ywq.page_advertisement.service.AdvertisementService;
+import com.seeu.ywq.page_video.model.HomePageVideo;
+import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,10 @@ import java.util.Map;
 public class HomePageApi {
     @Autowired
     private AppHomePageService appHomePageService;
+    @Autowired
+    private AdvertisementService advertisementService;
+    @Autowired
+    private HomePageVideoService homePageVideoService;
 
     @ApiOperation(value = "首页")
     @GetMapping("/homepage")
@@ -43,7 +49,7 @@ public class HomePageApi {
     @ApiOperation(value = "首页广告")
     @GetMapping("/homepage/advertisements")
     public ResponseEntity homePageAdvertisements() {
-        return ResponseEntity.ok(appHomePageService.getHomePage_Advertisements());
+        return ResponseEntity.ok(advertisementService.getAdvertisements(Advertisement.CATEGORY.HomePage));
     }
 
     @ApiOperation(value = "网红")
@@ -82,14 +88,14 @@ public class HomePageApi {
         Long visitorUid = null;
         if (authUser != null) visitorUid = authUser.getUid();
         Map map = new HashMap();
-        map.put("hd", appHomePageService.getVideo_HD(visitorUid));
-        map.put("vr", appHomePageService.getVideo_VR(visitorUid));
+        map.put("hd", homePageVideoService.getVideo_HD(visitorUid));
+        map.put("vr", homePageVideoService.getVideo_VR(visitorUid));
         return ResponseEntity.ok(map);
     }
 
     @ApiOperation(value = "视频页广告")
     @GetMapping("/video/advertisements")
     public ResponseEntity videoAdvertisements() {
-        return ResponseEntity.ok(appHomePageService.getVideo_Advertisements());
+        return ResponseEntity.ok(advertisementService.getAdvertisements(Advertisement.CATEGORY.VideoPage));
     }
 }

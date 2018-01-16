@@ -4,18 +4,18 @@ import com.seeu.core.R;
 import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
-import com.seeu.ywq.page.model.Advertisement;
 import com.seeu.ywq.page.model.HomePageCategory;
-import com.seeu.ywq.page.model.HomePageUser;
-import com.seeu.ywq.page.model.HomePageVideo;
 import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page.service.HomePageCategoryService;
+import com.seeu.ywq.page_advertisement.model.Advertisement;
+import com.seeu.ywq.page_advertisement.service.AdvertisementService;
+import com.seeu.ywq.page_video.model.HomePageVideo;
+import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +30,10 @@ public class AppPageConfigApi {
     private AppHomePageService appHomePageService;
     @Autowired
     private HomePageCategoryService homePageCategoryService;
+    @Autowired
+    private AdvertisementService advertisementService;
+    @Autowired
+    private HomePageVideoService homePageVideoService;
 
 
     @ApiOperation(value = "查看所有分类信息", notes = "首页、网红、尤物页面下的分类信息")
@@ -113,7 +117,7 @@ public class AppPageConfigApi {
             return ResponseEntity.status(400).body(R.code(4000).message("序号或用户 UID 不能为空或负数").build());
         // upload video
         try {
-            HomePageVideo homePageVideo = appHomePageService.addVideo(video, coverImage, uid, title, category, order);
+            HomePageVideo homePageVideo = homePageVideoService.addVideo(video, coverImage, uid, title, category, order);
             return ResponseEntity.status(200).body(homePageVideo);
         } catch (ResourceAddException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("添加失败【" + e.getMessage() + "】").build());
@@ -130,7 +134,7 @@ public class AppPageConfigApi {
         if (order == null || order < 0)
             return ResponseEntity.status(400).body(R.code(4000).message("序号不能为空或负数").build());
         try {
-            appHomePageService.addAdvertisement(image, category, url, order);
+            advertisementService.addAdvertisement(image, category, url, order);
             return ResponseEntity.status(201).body(R.code(201).message("添加成功！").build());
         } catch (ResourceAddException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("添加失败").build());
@@ -153,7 +157,7 @@ public class AppPageConfigApi {
     public ResponseEntity deleteVideo(@PathVariable Long videoId) {
         // set deleteFlag 即可
         try {
-            appHomePageService.deleteVideo(videoId);
+            homePageVideoService.deleteVideo(videoId);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该视频记录").build());
@@ -164,7 +168,7 @@ public class AppPageConfigApi {
     @DeleteMapping("/advertisement/{advertisementId}")
     public ResponseEntity deleteAdvertisement(@PathVariable Long advertisementId) {
         try {
-            appHomePageService.deleteAdvertisement(advertisementId);
+            advertisementService.deleteAdvertisement(advertisementId);
             return ResponseEntity.status(200).body(R.code(200).message("删除成功！").build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该广告记录").build());

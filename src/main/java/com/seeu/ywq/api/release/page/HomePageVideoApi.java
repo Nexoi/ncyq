@@ -1,12 +1,12 @@
 package com.seeu.ywq.api.release.page;
 
 import com.seeu.core.R;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
-import com.seeu.ywq.page.model.HomePageVideo;
-import com.seeu.ywq.page.model.HomePageVideoComment;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
+import com.seeu.ywq.page_video.model.HomePageVideo;
+import com.seeu.ywq.page_video.model.HomePageVideoComment;
 import com.seeu.ywq.user.service.FansService;
-import com.seeu.ywq.page.service.HomePageVideoCommentService;
-import com.seeu.ywq.page.service.HomePageVideoService;
+import com.seeu.ywq.page_video.service.HomePageVideoCommentService;
+import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.*;

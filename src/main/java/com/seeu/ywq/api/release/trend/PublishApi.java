@@ -4,7 +4,7 @@ import com.seeu.core.R;
 import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.exception.PublishSRCTYPEConvertException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.trend.dto.PictureDTO;
 import com.seeu.ywq.trend.dto.PicturesDTO;

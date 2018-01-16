@@ -30,7 +30,8 @@ public class ActivityApi {
     private ActivityCheckInService activityCheckInService;
 
     @GetMapping("/list")
-    public ResponseEntity list(@RequestParam Integer page, @RequestParam Integer size) {
+    public ResponseEntity list(@RequestParam(defaultValue = "0") Integer page,
+                               @RequestParam(defaultValue = "10") Integer size) {
         Page<Activity> activities = activityService.findAll(new PageRequest(page, size, new Sort(Sort.Direction.DESC, "updateTime")));
         return ResponseEntity.ok(activities);
     }

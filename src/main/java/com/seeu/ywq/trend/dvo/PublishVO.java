@@ -1,6 +1,6 @@
 package com.seeu.ywq.trend.dvo;
 
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.trend.model.Publish;
 
 import java.util.Date;

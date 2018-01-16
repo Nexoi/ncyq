@@ -1,8 +1,7 @@
 package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
-import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
-import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.exception.*;
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
@@ -39,7 +38,7 @@ public class SignUpApi {
     })
     public ResponseEntity sendPhone(@PathVariable("phone") String phone, HttpServletResponse response) {
         UserSignUpService.SignUpPhoneResult result = userSignUpService.sendPhoneMessage(phone);
-        if (result.getStatus() != null && result.getStatus().equals(UserSignUpService.SIGN_PHONE_SEND.success)) {
+        if (result.getStatus() != null && result.getStatus().equals(UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND.success)) {
             // 写入 cookie
             String signCheckToken = userSignUpService.genSignCheckToken(phone, result.getCode());
             Cookie cookie = new Cookie("signCheck", signCheckToken);
@@ -59,10 +58,10 @@ public class SignUpApi {
             @ApiResponse(code = 400, message = "400 数据错误"),
             @ApiResponse(code = 500, message = "500 注册失败，服务器异常，请稍后再试"),
     })
-    public ResponseEntity signUp(@RequestParam String username,
-                                 @RequestParam String phone,
-                                 @RequestParam String password,
-                                 @RequestParam String code,
+    public ResponseEntity signUp(@RequestParam(required = true) String username,
+                                 @RequestParam(required = true) String phone,
+                                 @RequestParam(required = true) String password,
+                                 @RequestParam(required = true) String code,
                                  @ApiParam(name = "注册码校验签名，存在 cookie 中，不需要手动传入")
                                  @CookieValue(required = false) String signCheck) {
         // 检查手机号码是否被注册
@@ -72,22 +71,17 @@ public class SignUpApi {
         if (signCheck == null || signCheck.trim().length() < 10)
             return ResponseEntity.badRequest().body(R.code(4000).message("请先获取验证码").build());
         // start sign up
-        UserSignUpService.SIGN_STATUS status = userSignUpService.signUp(username, phone, password, code, signCheck);
-        switch (status) {
-            case signup_success:
-                return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
-            case signup_error_sign_check:
-                return ResponseEntity.badRequest().body(R.code(4001).message("注册失败，验证码错误").build());
-            case signup_error_phone:
-                return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码有误").build());
-            case signup_error_name:
-                return ResponseEntity.badRequest().body(R.code(4003).message("注册失败，昵称非法，不能为空").build());
-            case signup_error_password:
-                return ResponseEntity.badRequest().body(R.code(4004).message("注册失败，密码需大于 6 位").build());
-            case sign_exception:
-                return ResponseEntity.status(500).body(R.code(500).message("注册失败，服务器异常，请稍后再试").build());
-            default:
-                return ResponseEntity.badRequest().body(R.code(4005).message("未知异常，请联系管理员").build());
+        try {
+            userSignUpService.signUp(username, phone, password, code, signCheck);
+            return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
+        } catch (PasswordSetException e) {
+            return ResponseEntity.badRequest().body(R.code(4004).message("注册失败，密码需大于 6 位").build());
+        } catch (NickNameSetException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("注册失败，昵称非法，不能为空").build());
+        } catch (PhoneNumberHasUsedException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码有误").build());
+        } catch (JwtCodeException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("注册失败，验证码错误").build());
         }
     }
 
@@ -110,9 +104,9 @@ public class SignUpApi {
                                               @RequestParam(required = true) String credential,
                                               @RequestParam(required = false) String token,
                                               @RequestParam(required = true) String nickname,
-                                              @RequestParam(required = true)  String phone) {
+                                              @RequestParam(required = true) String phone) {
         try {
-            userSignUpService.signUpWithThirdPart(type,name,credential,token,nickname,phone);
+            userSignUpService.signUpWithThirdPart(type, name, credential, token, nickname, phone);
             return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
         } catch (AccountNameAlreadyExistedException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，该帐号已经被注册").build());

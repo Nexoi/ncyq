@@ -1,6 +1,6 @@
 package com.seeu.ywq.user.service;
 
-import com.seeu.ywq.page.dvo.PositionUserVO;
+import com.seeu.ywq.user.dvo.PositionUserVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

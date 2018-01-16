@@ -34,6 +34,9 @@ public class QiniuUploadServiceImpl implements FileUploadService {
     @Value("${qiniu.bucket}")
     private String bucket;
 
+    @Value("${qiniu.protocol_host}")
+    private String protocol_host;
+
     @Override
     public Image uploadImage(MultipartFile file) throws IOException {
         String url = upload(file);
@@ -134,7 +137,7 @@ public class QiniuUploadServiceImpl implements FileUploadService {
     private String upload(ByteArrayInputStream byteInputStream) throws IOException {
         String key = "ywq" + UUID.randomUUID();
         //构造一个带指定Zone对象的配置类
-        Configuration cfg = new Configuration(Zone.zone0());
+        Configuration cfg = new Configuration(Zone.zone2());
         UploadManager uploadManager = new UploadManager(cfg);
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
@@ -144,7 +147,7 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
 //        System.out.println(putRet.key);
 //        System.out.println(putRet.hash);
-        return "http://o7k6tx0fl.bkt.clouddn.com/" + key;
+        return protocol_host + key;
     }
 
     private Map<Picture.ALBUM_TYPE, Image> uploadWithJudgeHazyJPEGWithMap(BufferedImage bufferedImage, Picture.ALBUM_TYPE album_type) throws IOException {

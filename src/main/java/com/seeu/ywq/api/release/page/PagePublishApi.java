@@ -1,7 +1,8 @@
 package com.seeu.ywq.api.release.page;
 
-import com.seeu.core.R;
-import com.seeu.ywq.page.service.AppPublishPageService;
+import com.seeu.ywq.trend_lite.service.AppPublishPageService;
+import com.seeu.ywq.page_advertisement.model.Advertisement;
+import com.seeu.ywq.page_advertisement.service.AdvertisementService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,11 +23,13 @@ public class PagePublishApi {
 
     @Autowired
     private AppPublishPageService appPublishPageService;
+    @Autowired
+    private AdvertisementService advertisementService;
 
     @ApiOperation(value = "广告（至少会有两条）", notes = "至少两条，一般六条，一次请求会返回所有信息")
     @GetMapping("/advertisements")
     public ResponseEntity getAds() {
-        List list = appPublishPageService.getPublishPageAdvertisements();
+        List list = advertisementService.getAdvertisements(Advertisement.CATEGORY.PublishPage);
         return ResponseEntity.ok(list);
     }
 

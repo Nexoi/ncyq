@@ -4,7 +4,7 @@ import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.user.dto.UserDTO;
 import com.seeu.ywq.user.dvo.PhotoWallVO;
 import com.seeu.ywq.user.dvo.UserTagVO;

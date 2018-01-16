@@ -1,53 +1,33 @@
 package com.seeu.ywq.page.service.impl;
 
-import com.seeu.third.filestore.FileUploadService;
-import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOUser;
-import com.seeu.ywq.page.dvo.HomePageVOVideo;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
-import com.seeu.ywq.page.model.*;
+import com.seeu.ywq.page.model.HomePageCategory;
+import com.seeu.ywq.page.model.HomePageUser;
+import com.seeu.ywq.page.model.HomePageUserPKeys;
 import com.seeu.ywq.page.repository.HomePageUserRepository;
-import com.seeu.ywq.page.repository.HomePageVideoRepository;
-import com.seeu.ywq.page.repository.PageAdvertisementRepository;
 import com.seeu.ywq.page.service.AppHomePageService;
-import com.seeu.ywq.page.service.AppVOService;
 import com.seeu.ywq.page.service.HomePageCategoryService;
+import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.resource.model.Image;
-import com.seeu.ywq.resource.model.Video;
-import com.seeu.ywq.resource.repository.ImageRepository;
-import com.seeu.ywq.resource.repository.VideoRepository;
-import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class AppHomePageServiceImpl implements AppHomePageService {
 
     @Resource
-    private PageAdvertisementRepository pageAdvertisementRepository;
-    @Resource
     private HomePageUserRepository homePageUserRepository;
-    @Resource
-    private HomePageVideoRepository homePageVideoRepository;
     @Autowired
     private HomePageCategoryService homePageCategoryService;
     @Autowired
-    private AppVOService appVOService;
-    @Autowired
-    private FileUploadService fileUploadService;
-    @Autowired
-    private UserReactService userReactService;
-    @Resource
-    private VideoRepository videoRepository;
-    @Resource
-    private ImageRepository imageRepository; // 存储图片之用
+    private AppVOUtils appVOUtils;
 
     @Override
     public void addUserConfigurer(Integer category, Long uid, Integer orderId) throws ResourceAlreadyExistedException {
@@ -70,77 +50,6 @@ public class AppHomePageServiceImpl implements AppHomePageService {
         // ...
     }
 
-    @Override
-    public void addAdvertisement(MultipartFile imageFile, Advertisement.CATEGORY category, String url, Integer orderId) throws ResourceAddException {
-        // 文件上传
-        try {
-            Image image = fileUploadService.uploadImage(imageFile);
-            image = imageRepository.save(image); // 持久化（先持久化才能被 set 进去。。）
-            // 持久化
-            Advertisement advertisement = new Advertisement();
-            advertisement.setImage(image);
-            advertisement.setUrl(url);
-            advertisement.setCategory(category);
-            advertisement.setOrderId(orderId);
-            advertisement.setCreateTime(new Date());
-            pageAdvertisementRepository.save(advertisement);
-        } catch (Exception e) {
-            throw new ResourceAddException(e.getMessage());
-        }
-    }
-
-    @Override
-    public void deleteAdvertisement(Long advertisementId) throws ResourceNotFoundException {
-        Advertisement advertisement = pageAdvertisementRepository.findOne(advertisementId);
-        if (advertisement == null)
-            throw new ResourceNotFoundException("Can not found Advertisement[ID:" + advertisementId + "]");
-        pageAdvertisementRepository.delete(advertisementId);
-    }
-
-    @Override
-    public HomePageVideo addVideo(MultipartFile videoFile, MultipartFile coverImage, Long uid, String title, HomePageVideo.CATEGORY category, Integer orderId) throws ResourceAddException {
-        try {
-            // video
-            Video video = fileUploadService.uploadVideo(videoFile);
-            Image image = fileUploadService.uploadImage(coverImage);
-            video.setCoverUrl(image.getImageUrl()); // 设定一张封面
-            // cover
-            Video savedVideo = videoRepository.save(video);
-            Image savedImage = imageRepository.save(image);
-            HomePageVideo pageVideo = new HomePageVideo();
-            pageVideo.setCategory(category);
-            pageVideo.setUid(uid);
-            pageVideo.setTitle(title);
-            pageVideo.setViewNum(0l);
-            pageVideo.setDeleteFlag(HomePageVideo.DELETE_FLAG.show);
-            pageVideo.setVideo(savedVideo);
-            pageVideo.setCoverImage(savedImage);
-            pageVideo.setCreateTime(new Date());
-            return homePageVideoRepository.save(pageVideo);
-        } catch (IOException e) {
-            throw new ResourceAddException("Resource add exception: 视频上传失败！");
-        }
-    }
-
-    @Override
-    public void deleteVideo(Long videoId) throws ResourceNotFoundException {
-        HomePageVideo video = homePageVideoRepository.findOne(videoId);
-        if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
-            throw new ResourceNotFoundException("Can not found Resource[Video:" + videoId + "]");
-        video.setDeleteFlag(HomePageVideo.DELETE_FLAG.delete);
-        homePageVideoRepository.saveAndFlush(video);
-    }
-
-    @Override
-    public List<Advertisement> getHomePage_Advertisements() {
-        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.HomePage);
-    }
-
-
-    @Override
-    public List<Advertisement> getVideo_Advertisements() {
-        return pageAdvertisementRepository.findAllByCategory(Advertisement.CATEGORY.VideoPage);
-    }
 
     @Override
     public List<HomePageCategory> queryAllByPage(Long visitorUid, HomePageCategory.PAGE page) {
@@ -162,7 +71,7 @@ public class AppHomePageServiceImpl implements AppHomePageService {
     @Override
     public List<HomePageVOUser> getHomePageUsers(Long visitorUid, Integer category) {
         if (category == null) return new ArrayList<>();
-        return appVOService.formUserVO(visitorUid == null ? homePageUserRepository.findUserVOByCategory(category) : homePageUserRepository.findUserVOByCategory(visitorUid, category));
+        return formUserVO(visitorUid == null ? homePageUserRepository.findUserVOByCategory(category) : homePageUserRepository.findUserVOByCategory(visitorUid, category));
     }
 
     @Override
@@ -170,84 +79,37 @@ public class AppHomePageServiceImpl implements AppHomePageService {
         return getHomePageUsers(null, category);
     }
 
-    //    @Override
-//    public List<HomePageVOUser> getHomePage_NewHotsPerson() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_HotsPerson.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-//
-//    @Override
-//    public List<HomePageVOUser> getHomePage_NewActors() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HomePage_Actor.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-//
-//    @Override
-//    public List<HomePageVOUser> getYouWuPage_New() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_New.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-//
-//    @Override
-//    public List<HomePageVOUser> getYouWuPage_Suggestion() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.YouWuPage_Suggest.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-//
-//
-//    @Override
-//    public List<HomePageVOUser> getHotsPerson_New() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_New.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-//
-//    @Override
-//    public List<HomePageVOUser> getHotsPerson_Suggestion() {
-//        List list = homePageUserRepository.findUserVOByCategory(HomePageUser.CATEGORY.HotsPerson_Suggest.ordinal());
-//        return appVOService.formUserVO(list);
-//    }
-    @Override
-    public List<HomePageVOVideo> getVideo_HD() {
-        return getVideo_HD(null);
+
+    private HomePageVOUser formUserVO(Object[] objects) {
+        if (objects == null || objects.length != 13 && objects.length != 14) return null;// 长度必须是 13 或 14 个
+        HomePageVOUser vo = new HomePageVOUser();
+        vo.setUid(appVOUtils.parseLong(objects[0]));
+        vo.setNickname(appVOUtils.parseString(objects[1]));
+        vo.setLikeNum(appVOUtils.parseLong(objects[2]));
+        vo.setHeadIconUrl(appVOUtils.parseString(objects[3]));
+        vo.setIdentifications(appVOUtils.parseBytesToLongList(objects[4]));
+        Image image = new Image();
+        image.setId(appVOUtils.parseLong(objects[5]));
+        image.setHeight(appVOUtils.parseInt(objects[6]));
+        image.setWidth(appVOUtils.parseInt(objects[7]));
+        image.setImageUrl(appVOUtils.parseString(objects[8]));
+        image.setThumbImage100pxUrl(appVOUtils.parseString(objects[9]));
+        image.setThumbImage200pxUrl(appVOUtils.parseString(objects[10]));
+        image.setThumbImage300pxUrl(appVOUtils.parseString(objects[11]));
+        image.setThumbImage500pxUrl(appVOUtils.parseString(objects[12]));
+        if (objects.length > 13)
+            vo.setLikeIt(1 == appVOUtils.parseInt(objects[13]));
+        vo.setCoverImage(image);
+        return vo;
     }
 
-    @Override
-    public List<HomePageVOVideo> getVideo_VR() {
-        return getVideo_VR(null);
-    }
-
-    @Override
-    public List<HomePageVOVideo> getVideo_HD(Long visitorUid) {
-        return formVOs(visitorUid, HomePageVideo.CATEGORY.hd.ordinal());
-    }
-
-    @Override
-    public List<HomePageVOVideo> getVideo_VR(Long visitorUid) {
-        return formVOs(visitorUid, HomePageVideo.CATEGORY.vr.ordinal());
-    }
-
-    private List<HomePageVOVideo> formVOs(Long visitorUid, Integer category) {
-        List list = homePageVideoRepository.findThemByCategory(category);
-        List<HomePageVOVideo> voVideos = appVOService.formVideoVO(list);
-        if (voVideos == null || voVideos.size() == 0) return new ArrayList<>();
-        List<Long> uids = new ArrayList<>();
-        for (HomePageVOVideo voVideo : voVideos) {
-            Long uid = voVideo.getUid();
-            if (uid != null) uids.add(uid);
+    private List<HomePageVOUser> formUserVO(List<Object[]> objects) {
+        if (objects == null || objects.size() == 0) return new ArrayList<>();
+        List<HomePageVOUser> vos = new ArrayList<>();
+        for (Object[] object : objects) {
+            vos.add(formUserVO(object));
         }
-        // 查询用户信息
-        List<SimpleUserVO> users = userReactService.findAllSimpleUsers(visitorUid, uids);
-        if (users == null || users.size() == 0) return voVideos;
-        Map<Long, SimpleUserVO> map = new HashMap<>();
-        for (SimpleUserVO vo : users) {
-            map.put(vo.getUid(), vo);
-        }
-        // 装载信息
-        for (HomePageVOVideo voVideo : voVideos) {
-            voVideo.setUser(map.get(voVideo.getUid()));
-            voVideo.setUid(null);// 清除不必要的信息
-        }
-        return voVideos;
+        return vos;
     }
 
 }

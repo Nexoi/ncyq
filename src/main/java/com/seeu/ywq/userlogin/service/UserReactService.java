@@ -1,7 +1,6 @@
 package com.seeu.ywq.userlogin.service;
 
-import com.seeu.ywq.page.dvo.HomePageVOUser;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
 

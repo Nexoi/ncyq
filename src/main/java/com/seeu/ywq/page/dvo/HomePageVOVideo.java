@@ -2,7 +2,8 @@ package com.seeu.ywq.page.dvo;
 
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.resource.model.Video;
-import com.seeu.ywq.page.model.HomePageVideo;
+import com.seeu.ywq.page_video.model.HomePageVideo;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 
 import java.util.Date;
 

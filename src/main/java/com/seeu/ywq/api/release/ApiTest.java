@@ -1,6 +1,6 @@
 package com.seeu.ywq.api.release;
 
-import com.seeu.ywq.page.repository.PublishLiteRepository;
+import com.seeu.ywq.trend_lite.repository.PublishLiteRepository;
 import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.user.service.FansService;
 import com.seeu.ywq.user.service.UserPositionService;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/test")

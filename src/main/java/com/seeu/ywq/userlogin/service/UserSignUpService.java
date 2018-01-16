@@ -1,7 +1,6 @@
 package com.seeu.ywq.userlogin.service;
 
-import com.seeu.ywq.userlogin.exception.AccountNameAlreadyExistedException;
-import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.exception.*;
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.UserLogin;
 
@@ -22,30 +21,11 @@ import com.seeu.ywq.userlogin.model.UserLogin;
  */
 public interface UserSignUpService {
 
-    public enum SIGN_STATUS {
-        // 注册
-        signup_success,
-        signup_failure,
-        // 字段错误
-        signup_error_phone,
-        signup_error_name,
-        signup_error_password,  // 密码长度／复杂度有误
-        signup_error_sign_check, // 验证码加密信息
-        // 注销
-        written_off_success,
-        written_off_failure,
-        // 异常
-        sign_exception
-    }
 
-    public enum SIGN_PHONE_SEND {
-        success,
-        failure
-    }
 
-    public SignUpPhoneResult sendPhoneMessage(String phone);
+    SignUpPhoneResult sendPhoneMessage(String phone);
 
-    public String genSignCheckToken(String phone, String code);
+    String genSignCheckToken(String phone, String code);
 
 
     /**
@@ -56,7 +36,11 @@ public interface UserSignUpService {
      * @param password  始末可以为空格，长度大于等于 6 即可【强制】
      * @param signCheck 验证手机号码和验证码是否匹配
      */
-    public SIGN_STATUS signUp(String name, String phone, String password, String code, String signCheck);
+    void signUp(String name, String phone, String password, String code, String signCheck)
+            throws PasswordSetException,
+            NickNameSetException,
+            PhoneNumberHasUsedException,
+            JwtCodeException;
 
     /**
      * third part sign up
@@ -67,7 +51,7 @@ public interface UserSignUpService {
      * @param nickname
      * @return
      */
-    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException;
+    UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException;
 
     /**
      * 注销用户
@@ -75,10 +59,14 @@ public interface UserSignUpService {
      * @param uid
      * @return
      */
-    public SIGN_STATUS writtenOff(Long uid);
+    void writtenOff(Long uid) throws NoSuchUserException;
 
 
     public class SignUpPhoneResult {
+        public enum SIGN_PHONE_SEND {
+            success,
+            failure
+        }
         private SIGN_PHONE_SEND status;
         private String code;
 

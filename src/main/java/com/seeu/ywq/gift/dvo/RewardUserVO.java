@@ -1,6 +1,6 @@
 package com.seeu.ywq.gift.dvo;
 
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 
 import java.util.Date;
 

@@ -4,7 +4,7 @@ import com.seeu.ywq.gift.dvo.RewardUserVO;
 import com.seeu.ywq.gift.model.RewardOrder;
 import com.seeu.ywq.gift.service.RewardOrderService;
 import com.seeu.ywq.gift.service.RewardUserService;
-import com.seeu.ywq.page.dvo.SimpleUserVO;
+import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
