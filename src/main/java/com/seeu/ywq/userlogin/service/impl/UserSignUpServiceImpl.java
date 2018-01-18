@@ -147,8 +147,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
         // 验证第三方
         final Map<String, String> map = new HashMap();
-        thirdPartTokenService.validatedInfo(type, name, token, x-> {
-            
+        thirdPartTokenService.validatedInfo(type, name, token, new ThirdPartTokenService.Processor() {
+
             @Override
             public void process(boolean isValidated, String username, String nickname, String headIconUrl) {
                 if (isValidated) {
