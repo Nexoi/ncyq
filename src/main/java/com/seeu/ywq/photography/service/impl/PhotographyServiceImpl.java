@@ -5,6 +5,7 @@ import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.photography.model.Photography;
 import com.seeu.ywq.photography.repository.PhotographyRepository;
 import com.seeu.ywq.photography.service.PhotographyService;
+import com.seeu.ywq.resource.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,8 @@ public class PhotographyServiceImpl implements PhotographyService {
     private PhotographyRepository repository;
     @Autowired
     private FileUploadService fileUploadService;
+    @Autowired
+    private ImageService imageService;
 
     @Override
     public Page findAllByUid(Long uid, Pageable pageable) {
@@ -39,7 +42,7 @@ public class PhotographyServiceImpl implements PhotographyService {
             Photography photography = new Photography();
             photography.setCreateTime(new Date());
             photography.setDeleteFlag(Photography.DELETE_FLAG.show);
-            photography.setImage(image);
+            photography.setImage(imageService.save(image));
             photography.setUid(uid);
             photographies.add(photography);
         }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +92,7 @@ public class HomePageVideoApi {
 
     @ApiOperation(value = "添加评论", notes = "添加一条新的评论信息")
     @PostMapping("/{videoId}/comment")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity comment(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long videoId, String text) {
         HomePageVideoComment comment = new HomePageVideoComment();
         comment.setCommentDate(new Date());
@@ -106,6 +108,7 @@ public class HomePageVideoApi {
 
     @ApiOperation(value = "添加评论回复", notes = "添加一条评论信息的回复内容")
     @PostMapping("/{videoId}/comment/{fatherId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity commentReply(@AuthenticationPrincipal UserLogin authUser,
                                        @PathVariable Long videoId,
                                        @ApiParam(value = "父评论ID，回复的内容会挂在这条评论下")
@@ -126,6 +129,7 @@ public class HomePageVideoApi {
 
     @ApiOperation(value = "删除评论", notes = "删除该评论信息")
     @DeleteMapping("/{videoId}/comment/{commentId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity deleteComment(@AuthenticationPrincipal UserLogin authUser,
                                         @PathVariable Long videoId,
                                         @PathVariable Long commentId) {
