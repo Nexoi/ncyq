@@ -1,4 +1,4 @@
-package com.seeu.ywq.utils;
+package com.seeu.ywq.userlogin.service;
 
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 

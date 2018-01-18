@@ -19,7 +19,8 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
             "right join ywq_publish p on p.uid = ut.user_uid " +
             "left join ywq_video v on v.id = p.video_id " +
             "left join ywq_publish_liked_users pubu on pubu.publish_id = p.id and pubu.uid = :uid " +
-            "where p.status = 0 and ut.tags_id in (:labels) " +
+//          "where p.status = 0 and ut.tags_id in (:labels) " +   // 2018-01-18 night update (replace it)
+            "where p.status = 0 and ut.tags_id in (:labels) and p.uid != :uid " +
             "group by p.id " +
             "ORDER BY p.create_time desc limit :startPage, :pageSize", nativeQuery = true)
     List<Object[]> queryItUseMyTags(@Param("uid") Long uid, @Param("labels") Collection<Long> labels, @Param("startPage") Integer startPage, @Param("pageSize") Integer pageSize);

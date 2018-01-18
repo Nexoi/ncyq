@@ -15,7 +15,7 @@ import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
-import com.seeu.ywq.utils.ThirdPartTokenService;
+import com.seeu.ywq.userlogin.service.ThirdPartTokenService;
 import com.seeu.ywq.utils.jwt.JwtConstant;
 import com.seeu.ywq.utils.jwt.JwtUtil;
 import com.seeu.ywq.utils.jwt.PhoneCodeToken;
@@ -55,8 +55,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
     public SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
-        String code = String.valueOf(100000 + new Random().nextInt(899999));
-//        String code = "123456";
+//        String code = String.valueOf(100000 + new Random().nextInt(899999));
+        String code = "123456";
         SignUpPhoneResult.SIGN_PHONE_SEND status = null;
         try {
 //            code = iSmsSV.sendSMS(phone);
@@ -130,7 +130,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     }
 
     @Override
-    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String token, String phone, String code, String signCheck) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException, JwtCodeException {
+    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String token, String phone, String code, String signCheck) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException, JwtCodeException, ThirdPartTokenException {
         // 验证验证码
         if (signCheck == null || signCheck.trim().length() == 0)
             throw new JwtCodeException();
@@ -147,19 +147,20 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
         // 验证第三方
         final Map<String, String> map = new HashMap();
-        thirdPartTokenService.validatedInfo(type, name, token, new ThirdPartTokenService.Processor() {
-
-            @Override
-            public void process(boolean isValidated, String username, String nickname, String headIconUrl) {
-                if (isValidated) {
-                    map.put("nickname", nickname);
-                    map.put("headIconUrl", headIconUrl);
-                } else {
-                    map.put("nickname", null);
-                    map.put("headIconUrl", null);
-                }
+        thirdPartTokenService.validatedInfo(type, name, token, (isValidated, username, nickname, headIconUrl) -> {
+            if (isValidated) {
+                map.put("ok", "ok");
+                map.put("nickname", nickname);
+                map.put("headIconUrl", headIconUrl);
+            } else {
+                map.put("ok", "notok");
+                map.put("nickname", null);
+                map.put("headIconUrl", null);
             }
         });
+
+        if (null == map.get("ok") || !"ok".equals(map.get("ok")))
+            throw new ThirdPartTokenException();
 
         ThirdUserLogin thirdUserLogin = thirdUserLoginService.findByName(name);
         if (null != thirdUserLogin)

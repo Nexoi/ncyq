@@ -98,7 +98,11 @@ public class SignUpApi {
         return ResponseEntity.ok(R.code(200).message("修改密码成功").build());
     }
 
-    @ApiOperation(value = "sign up with qq, weibo, wechat, etc.")
+    @ApiOperation(
+            value = "sign up with qq, weibo, wechat, etc.",
+            notes = "微信：需要傳入：username[openid]、token[access_token]；" +
+                    "微博：需要傳入：token[access_token]；" +
+                    "QQ：username[openid]、token[access_token]")
     @PostMapping("/signup/{type}")
     public ResponseEntity signUpWithThirdPart(@PathVariable ThirdUserLogin.TYPE type,
                                               @RequestParam(required = true) String username,
@@ -123,6 +127,8 @@ public class SignUpApi {
             return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码已经被注册").build());
         } catch (JwtCodeException e) {
             return ResponseEntity.badRequest().body(R.code(4001).message("注册失败，验证码错误").build());
+        } catch (ThirdPartTokenException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("注册失败，TOKEN 驗證錯誤").build());
         }
     }
 }
