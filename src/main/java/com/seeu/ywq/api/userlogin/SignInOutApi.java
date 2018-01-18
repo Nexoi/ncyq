@@ -6,6 +6,7 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.TokenPersistentRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,8 @@ public class SignInOutApi {
     @ApiOperation(value = "登录账号", notes = "登陆成功只会返回 200 状态码，token 信息会自动写入 cookie，客户端需要支持 cookie；如需要退出账号，请使用 /api/v1/signout 清除 cookie 信息")
     @PostMapping("/api/v1/signin")
     public void signIn(@AuthenticationPrincipal UserLogin authUser,
-                       @RequestParam String phone,
+                       @ApiParam(value = "登录帐号（手机/openId/...）")
+                       @RequestParam String username,
                        @RequestParam String password,
                        @RequestParam(value = "remember-me", required = false) Boolean rememberMe,
                        @RequestParam(required = false) BigDecimal longitude,

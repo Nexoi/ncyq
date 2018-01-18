@@ -52,7 +52,7 @@ public class ShareApi {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value = "get pictures", notes = "get all pictures from server")
+    @ApiOperation(value = "获取分享图片", notes = "get all pictures from server")
     @GetMapping("/pictures")
     public ResponseEntity listPictures() {
         return ResponseEntity.ok(sharePicturesService.findAll());

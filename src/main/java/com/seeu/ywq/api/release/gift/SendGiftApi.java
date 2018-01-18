@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "Send Gift (With Address)", description = "")
+@Api(tags = "打赏送礼（寄送）", description = "寄送礼物到家门")
 @RestController
 @RequestMapping("/api/v1/gift")
 public class SendGiftApi {
@@ -27,7 +27,7 @@ public class SendGiftApi {
     @Autowired
     private OrderService orderService;
 
-    @ApiOperation(value = "list all gifts")
+    @ApiOperation(value = "列出所有可送礼物")
     @GetMapping("/list")
     public ResponseEntity listAll(@RequestParam(defaultValue = "0") Integer page,
                                   @RequestParam(defaultValue = "10") Integer size) {
@@ -35,7 +35,7 @@ public class SendGiftApi {
     }
 
 
-    @ApiOperation("send gift")
+    @ApiOperation("送礼")
     @PostMapping("/{uid}")
     public ResponseEntity createSend(@AuthenticationPrincipal UserLogin authUser,
                                      @PathVariable Long uid,

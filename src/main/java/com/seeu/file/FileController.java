@@ -1,4 +1,4 @@
-//package com.seeu.file;
+package com.seeu.file;//package com.seeu.file;
 //
 //
 //import com.alibaba.fastjson.JSONObject;

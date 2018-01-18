@@ -22,7 +22,6 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 public interface UserSignUpService {
 
 
-
     SignUpPhoneResult sendPhoneMessage(String phone);
 
     String genSignCheckToken(String phone, String code);
@@ -46,12 +45,10 @@ public interface UserSignUpService {
      * third part sign up
      *
      * @param name
-     * @param credential
      * @param token
-     * @param nickname
      * @return
      */
-    UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException;
+    UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String token, String phone, String code, String signCheck) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException, JwtCodeException;
 
     /**
      * 注销用户
@@ -67,6 +64,7 @@ public interface UserSignUpService {
             success,
             failure
         }
+
         private SIGN_PHONE_SEND status;
         private String code;
 

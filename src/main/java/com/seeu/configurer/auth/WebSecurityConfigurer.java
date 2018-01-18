@@ -62,7 +62,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin()
-                .usernameParameter("phone") // 用 email 登录
+                .usernameParameter("username") // 用 email 登录
                 .loginPage("/api/v1/signin")
                 //设置默认登录成功跳转页面
                 .defaultSuccessUrl("/signin-success")

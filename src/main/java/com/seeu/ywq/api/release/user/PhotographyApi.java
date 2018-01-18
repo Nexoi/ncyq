@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "下载相册(摄影集)", description = "管理员通过接口进行上传照片，用户在此下载")
+@Api(tags = "下载相册（摄影集）", description = "管理员通过接口进行上传照片，用户在此下载")
 @RestController
 @RequestMapping("/api/v1/photographs")
 public class PhotographyApi {

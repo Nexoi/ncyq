@@ -15,6 +15,7 @@ import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
+import com.seeu.ywq.utils.ThirdPartTokenService;
 import com.seeu.ywq.utils.jwt.JwtConstant;
 import com.seeu.ywq.utils.jwt.JwtUtil;
 import com.seeu.ywq.utils.jwt.PhoneCodeToken;
@@ -23,10 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class UserSignUpServiceImpl implements UserSignUpService {
@@ -41,6 +39,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     @Autowired
     private ThirdUserLoginService thirdUserLoginService;
     @Autowired
+    private ThirdPartTokenService thirdPartTokenService;
+    @Autowired
     JwtUtil jwtUtil;
     @Autowired
     JwtConstant jwtConstant;
@@ -53,21 +53,21 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     @Value("${ywq.headicon}")
     private String headIcon;
 
-    public UserSignUpService.SignUpPhoneResult sendPhoneMessage(String phone) {
+    public SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
         String code = String.valueOf(100000 + new Random().nextInt(899999));
 //        String code = "123456";
-        UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND status = null;
+        SignUpPhoneResult.SIGN_PHONE_SEND status = null;
         try {
 //            code = iSmsSV.sendSMS(phone);
             smsService.send(phone, message.replace("%code%", code));
-            status = UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND.success;
+            status = SignUpPhoneResult.SIGN_PHONE_SEND.success;
         } catch (SMSSendFailureException e) {
             code = null;
-            status = UserSignUpService.SignUpPhoneResult.SIGN_PHONE_SEND.failure;
+            status = SignUpPhoneResult.SIGN_PHONE_SEND.failure;
         }
         //...
-        UserSignUpService.SignUpPhoneResult result = new UserSignUpService.SignUpPhoneResult();
+        SignUpPhoneResult result = new SignUpPhoneResult();
         result.setCode(code);
         result.setStatus(status);
         return result;
@@ -121,7 +121,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (password == null || password.length() < 6) throw new PasswordSetException(password);
 
         try {
-            initAccount(name, phone, password);
+            initAccount(name, phone, password, headIcon);
         } catch (PhoneNumberHasUsedException e) {
             throw new PhoneNumberHasUsedException(phone);
         }
@@ -130,11 +130,42 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     }
 
     @Override
-    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String credential, String token, String nickname, String phone) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException {
+    public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String token, String phone, String code, String signCheck) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException, JwtCodeException {
+        // 验证验证码
+        if (signCheck == null || signCheck.trim().length() == 0)
+            throw new JwtCodeException();
+        // jwt 解析
+        PhoneCodeToken phoneCodeToken = jwtUtil.parseToken(signCheck);
+        if (phoneCodeToken == null
+                || phoneCodeToken.getPhone() == null
+                || phoneCodeToken.getCode() == null
+                || !phoneCodeToken.getPhone().equals(phone) // 电话号码不一致
+                || !phoneCodeToken.getCode().equals(code)   // 验证码不一致
+                ) {
+            throw new JwtCodeException();
+        }
+
+        // 验证第三方
+        final Map<String, String> map = new HashMap();
+        thirdPartTokenService.validatedInfo(type, name, token, x-> {
+            
+            @Override
+            public void process(boolean isValidated, String username, String nickname, String headIconUrl) {
+                if (isValidated) {
+                    map.put("nickname", nickname);
+                    map.put("headIconUrl", headIconUrl);
+                } else {
+                    map.put("nickname", null);
+                    map.put("headIconUrl", null);
+                }
+            }
+        });
+
         ThirdUserLogin thirdUserLogin = thirdUserLoginService.findByName(name);
         if (null != thirdUserLogin)
             throw new AccountNameAlreadyExistedException(name);
-        UserLogin ul = initAccount(nickname, phone, credential);
+        String credential = "defaultPassword";
+        UserLogin ul = initAccount(map.get("nickname"), phone, credential, map.get("headIconUrl"));
         // record third part info
         if (ul == null)
             return null;
@@ -142,7 +173,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         thirdUserLogin.setYwqUid(ul.getUid());
         thirdUserLogin.setCredential(md5Service.encode(credential));
         thirdUserLogin.setName(name);
-        thirdUserLogin.setNickName(nickname);
+        thirdUserLogin.setNickName(map.get("nickname"));
         thirdUserLogin.setToken(token);
         thirdUserLogin.setType(type);
         thirdUserLogin.setUpdateTime(new Date());
@@ -150,7 +181,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         return ul;
     }
 
-    private UserLogin initAccount(String name, String phone, String credential) throws PhoneNumberHasUsedException {
+    private UserLogin initAccount(String name, String phone, String credential, String headIconUrl) throws PhoneNumberHasUsedException {
+        if (headIconUrl == null) headIconUrl = headIcon;
         UserLogin ul = userReactService.findByPhone(phone);
         if (null != ul)
             throw new PhoneNumberHasUsedException(phone);
@@ -158,7 +190,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setNickname(name);
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(credential));
-        userLogin.setHeadIconUrl(headIcon);
+        userLogin.setHeadIconUrl(headIconUrl);
         // 直接添加，状态为 1【正常用户】
         userLogin.setMemberStatus(USER_STATUS.OK);
         // 添加权限 //
@@ -168,8 +200,10 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setRoles(roles);
         UserLogin savedUserLogin = userReactService.save(userLogin);
         // 更新昵称
-        savedUserLogin.setNickname("user_" + savedUserLogin.getUid());
-        savedUserLogin = userReactService.save(savedUserLogin);
+        if (name == null) {
+            savedUserLogin.setNickname("user_" + savedUserLogin.getUid());
+            savedUserLogin = userReactService.save(savedUserLogin);
+        }
         // 添加用户基本信息 //
         User user = new User();
         user.setUid(savedUserLogin.getUid());

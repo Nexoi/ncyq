@@ -1,4 +1,4 @@
-//package com.seeu.ywq.release.model;
+package com.seeu.ywq.user.model;//package com.seeu.ywq.release.model;
 //
 //import io.swagger.annotations.ApiParam;
 //

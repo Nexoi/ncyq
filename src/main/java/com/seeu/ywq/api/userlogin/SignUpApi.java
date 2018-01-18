@@ -62,7 +62,8 @@ public class SignUpApi {
                                  @RequestParam(required = true) String phone,
                                  @RequestParam(required = true) String password,
                                  @RequestParam(required = true) String code,
-                                 @ApiParam(name = "注册码校验签名，存在 cookie 中，不需要手动传入")
+                                 @RequestParam(required = false) String inviteUid,
+                                 @ApiParam(hidden = true, name = "注册码校验签名，存在 cookie 中，不需要手动传入")
                                  @CookieValue(required = false) String signCheck) {
         // 检查手机号码是否被注册
         if (userReactService.findByPhone(phone) != null) {
@@ -100,18 +101,28 @@ public class SignUpApi {
     @ApiOperation(value = "sign up with qq, weibo, wechat, etc.")
     @PostMapping("/signup/{type}")
     public ResponseEntity signUpWithThirdPart(@PathVariable ThirdUserLogin.TYPE type,
-                                              @RequestParam(required = true) String name,
-                                              @RequestParam(required = true) String credential,
+                                              @RequestParam(required = true) String username,
                                               @RequestParam(required = false) String token,
-                                              @RequestParam(required = true) String nickname,
-                                              @RequestParam(required = true) String phone) {
+                                              @RequestParam(required = true) String phone,
+                                              @RequestParam(required = true) String code,
+                                              @ApiParam(hidden = true)
+                                              @CookieValue(required = false) String signCheck) {
+        // 检查手机号码是否被注册
+        if (userReactService.findByPhone(phone) != null) {
+            return ResponseEntity.badRequest().body(R.code(4006).message("该手机号码已被注册").build());
+        }
+        if (signCheck == null || signCheck.trim().length() < 10)
+            return ResponseEntity.badRequest().body(R.code(4000).message("请先获取验证码").build());
         try {
-            userSignUpService.signUpWithThirdPart(type, name, credential, token, nickname, phone);
+            //
+            userSignUpService.signUpWithThirdPart(type, username, token, phone, code, signCheck);
             return ResponseEntity.status(201).body(R.code(201).message("注册成功，账户创建完成").build());
         } catch (AccountNameAlreadyExistedException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，该帐号已经被注册").build());
         } catch (PhoneNumberHasUsedException e) {
             return ResponseEntity.badRequest().body(R.code(4002).message("注册失败，手机号码已经被注册").build());
+        } catch (JwtCodeException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("注册失败，验证码错误").build());
         }
     }
 }

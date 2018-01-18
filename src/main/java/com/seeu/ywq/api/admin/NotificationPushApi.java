@@ -26,15 +26,14 @@ public class NotificationPushApi {
     @ApiOperation(value = "为所有人发布通知", notes = "字段 extraJson 必须为 JSON Object 格式，如 { key:value }")
     @PostMapping("/sys")
     public ResponseEntity sendPush(String text, String linkUrl, String extraJson) {
-
         try {
             JSONObject jsonObject = JSON.parseObject(extraJson);
             pushService.sysPush(text, linkUrl, jsonObject);
             return ResponseEntity.ok(R.code(200).message("发布成功！").build());
         } catch (PushException e) {
             return ResponseEntity.badRequest().body(R.code(4001).message("发布失败！" + e.getMessage()).build());
-        }catch (JSONException e1){
-            return ResponseEntity.badRequest().body(R.code(4002).message("JSON ").build());
+        } catch (JSONException e1) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("JSON 解析失败！").build());
         }
     }
 }

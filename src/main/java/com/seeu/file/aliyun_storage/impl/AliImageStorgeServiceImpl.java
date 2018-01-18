@@ -1,4 +1,4 @@
-//package com.seeu.file.aliyun_storage.impl;
+package com.seeu.file.aliyun_storage.impl;//package com.seeu.file.aliyun_storage.impl;
 //
 //import com.aliyun.oss.OSSClient;
 //import com.seeu.file.aliyun_storage.StorageImageService;

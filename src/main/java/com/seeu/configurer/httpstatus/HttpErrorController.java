@@ -1,4 +1,4 @@
-//package com.seeu.configurer.httpstatus;//package com.seeu.configurer.httpstatus;
+package com.seeu.configurer.httpstatus;//package com.seeu.configurer.httpstatus;//package com.seeu.configurer.httpstatus;
 //
 //import com.seeu.core.R;
 //import org.springframework.boot.autoconfigure.web.ErrorController;
