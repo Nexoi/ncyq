@@ -41,8 +41,8 @@ public class UserInfoApi {
 
     @ApiOperation("查詢用戶信息（具備搜索功能，默認按粉絲數排序）")
     @GetMapping("/info/list")
-    public ResponseEntity search(@RequestParam String word,
-                                 @RequestParam USER search,
+    public ResponseEntity search(@RequestParam(required = false) String word,
+                                 @RequestParam(required = false) USER search,
                                  @RequestParam(defaultValue = "0") Integer page,
                                  @RequestParam(defaultValue = "10") Integer size,
                                  @RequestParam(required = false) String orderBy,
