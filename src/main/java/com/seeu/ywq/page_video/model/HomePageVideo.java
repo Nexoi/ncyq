@@ -26,6 +26,11 @@ public class HomePageVideo {
     private String title;
     private Long uid;
     private Long viewNum;
+    // 收費
+    private Long diamonds;
+    // 總收入
+    @Column(name = "received_diamonds")
+    private Long receivedDiamonds;
 
     @OneToOne(targetEntity = Image.class)
     @JoinColumn(name = "cover_image_id", referencedColumnName = "id")
@@ -109,5 +114,21 @@ public class HomePageVideo {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getDiamonds() {
+        return diamonds;
+    }
+
+    public void setDiamonds(Long diamonds) {
+        this.diamonds = diamonds;
+    }
+
+    public Long getReceivedDiamonds() {
+        return receivedDiamonds;
+    }
+
+    public void setReceivedDiamonds(Long receivedDiamonds) {
+        this.receivedDiamonds = receivedDiamonds;
     }
 }

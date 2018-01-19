@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 
 public interface ResourceAuthRepository extends JpaRepository<ResourceAuth, ResourceAuthPKeys> {
-    Integer countAllByUidAndResourceIdAndOutTimeAfter(@Param("uid") Long uid, @Param("resourceId") Long resourceId, @Param("outTime") Date currentTime);
+    Integer countAllByUidAndTypeAndResourceIdAndOutTimeAfter(@Param("uid") Long uid, @Param("type") ResourceAuth.TYPE type, @Param("resourceId") Long resourceId, @Param("outTime") Date currentTime);
 }

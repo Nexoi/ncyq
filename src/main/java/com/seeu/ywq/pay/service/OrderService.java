@@ -47,9 +47,11 @@ public interface OrderService {
     // 送花（直接将花转成钻石）
     RewardOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException;
 
-    GiftOrder createSendGift(Long uid, Long herUid, Long resourceId, Integer amount)throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException;
+    GiftOrder createSendGift(Long uid, Long herUid, Long resourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException;
 
     OrderLog createUnlockPublish(Long uid, Long publishId) throws PublishNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException, ActionNotSupportException;
+
+    OrderLog createUnlockHomePageVideo(Long uid, Long videoId) throws ResourceNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException, ActionNotSupportException;
 
     OrderLog createUnlockWeChatID(Long uid, Long herUid) throws BalanceNotEnoughException, WeChatNotSetException, SMSSendFailureException, GlobalConfigSettingException, ActionParameterException;
 

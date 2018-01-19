@@ -15,6 +15,8 @@ import com.seeu.ywq.gift.service.RewardOrderService;
 import com.seeu.ywq.gift.service.RewardService;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
+import com.seeu.ywq.page_video.model.HomePageVideo;
+import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
@@ -55,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
     private BalanceService balanceService;
     @Autowired
     private PublishService publishService;
+    @Autowired
+    private HomePageVideoService homePageVideoService;
     @Autowired
     private ResourceAuthService resourceAuthService;
     @Autowired
@@ -237,7 +241,7 @@ public class OrderServiceImpl implements OrderService {
             throw new PublishNotFoundException("动态不存在！");
         Long herUid = publish.getUid();
         // 查看是否在激活状态
-        if (resourceAuthService.canVisit(uid, publishId))
+        if (resourceAuthService.canVisitPublish(uid, publishId))
             throw new ResourceAlreadyActivedException();
         Long diamonds = publish.getUnlockPrice().longValue();
         String orderID = genOrderID();
@@ -247,11 +251,37 @@ public class OrderServiceImpl implements OrderService {
         Long transactionDiamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
         balanceService.update(orderID, herUid, OrderLog.EVENT.RECEIVE_PUBLISH, transactionDiamonds);
         // 激活权限
-        resourceAuthService.activeResource(uid, publishId, timeInterval_Publish); // 默认一天
-        // publish record
+        resourceAuthService.activePublishResource(uid, publishId, timeInterval_Publish); // 默认一天
+        // publish record 紀錄每個動態的收入
         Long pdiamonds = publish.getReceivedDiamonds();
         if (pdiamonds == null) pdiamonds = 0L;
         publish.setReceivedDiamonds(pdiamonds + diamonds);
+        publishService.save(publish);
+        return log;
+    }
+
+    @Override
+    public OrderLog createUnlockHomePageVideo(Long uid, Long videoId) throws ResourceNotFoundException, BalanceNotEnoughException, ResourceAlreadyActivedException, ActionNotSupportException {
+        HomePageVideo video = homePageVideoService.findOne(videoId);
+        if (video == null)
+            throw new ResourceNotFoundException("視頻不存在！");
+        Long herUid = video.getUid();
+        // 查看是否激活
+        if (resourceAuthService.canVisitVideo(uid, videoId))
+            throw new ResourceAlreadyActivedException();
+        Long diamonds = video.getDiamonds();
+        String orderID = genOrderID();
+        OrderLog log = balanceService.update(orderID, uid, OrderLog.EVENT.UNLOCK_VIDEO, diamonds);
+        // 發布者收款
+        Long transactionDiamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
+        balanceService.update(orderID, herUid, OrderLog.EVENT.RECEIVE_VIDEO, transactionDiamonds);
+        // 激活权限
+        resourceAuthService.activePublishResource(uid, videoId, timeInterval_Publish); // 默认一天
+        // publish record
+        Long receivedDiamonds = video.getReceivedDiamonds();
+        if (receivedDiamonds == null) receivedDiamonds = 0L;
+        video.setReceivedDiamonds(receivedDiamonds + diamonds);
+        homePageVideoService.save(video);
         return log;
     }
 

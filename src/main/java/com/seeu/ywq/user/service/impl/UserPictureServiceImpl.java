@@ -143,7 +143,7 @@ public class UserPictureServiceImpl implements UserPictureService {
     }
 
     public boolean canVisit(Long uid, Long publishId, Date currentTime) {
-        return resourceAuthService.canVisit(uid, publishId, currentTime);
+        return resourceAuthService.canVisitPublish(uid, publishId, currentTime);
     }
 
 //    /**
@@ -216,7 +216,7 @@ public class UserPictureServiceImpl implements UserPictureService {
 //    @Override
 //    public List<PublishPictureVO> transferToVO(List<Picture> pictures, Long uid) {
 //        if (pictures == null || pictures.size() == 0) return new ArrayList<>();
-//        boolean canVisit = canVisit(uid, pictures.get(0).getPublishId(), new Date());
+//        boolean canVisitPublish = canVisitPublish(uid, pictures.get(0).getPublishId(), new Date());
 //        List<PublishPictureVO> vos = new ArrayList<>();
 //        for (Picture picture : pictures) {
 //            PublishPictureVO vo = new PublishPictureVO();
@@ -227,7 +227,7 @@ public class UserPictureServiceImpl implements UserPictureService {
 //                vo.setAlbumType(Picture.ALBUM_TYPE.open);
 //            } else {
 //                if (Picture.ALBUM_TYPE.close == picture.getAlbumType())
-//                    if (canVisit) {
+//                    if (canVisitPublish) {
 //                        vo.setImage(picture.getImageOpen());
 //                        vo.setAlbumType(Picture.ALBUM_TYPE.open);
 //                    } else {

@@ -5,12 +5,14 @@ import java.io.Serializable;
 public class ResourceAuthPKeys implements Serializable {
     private Long resourceId;
     private Long uid;
+    private ResourceAuth.TYPE type;
 
     public ResourceAuthPKeys() {
     }
 
-    public ResourceAuthPKeys(Long uid, Long resourceId) {
+    public ResourceAuthPKeys(Long uid, ResourceAuth.TYPE type, Long resourceId) {
         this.uid = uid;
+        this.type = type;
         this.resourceId = resourceId;
     }
 
@@ -22,12 +24,29 @@ public class ResourceAuthPKeys implements Serializable {
         this.uid = uid;
     }
 
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public ResourceAuth.TYPE getType() {
+        return type;
+    }
+
+    public void setType(ResourceAuth.TYPE type) {
+        this.type = type;
+    }
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((uid == null) ? 0 : uid.hashCode());
         result = PRIME * result + ((resourceId == null) ? 0 : resourceId.hashCode());
+        result = PRIME * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
@@ -56,6 +75,13 @@ public class ResourceAuthPKeys implements Serializable {
                 return false;
             }
         } else if (!resourceId.equals(other.resourceId)) {
+            return false;
+        }
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;

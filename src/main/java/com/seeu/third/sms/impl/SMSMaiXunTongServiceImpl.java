@@ -50,7 +50,8 @@ public class SMSMaiXunTongServiceImpl implements SMSService {
                 new NameValuePair("Password", password),
                 new NameValuePair("Phones", phone),
                 new NameValuePair("SendType", "1"),
-                new NameValuePair("SendTime", df.format(date)),
+//                new NameValuePair("SendTime", df.format(date)),
+                new NameValuePair("SendTime", ""),
                 new NameValuePair("PostFixNumber", ""),
                 new NameValuePair("Content", Content)};
         getMethod.setRequestBody(data);

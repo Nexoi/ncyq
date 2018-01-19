@@ -18,6 +18,11 @@ public class HomePageVOVideo {
     private Date createTime;
     private Image coverImage;
     private Video video;
+    // 收費
+    private Long diamonds;
+    // 總收入
+    private Long receivedDiamonds;
+
     // ...
     private SimpleUserVO user;
 
@@ -107,5 +112,21 @@ public class HomePageVOVideo {
 
     public void setUser(SimpleUserVO user) {
         this.user = user;
+    }
+
+    public Long getDiamonds() {
+        return diamonds;
+    }
+
+    public void setDiamonds(Long diamonds) {
+        this.diamonds = diamonds;
+    }
+
+    public Long getReceivedDiamonds() {
+        return receivedDiamonds;
+    }
+
+    public void setReceivedDiamonds(Long receivedDiamonds) {
+        this.receivedDiamonds = receivedDiamonds;
     }
 }

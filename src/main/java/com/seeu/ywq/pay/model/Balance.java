@@ -48,6 +48,10 @@ public class Balance {
 
     private Long vipBuyExpenseDiamonds;  // 购买VIP花费钻石
 
+    private Long videoExpense;      // 視頻支出
+
+    private Long videoReceive;      // 視頻收入
+
     private Long sendGift;      // gift send
 
     private Date updateTime = new Date();
@@ -210,5 +214,21 @@ public class Balance {
 
     public void setSendGift(Long sendGift) {
         this.sendGift = sendGift;
+    }
+
+    public Long getVideoExpense() {
+        return videoExpense;
+    }
+
+    public void setVideoExpense(Long videoExpense) {
+        this.videoExpense = videoExpense;
+    }
+
+    public Long getVideoReceive() {
+        return videoReceive;
+    }
+
+    public void setVideoReceive(Long videoReceive) {
+        this.videoReceive = videoReceive;
     }
 }

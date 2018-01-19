@@ -29,7 +29,9 @@ public class OrderLog {
         BIND_SHARED_RECEIVE(false),
         DIAMOND_TO_COIN(true),
         BUY_VIP(true),
-        SEND_GIFT(true);
+        SEND_GIFT(true),
+        UNLOCK_VIDEO(true),
+        RECEIVE_VIDEO(false);
 
         boolean expense;
 

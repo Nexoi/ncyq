@@ -158,7 +158,7 @@ public class UserInfoApi {
             // 用户关注
             SimpleUserVO voBar = userReactService.findOneAndTransferToVO(authUser.getUid(), uid);
             map.put("bar", voBar);
-        }else{
+        } else {
             SimpleUserVO voBar = userReactService.findOneAndTransferToVO(null, uid);
             map.put("bar", voBar);
         }
@@ -262,7 +262,7 @@ public class UserInfoApi {
             context.setAuthentication(auth); //重新设置上下文中存储的用户权限
             return ResponseEntity.ok(R.code(200).message("设置成功！").build());
         } catch (ActionParameterException e) {
-            return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，请稍后再试").build());
+            return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，參數異常，请稍后再试").build());
         } catch (ActionNotSupportException e) {
             return ResponseEntity.badRequest().body(R.code(4000).message("性别设定之后不可修改").build());
         } catch (ResourceNotFoundException e) {

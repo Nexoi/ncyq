@@ -4,6 +4,7 @@ import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.page.dvo.HomePageVOVideo;
+import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.page_video.model.HomePageVideo;
@@ -16,6 +17,7 @@ import com.seeu.ywq.resource.service.VideoService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,16 +41,37 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     @Autowired
     private AppVOUtils appVOUtils;
 
+    @Autowired
+    private ResourceAuthService resourceAuthService;
+
     @Override
     public HomePageVideo findOne(Long videoId) {
-        HomePageVideo video = repository.findOne(videoId);
-        if (video != null) repository.viewItOnce(videoId);
+        return repository.findOne(videoId);
+    }
+
+    @Override
+    public HomePageVideo findOne(Long visitorUid, Long videoId) {
+        if (visitorUid == null) return findOne(videoId);
+        HomePageVideo video = findOne(videoId);
+        if (null != video)
+            authFliter(visitorUid, video);
         return video;
     }
 
     @Override
     public Page findAllByUid(Long uid, Pageable pageable) {
         return repository.findAllByUid(uid, pageable);
+    }
+
+    @Override
+    public Page findAllByUid(Long visitorUid, Long uid, Pageable pageable) {
+        Page page = findAllByUid(uid, pageable);
+        return null;
+    }
+
+    @Override
+    public Page findAllByCategory(HomePageVideo.CATEGORY category) {
+        return null;
     }
 
     @Override
@@ -77,6 +100,11 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     }
 
     @Override
+    public HomePageVideo save(HomePageVideo video) {
+        return repository.save(video);
+    }
+
+    @Override
     public void deleteVideo(Long videoId) throws ResourceNotFoundException {
         HomePageVideo video = repository.findOne(videoId);
         if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
@@ -86,27 +114,41 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     }
 
     @Override
-    public List<HomePageVOVideo> getVideo_HD() {
-        return getVideo_HD(null);
+    public Page<HomePageVOVideo> getVideo_HD(Pageable pageable) {
+        return getVideo_HD(null, pageable);
     }
 
     @Override
-    public List<HomePageVOVideo> getVideo_VR() {
-        return getVideo_VR(null);
+    public Page<HomePageVOVideo> getVideo_VR(Pageable pageable) {
+        return getVideo_VR(null, pageable);
     }
 
     @Override
-    public List<HomePageVOVideo> getVideo_HD(Long visitorUid) {
-        return formVOs(visitorUid, HomePageVideo.CATEGORY.hd.ordinal());
+    public Page<HomePageVOVideo> getVideo_HD(Long visitorUid, Pageable pageable) {
+        return formPage(visitorUid, HomePageVideo.CATEGORY.hd.ordinal(), pageable);
     }
 
     @Override
-    public List<HomePageVOVideo> getVideo_VR(Long visitorUid) {
-        return formVOs(visitorUid, HomePageVideo.CATEGORY.vr.ordinal());
+    public Page<HomePageVOVideo> getVideo_VR(Long visitorUid, Pageable pageable) {
+        return formPage(visitorUid, HomePageVideo.CATEGORY.vr.ordinal(), pageable);
     }
 
-    private List<HomePageVOVideo> formVOs(Long visitorUid, Integer category) {
-        List list = repository.findThemByCategory(category);
+
+    private Page<HomePageVOVideo> formPage(Long visitorUid, Integer category, Pageable pageable) {
+        Integer page = pageable.getPageNumber();
+        Integer size = pageable.getPageSize();
+        if (page == null) page = 0;
+        if (size == null) size = 0;
+        Long totalSize = repository.countThemByCategory(category);
+        List<HomePageVOVideo> list = formVOs(visitorUid, category, page, size);
+        for (HomePageVOVideo video : list) {
+            authFliter(visitorUid, video);
+        }
+        return new PageImpl<>(list, pageable, totalSize);
+    }
+
+    private List<HomePageVOVideo> formVOs(Long visitorUid, Integer category, Integer startPage, Integer pageSize) {
+        List list = repository.findThemByCategory(category, startPage, pageSize);
         List<HomePageVOVideo> voVideos = formVideoVO(list);
         if (voVideos == null || voVideos.size() == 0) return new ArrayList<>();
         List<Long> uids = new ArrayList<>();
@@ -121,9 +163,11 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         for (SimpleUserVO vo : users) {
             map.put(vo.getUid(), vo);
         }
-        // 装载信息
+        // 装载信息（並且驗證權限）
         for (HomePageVOVideo voVideo : voVideos) {
             voVideo.setUser(map.get(voVideo.getUid()));
+            // TODO is active?
+            authFliter(visitorUid, voVideo);
             voVideo.setUid(null);// 清除不必要的信息
         }
         return voVideos;
@@ -154,6 +198,8 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         video.setId(appVOUtils.parseLong(objects[16]));
         video.setCoverUrl(appVOUtils.parseString(objects[17]));
         video.setSrcUrl(appVOUtils.parseString(objects[18]));
+        vo.setDiamonds(appVOUtils.parseLong(objects[19]));
+        vo.setReceivedDiamonds(appVOUtils.parseLong(objects[20]));
 
         vo.setCoverImage(image);
         vo.setVideo(video);
@@ -167,5 +213,29 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
             vos.add(formVideoVO(object));
         }
         return vos;
+    }
+
+    private void authFliter(Long visitorUid, HomePageVideo video) {
+        if (visitorUid == null) return;
+        if (video != null) {
+            repository.viewItOnce(video.getId()); // view it once
+            // vo
+            if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
+            // is active?
+            if (!resourceAuthService.canVisitVideo(visitorUid, video.getId()))
+                video.getVideo().setSrcUrl(null);
+        }
+    }
+
+    private void authFliter(Long visitorUid, HomePageVOVideo video) {
+        if (visitorUid == null) return;
+        if (video != null) {
+            repository.viewItOnce(video.getId()); // view it once
+            // vo
+            if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
+            // is active?
+            if (!resourceAuthService.canVisitVideo(visitorUid, video.getId()))
+                video.getVideo().setSrcUrl(null);
+        }
     }
 }

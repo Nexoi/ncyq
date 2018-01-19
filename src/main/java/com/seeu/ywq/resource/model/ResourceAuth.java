@@ -10,12 +10,21 @@ import java.util.Date;
 @IdClass(ResourceAuthPKeys.class)
 @Table(name = "ywq_resources_unlock")
 public class ResourceAuth {
+
+    public enum TYPE {
+        publish,
+        video
+    }
+
     @Id
     @Column(name = "resource_id")
     private Long resourceId;
     @Id
     @Column(name = "uid")
     private Long uid;
+    @Id
+    @Column(name = "type")
+    private TYPE type;
 
     private Date outTime; // 过期时间
 
@@ -41,5 +50,13 @@ public class ResourceAuth {
 
     public void setUid(Long uid) {
         this.uid = uid;
+    }
+
+    public TYPE getType() {
+        return type;
+    }
+
+    public void setType(TYPE type) {
+        this.type = type;
     }
 }

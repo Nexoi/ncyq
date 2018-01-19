@@ -5,9 +5,9 @@ import com.seeu.ywq.exception.PublishNotFoundException;
 import java.util.Date;
 
 public interface ResourceAuthService {
-    boolean canVisit(Long uid, Long publishId, Date currentTime);
+    boolean canVisitPublish(Long uid, Long publishId, Date currentTime);
 
-    boolean canVisit(Long uid, Long resourceId);
+    boolean canVisitPublish(Long uid, Long resourceId);
 
     /**
      * 激活该资源
@@ -18,5 +18,14 @@ public interface ResourceAuthService {
      * @param day
      * @throws PublishNotFoundException
      */
-    void activeResource(Long uid, Long resourceId, Integer day);
+    void activePublishResource(Long uid, Long resourceId, Integer day);
+
+
+    // video
+
+    boolean canVisitVideo(Long uid, Long videoId, Date currentTime);
+
+    boolean canVisitVideo(Long uid, Long videoId);
+
+    void activeVideoResource(Long uid, Long videoId, Integer day);
 }

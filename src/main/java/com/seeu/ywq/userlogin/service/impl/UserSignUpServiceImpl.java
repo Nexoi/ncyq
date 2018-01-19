@@ -55,8 +55,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
 
     public SignUpPhoneResult sendPhoneMessage(String phone) {
         // 此处生成 6 位验证码
-//        String code = String.valueOf(100000 + new Random().nextInt(899999));
-        String code = "123456";
+        String code = String.valueOf(100000 + new Random().nextInt(899999));
+//        String code = "123456";
         SignUpPhoneResult.SIGN_PHONE_SEND status = null;
         try {
 //            code = iSmsSV.sendSMS(phone);

@@ -1,6 +1,5 @@
 package com.seeu.ywq.trend_lite.service.impl;
 
-import com.seeu.ywq.trend.dvo.PublishVOAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVO;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOPicture;
@@ -154,7 +153,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         List<PublishLiteVO> vos = new ArrayList<>();
         for (PublishLite publish : publishs) {
             if (publish == null) continue;
-            boolean canVisit = visitorUid == publish.getUid() || resourceAuthService.canVisit(visitorUid, publish.getId());
+            boolean canVisit = visitorUid == publish.getUid() || resourceAuthService.canVisitPublish(visitorUid, publish.getId());
             publish.setStatus(null); // 消除不必要的数据
             vos.add(transferToVO(publish, canVisit));
         }

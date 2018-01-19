@@ -19,27 +19,57 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
     private UserVIPService userVIPService;
 
     @Override
-    public boolean canVisit(Long uid, Long publishId, Date currentTime) {
+    public boolean canVisitPublish(Long uid, Long publishId, Date currentTime) {
         return userVIPService.isActive(uid) || // 会员全部放行
-                0 != resourceAuthRepository.countAllByUidAndResourceIdAndOutTimeAfter(uid, publishId, currentTime);
+                0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.publish, publishId, currentTime);
     }
 
     @Override
-    public boolean canVisit(Long uid, Long resourceId) {
-        return canVisit(uid, resourceId, new Date());
+    public boolean canVisitPublish(Long uid, Long resourceId) {
+        return canVisitPublish(uid, resourceId, new Date());
     }
 
     @Override
-    public void activeResource(Long uid, Long resourceId, Integer day) {
+    public void activePublishResource(Long uid, Long resourceId, Integer day) {
         if (day == null || day <= 0) return;
-        ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, resourceId));
+        ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, ResourceAuth.TYPE.publish, resourceId));
         if (resourceAuth == null) {
             resourceAuth = new ResourceAuth();
             resourceAuth.setUid(uid);
+            resourceAuth.setType(ResourceAuth.TYPE.publish);
             resourceAuth.setResourceId(resourceId);
             resourceAuth.setOutTime(new Date()); // 初始化为当前时间
         }
         // 激活时间
+        Date date = new Date();
+        date.setTime(date.getTime() + day * 24 * 60 * 60 * 1000);
+        resourceAuth.setOutTime(date);
+        resourceAuthRepository.save(resourceAuth);
+    }
+
+    @Override
+    public boolean canVisitVideo(Long uid, Long videoId, Date currentTime) {
+        return userVIPService.isActive(uid) || // 会员全部放行
+                0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.video, videoId, currentTime);
+    }
+
+    @Override
+    public boolean canVisitVideo(Long uid, Long videoId) {
+        return canVisitVideo(uid, videoId, new Date());
+    }
+
+    @Override
+    public void activeVideoResource(Long uid, Long videoId, Integer day) {
+        if (day == null || day <= 0) return;
+        ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, ResourceAuth.TYPE.publish, videoId));
+        if (resourceAuth == null) {
+            resourceAuth = new ResourceAuth();
+            resourceAuth.setUid(uid);
+            resourceAuth.setType(ResourceAuth.TYPE.video);
+            resourceAuth.setResourceId(videoId);
+            resourceAuth.setOutTime(new Date()); // 初始化为当前时间
+        }
+        // 激活时间（當前時期 + day 天）
         Date date = new Date();
         date.setTime(date.getTime() + day * 24 * 60 * 60 * 1000);
         resourceAuth.setOutTime(date);
