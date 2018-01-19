@@ -25,7 +25,7 @@ public interface HomePageVideoRepository extends JpaRepository<HomePageVideo, Lo
             " from ywq_page_video v join ywq_user_login ul on v.uid = ul.uid" +
             " left join ywq_image img on v.cover_image_id = img.id" +
             " left join ywq_video vd on v.video_id = vd.id" +
-            " where v.category = ?1 limit :startPage, :pageSize ", nativeQuery = true)
+            " where v.category = :category limit :startPage, :pageSize ", nativeQuery = true)
     List<Object[]> queryThem(@Param("category") Integer category,
                              @Param("startPage") Integer startPage,
                              @Param("pageSize") Integer pageSize);
