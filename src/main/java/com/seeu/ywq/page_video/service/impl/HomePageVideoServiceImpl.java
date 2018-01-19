@@ -139,7 +139,7 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         Integer size = pageable.getPageSize();
         if (page == null) page = 0;
         if (size == null) size = 0;
-        Long totalSize = repository.countThemByCategory(category);
+        Long totalSize = repository.countThem(category);
         List<HomePageVOVideo> list = formVOs(visitorUid, category, page, size);
         for (HomePageVOVideo video : list) {
             authFliter(visitorUid, video);
@@ -148,7 +148,7 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     }
 
     private List<HomePageVOVideo> formVOs(Long visitorUid, Integer category, Integer startPage, Integer pageSize) {
-        List list = repository.findThemByCategory(category, startPage, pageSize);
+        List list = repository.queryThem(category, startPage, pageSize);
         List<HomePageVOVideo> voVideos = formVideoVO(list);
         if (voVideos == null || voVideos.size() == 0) return new ArrayList<>();
         List<Long> uids = new ArrayList<>();
