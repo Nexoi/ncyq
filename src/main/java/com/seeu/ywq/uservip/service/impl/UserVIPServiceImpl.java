@@ -26,6 +26,7 @@ public class UserVIPServiceImpl implements UserVIPService {
 
     @Override
     public UserVIP findOneIfActive(Long uid) {
+        if (uid == null) return null;
         UserVIP vip = findOne(uid);
         if (vip == null) return null;
         Date terDate = vip.getTerminationDate();
