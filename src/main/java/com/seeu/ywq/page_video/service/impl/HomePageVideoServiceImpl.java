@@ -153,6 +153,7 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         if (voVideos == null || voVideos.size() == 0) return new ArrayList<>();
         List<Long> uids = new ArrayList<>();
         for (HomePageVOVideo voVideo : voVideos) {
+            if (voVideo == null) continue;
             Long uid = voVideo.getUid();
             if (uid != null) uids.add(uid);
         }
@@ -175,7 +176,7 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
 
 
     private HomePageVOVideo formVideoVO(Object[] objects) {
-        if (objects == null || objects.length != 19) return null;// 长度必须是 19 个
+        if (objects == null || objects.length != 21) return null;// 长度必须是 21 个
         HomePageVOVideo vo = new HomePageVOVideo();
         vo.setId(appVOUtils.parseLong(objects[0]));
         vo.setCategory(appVOUtils.parseCATEGORY(objects[1]));
