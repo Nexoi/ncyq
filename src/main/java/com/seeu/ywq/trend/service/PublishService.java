@@ -23,6 +23,9 @@ public interface PublishService {
 
     Publish findOne(Long uid, Long publishId);
 
+
+    boolean exist(Long publishId);
+
     @Transactional
     Publish save(Publish publish);
 

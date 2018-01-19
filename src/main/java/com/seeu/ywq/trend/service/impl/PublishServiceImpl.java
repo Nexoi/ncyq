@@ -23,6 +23,7 @@ import com.seeu.ywq.trend.service.PublishVideoService;
 import com.seeu.ywq.user.service.UserInfoService;
 import com.seeu.ywq.user.service.UserPictureService;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.utils.PictureYellowService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -65,6 +66,9 @@ public class PublishServiceImpl implements PublishService {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private PictureYellowService pictureYellowService;
+
     @Override
     public Publish findOne(Long publishId) {
         return publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
@@ -75,6 +79,14 @@ public class PublishServiceImpl implements PublishService {
         return publishRepository.findByIdAndUidAndStatus(publishId, uid, Publish.STATUS.normal);
     }
 
+    @Override
+    public boolean exist(Long publishId) {
+        if (publishId == null) return false;
+//        if (!publishRepository.exists(publishId)) return false;
+        if (null == publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal)) return false;
+        return true;
+    }
+
     @Transactional
     @Override
     public Publish save(Publish publish) {
@@ -82,7 +94,10 @@ public class PublishServiceImpl implements PublishService {
         // 用户发布数量加一
         if (publish.getUid() != null)
             userInfoService.publishPlusOne(publish.getUid());
-        return publishRepository.save(publish);
+        // 图片鉴黄？
+        publish = publishRepository.save(publish);
+        pictureYellowService.validated(publish.getId());
+        return publish;
     }
 
     @Override

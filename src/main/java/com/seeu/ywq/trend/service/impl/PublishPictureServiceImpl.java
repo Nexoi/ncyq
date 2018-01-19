@@ -7,12 +7,18 @@ import com.seeu.ywq.trend.service.PublishPictureService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class PublishPictureServiceImpl implements PublishPictureService {
     @Resource
     private PublishPictureRepository publishPictureRepository;
 
+
+    @Override
+    public List<Picture> save(List<Picture> pictures) {
+        return publishPictureRepository.save(pictures);
+    }
 
     @Override
     public Image getCoverOpen(Long uid) {
