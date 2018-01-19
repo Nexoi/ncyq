@@ -217,7 +217,10 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     }
 
     private void authFliter(Long visitorUid, HomePageVideo video) {
-        if (visitorUid == null) return;
+        if (visitorUid == null) {
+            if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
+            video.getVideo().setSrcUrl(null);
+        }
         if (video != null) {
             repository.viewItOnce(video.getId()); // view it once
             // vo
@@ -229,7 +232,10 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     }
 
     private void authFliter(Long visitorUid, HomePageVOVideo video) {
-        if (visitorUid == null) return;
+        if (visitorUid == null) {
+            if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
+            video.getVideo().setSrcUrl(null);
+        }
         if (video != null) {
             repository.viewItOnce(video.getId()); // view it once
             // vo
