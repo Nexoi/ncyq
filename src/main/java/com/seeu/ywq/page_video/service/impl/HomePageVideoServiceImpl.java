@@ -46,15 +46,22 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
 
     @Override
     public HomePageVideo findOne(Long videoId) {
-        return repository.findOne(videoId);
+        HomePageVideo video = repository.findOne(videoId);
+        if (video != null) {
+            repository.viewItOnce(video.getId()); // view it once
+            authFliter(null, video);
+        }
+        return video;
     }
 
     @Override
     public HomePageVideo findOne(Long visitorUid, Long videoId) {
         if (visitorUid == null) return findOne(videoId);
-        HomePageVideo video = findOne(videoId);
-        if (null != video)
+        HomePageVideo video = repository.findOne(videoId); // 未經處理的源
+        if (null != video) {
+            repository.viewItOnce(video.getId()); // view it once
             authFliter(visitorUid, video);
+        }
         return video;
     }
 
@@ -222,7 +229,6 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
             video.getVideo().setSrcUrl(null);
         }
         if (video != null) {
-            repository.viewItOnce(video.getId()); // view it once
             // vo
             if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
             // is active?
@@ -237,7 +243,6 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
             video.getVideo().setSrcUrl(null);
         }
         if (video != null) {
-            repository.viewItOnce(video.getId()); // view it once
             // vo
             if (video.getDiamonds() == null || video.getDiamonds() <= 0 || video.getVideo() == null) return;
             // is active?
