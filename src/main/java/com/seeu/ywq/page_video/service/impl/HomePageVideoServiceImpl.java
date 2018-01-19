@@ -46,17 +46,11 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
 
     @Override
     public HomePageVideo findOne(Long videoId) {
-        HomePageVideo video = repository.findOne(videoId);
-        if (video != null) {
-            repository.viewItOnce(video.getId()); // view it once
-            authFliter(null, video);
-        }
-        return video;
+        return findOne(null, videoId);
     }
 
     @Override
     public HomePageVideo findOne(Long visitorUid, Long videoId) {
-        if (visitorUid == null) return findOne(videoId);
         HomePageVideo video = repository.findOne(videoId); // 未經處理的源
         if (null != video) {
             repository.viewItOnce(video.getId()); // view it once
@@ -67,18 +61,37 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
 
     @Override
     public Page findAllByUid(Long uid, Pageable pageable) {
-        return repository.findAllByUid(uid, pageable);
+        Page page = repository.findAllByUid(uid, pageable);
+        List<HomePageVideo> list = page.getContent();
+        for (HomePageVideo video : list) {
+            authFliter(null, video);
+        }
+        return page;
     }
 
     @Override
     public Page findAllByUid(Long visitorUid, Long uid, Pageable pageable) {
-        Page page = findAllByUid(uid, pageable);
-        return null;
+        Page page = repository.findAllByUid(uid, pageable);
+        List<HomePageVideo> list = page.getContent();
+        for (HomePageVideo video : list) {
+            authFliter(visitorUid, video);
+        }
+        return page;
     }
 
     @Override
-    public Page findAllByCategory(HomePageVideo.CATEGORY category) {
-        return null;
+    public Page findAllByCategory(HomePageVideo.CATEGORY category, Pageable pageable) {
+        return findAllByCategory(null, category, pageable);
+    }
+
+    @Override
+    public Page findAllByCategory(Long visitorUid, HomePageVideo.CATEGORY category, Pageable pageable) {
+        Page page = repository.findAllByCategory(category, pageable);
+        List<HomePageVideo> list = page.getContent();
+        for (HomePageVideo video : list) {
+            authFliter(visitorUid, video);
+        }
+        return page;
     }
 
     @Override
@@ -148,9 +161,6 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         if (size == null) size = 0;
         Long totalSize = repository.countThem(category);
         List<HomePageVOVideo> list = formVOs(visitorUid, category, page, size);
-        for (HomePageVOVideo video : list) {
-            authFliter(visitorUid, video);
-        }
         return new PageImpl<>(list, pageable, totalSize);
     }
 
@@ -174,9 +184,9 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         // 装载信息（並且驗證權限）
         for (HomePageVOVideo voVideo : voVideos) {
             voVideo.setUser(map.get(voVideo.getUid()));
+            voVideo.setUid(null);// 清除不必要的信息
             // TODO is active?
             authFliter(visitorUid, voVideo);
-            voVideo.setUid(null);// 清除不必要的信息
         }
         return voVideos;
     }

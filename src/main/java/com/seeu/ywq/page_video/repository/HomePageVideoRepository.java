@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 public interface HomePageVideoRepository extends JpaRepository<HomePageVideo, Long> {
-    List<HomePageVideo> findAllByCategory(@Param("category") HomePageVideo.CATEGORY category);
+    Page<HomePageVideo> findAllByCategory(@Param("category") HomePageVideo.CATEGORY category, Pageable pageable);
 
     Page<HomePageVideo> findAllByUid(@Param("uid") Long uid, Pageable pageable);
 
