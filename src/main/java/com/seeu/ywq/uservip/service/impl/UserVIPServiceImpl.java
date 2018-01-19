@@ -15,12 +15,18 @@ public class UserVIPServiceImpl implements UserVIPService {
 
     @Override
     public UserVIP findOne(Long uid) {
+//        UserVIP vip = repository.findOne(uid);
+//        不需要轉化成非會員信息
+//        if (null != vip && null != vip.getTerminationDate()) {
+//            if (vip.getTerminationDate().before(new Date()))
+//                vip.setVipLevel(UserVIP.VIP.none);
+//        }
         return repository.findOne(uid);
     }
 
     @Override
     public UserVIP findOneIfActive(Long uid) {
-        UserVIP vip = repository.findOne(uid);
+        UserVIP vip = findOne(uid);
         if (vip == null) return null;
         Date terDate = vip.getTerminationDate();
         if (terDate == null)

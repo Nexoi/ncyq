@@ -1,6 +1,7 @@
 package com.seeu.ywq.user.service.impl;
 
 import com.seeu.third.filestore.FileUploadService;
+import com.seeu.ywq.api.admin.user.USER;
 import com.seeu.ywq.exception.ActionNotSupportException;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
@@ -17,6 +18,9 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -182,5 +186,23 @@ public class UserInfoServiceImpl implements UserInfoService {
             vos.add(transferToVO(identification));
         }
         return vos;
+    }
+
+
+    // admin //
+
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userInfoRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> searchAll(USER searchBy, String word, Pageable pageable) {
+        if (searchBy == null) return findAll(pageable);
+        if (searchBy == USER.phone) return userInfoRepository.findAllByPhoneLike("%" + word + "%", pageable);
+        if (searchBy == USER.wechat) return userInfoRepository.findAllByWechatLike("%" + word + "%", pageable);
+        if (searchBy == USER.introduce) return userInfoRepository.findAllByIntroduceLike("%" + word + "%", pageable);
+        return findAll(pageable);
     }
 }

@@ -1,6 +1,8 @@
 package com.seeu.ywq.user.repository;
 
 import com.seeu.ywq.user.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -51,4 +53,12 @@ public interface UserInfoRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("update User u set u.likeNum = u.likeNum - 1 where u.uid = :uid")
     void cancelLikeMe(@Param("uid") Long uid);
+
+
+    // admin //
+    Page<User> findAllByPhoneLike(@Param("phone") String phone, Pageable pageable);
+
+    Page<User> findAllByWechatLike(@Param("wechat") String wechat, Pageable pageable);
+
+    Page<User> findAllByIntroduceLike(@Param("introduce") String introduce, Pageable pageable);
 }
