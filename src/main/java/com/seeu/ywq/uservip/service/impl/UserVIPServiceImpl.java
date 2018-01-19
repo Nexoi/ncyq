@@ -40,6 +40,7 @@ public class UserVIPServiceImpl implements UserVIPService {
 
     @Override
     public boolean isActive(Long uid) {
+        if (uid == null) return false;
         UserVIP vip = repository.findOne(uid);
         return !(vip == null
                 || vip.getVipLevel() == null
