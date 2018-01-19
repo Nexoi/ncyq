@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 @PreAuthorize("hasRole('USER')")
-public class ImageUploadApi {
+public class QiniuApi {
     @Autowired
     private FileUploadService fileUploadService;
 
