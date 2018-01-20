@@ -196,6 +196,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         PublishAudio audio = new PublishAudio();
         audio.setAudioUrl(appVOUtils.parseString(objects[17]));
         audio.setAudioSecond(appVOUtils.parseLong(objects[18]));
+        vo.setAudio(audio);
         return vo;
     }
 
