@@ -40,7 +40,7 @@ public class HomePageApi {
         return ResponseEntity.ok(advertisementService.getAdvertisements(Advertisement.CATEGORY.HomePage));
     }
 
-    @ApiOperation(value = "首页固定数据")
+    @ApiOperation(value = "首页固定长度数据")
     @GetMapping("/homepage")
     public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser) {
         List<HomePageCategory> categoryList = null;

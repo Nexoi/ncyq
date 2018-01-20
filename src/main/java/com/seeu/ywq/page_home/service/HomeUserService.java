@@ -21,6 +21,10 @@ public interface HomeUserService {
     Page<HomeUser> queryAll(Pageable pageable);
 
 
+    Page<HomeUser> queryAllByLABEL(Long uid, HomeUser.LABEL label, Pageable pageable);
+
+    Page<HomeUser> queryAllByLABEL(HomeUser.LABEL label, Pageable pageable);
+
     // admin //
 
     Page<HomeUser> findAll(Pageable pageable);

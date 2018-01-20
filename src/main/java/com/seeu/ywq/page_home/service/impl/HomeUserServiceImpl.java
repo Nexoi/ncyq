@@ -53,6 +53,26 @@ public class HomeUserServiceImpl implements HomeUserService {
     }
 
     @Override
+    public Page<HomeUser> queryAllByLABEL(Long uid, HomeUser.LABEL label, Pageable pageable) {
+        List<Object[]> list = null;
+        if (uid != null)
+            list = repository.queryPageByLabel(uid, label.ordinal(), pageable.getPageNumber(), pageable.getPageSize());
+        else
+            list = repository.queryPageByLabel(label.ordinal(), pageable.getPageNumber(), pageable.getPageSize());
+        if (list == null || list.size() == 0) return new PageImpl<>(new ArrayList<>());
+        // counts
+        int totalEls = repository.countPage();
+        // transfer
+        List<HomeUser> transferList = transferToHomeUser(list);
+        return new PageImpl<>(transferList, pageable, totalEls);
+    }
+
+    @Override
+    public Page<HomeUser> queryAllByLABEL(HomeUser.LABEL label, Pageable pageable) {
+        return queryAllByLABEL(null, label, pageable);
+    }
+
+    @Override
     public Page<HomeUser> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -93,7 +113,9 @@ public class HomeUserServiceImpl implements HomeUserService {
         user.setLabel(label);
         user.setDeleteFlag(HomeUser.DELETE.show);
         user.setCreateTime(new Date());
-        return repository.save(user);
+        user = repository.save(user);
+        user.setDeleteFlag(null);
+        return user;
     }
 
     private List<HomeUser> transferToHomeUser(List<Object[]> objects) {
