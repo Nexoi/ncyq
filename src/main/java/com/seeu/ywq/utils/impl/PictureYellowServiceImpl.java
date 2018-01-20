@@ -50,7 +50,12 @@ public class PictureYellowServiceImpl implements PictureYellowService {
         List<Picture> pictures = publish.getPictures();
         if (pictures == null || pictures.size() == 0) return;
         Long uid = publish.getUid();
+        if (publish.getType() != Publish.PUBLISH_TYPE.picture)
+            return; // 只验证图片类动态
         try {
+
+            boolean flag = false; // 是否有黄图
+            double score = 0.0;
             for (Picture picture : pictures) {
                 if (picture == null) continue;
                 Image image = picture.getImageOpen();
@@ -64,21 +69,27 @@ public class PictureYellowServiceImpl implements PictureYellowService {
                     if (result != null) {
                         Integer label = result.getInteger("label");
                         if (0 == label) {
-                            // 删除！
-                            picture.setDeleteFlag(Picture.DELETE_FLAG.delete);
-                            publish.setStatus(Publish.STATUS.delete);
-
-                            // 通知
-                            Double score = result.getDouble("score");
-                            if (uid == null) return;
-                            Map extraData = new HashMap();
-                            extraData.put("message", "动态图片含有色情信息");
-                            extraData.put("score", score);
-                            pushService.singlePush(uid, "您的图片含有色情信息，已被删除！", null, extraData);
+                            flag = true;
+                            score = result.getDouble("score");
                         }
                     }
                 }
             }
+
+            if (!flag) return; // flag 为 false 则表示一切正常
+
+            // 删除！
+            for (Picture picture : pictures) {
+                picture.setDeleteFlag(Picture.DELETE_FLAG.delete);
+            }
+            publish.setStatus(Publish.STATUS.delete);
+
+            // 通知
+            if (uid == null) return;
+            Map extraData = new HashMap();
+            extraData.put("message", "动态图片含有色情信息");
+            extraData.put("score", score);
+            pushService.singlePush(uid, "您的图片含有色情信息，已被删除！", null, extraData);
             publishPictureService.save(pictures);
             publishService.save(publish);
         } catch (Exception e) {
