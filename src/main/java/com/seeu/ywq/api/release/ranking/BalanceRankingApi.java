@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.release.page;
+package com.seeu.ywq.api.release.ranking;
 
 import com.seeu.ywq.ranking.service.PageBalanceRankingService;
 import io.swagger.annotations.Api;

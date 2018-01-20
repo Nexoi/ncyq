@@ -103,6 +103,8 @@ public class AppVOUtilsImpl implements AppVOUtils {
                 return Publish.PUBLISH_TYPE.picture;
             case 2:
                 return Publish.PUBLISH_TYPE.video;
+            case 3:
+                return Publish.PUBLISH_TYPE.audio;
             default:
                 return Publish.PUBLISH_TYPE.word;
         }

@@ -1,5 +1,6 @@
 package com.seeu.ywq.trend_lite.service.impl;
 
+import com.seeu.ywq.trend.model.PublishAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVO;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOAudio;
 import com.seeu.ywq.trend_lite.dvo.PublishLiteVOPicture;
@@ -46,6 +47,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
     @Autowired
     private AppVOUtils appVOUtils;
 
+    // 推荐
     @Override
     public Page<PublishLiteVO> findAllByTagIds(Long visitorUid, Pageable pageable, Long... ids) {
         if (ids == null || ids.length == 0) return new PageImpl<>(new ArrayList<>());
@@ -58,6 +60,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
     }
 
 
+    // 关注
     @Override
     public Page<PublishLiteVO> findAllByFollowedUids(Long visitorUid, Pageable pageable, Long... uids) {
         if (uids == null || uids.length == 0) return new PageImpl<>(new ArrayList<>());
@@ -69,6 +72,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         return new PageImpl<>(transferList, pageable, totalSize);
     }
 
+    // xx的动态
     @Override
     public Page<PublishLiteVO> findAllByUid(Long visitorUid, Long uid, Pageable pageable) {
         Page page = publishLiteRepository.findAllByUidAndStatus(uid, Publish.STATUS.normal, pageable);
@@ -80,7 +84,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         return new PageImpl<>(transferList, pageable, page.getTotalElements());
     }
 
-    // 将图片加载进 vo
+    // 将图片、个人信息加载进 vo
     private void completePicturesAndSimpleUsers(Long visitorUid, List<PublishLite> vos) {
         if (vos == null || vos.size() == 0) return;
         // hash
@@ -162,7 +166,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
 
 
     private PublishLite formPublishLite(Object[] objects) {
-        if (objects == null || objects.length != 16) return null;// 长度必须是 16 个
+        if (objects == null || objects.length != 19) return null;// 长度必须是 19 个
         PublishLite vo = new PublishLite();
         vo.setId(appVOUtils.parseLong(objects[0]));
         vo.setUid(appVOUtils.parseLong(objects[1]));
@@ -186,6 +190,12 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         vo.setVideo(publishVideo);
         vo.setPictures(new ArrayList<>());
         vo.setLikedIt(1 == appVOUtils.parseInt(objects[15]));
+        // 新增动态收入信息
+        vo.setReceivedDiamonds(appVOUtils.parseLong(objects[16]));
+        // 音频信息
+        PublishAudio audio = new PublishAudio();
+        audio.setAudioUrl(appVOUtils.parseString(objects[17]));
+        audio.setAudioSecond(appVOUtils.parseLong(objects[18]));
         return vo;
     }
 

@@ -32,6 +32,9 @@ public class PublishAudio {
     @ApiParam(hidden = true)
     private String audioUrl;
 
+    @ApiParam(hidden = true)
+    private Long audioSecond; //音频时长
+
 
     @ApiParam(hidden = true)
     private Date createTime;//创建时间
@@ -96,5 +99,13 @@ public class PublishAudio {
 
     public void setDeleteFlag(DELETE_FLAG deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public Long getAudioSecond() {
+        return audioSecond;
+    }
+
+    public void setAudioSecond(Long audioSecond) {
+        this.audioSecond = audioSecond;
     }
 }

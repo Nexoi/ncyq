@@ -96,7 +96,8 @@ public class PublishApi {
                               @RequestParam(required = false) Integer videoHeight,
                               @RequestParam(required = false) String videoCoverUrl, // 视频封面
                               @RequestParam(required = false) String videoUrl,//    视频链接
-                              @RequestParam(required = false) String audioUrl   // audio link
+                              @RequestParam(required = false) String audioUrl,   // audio link
+                              @RequestParam(required = false) Long audioSecond
     ) {
         // 数据规整
         publish.setId(null);
@@ -169,6 +170,7 @@ public class PublishApi {
                     audio.setAudioUrl(audioUrl);
                     audio.setCreateTime(new Date());
                     audio.setUid(authUser.getUid());
+                    audio.setAudioSecond(audioSecond == null ? 0L : audioSecond);
                     audio.setDeleteFlag(PublishAudio.DELETE_FLAG.show);
                     publish.setAudio(publishAudioService.save(audio));
                     publish.setPictures(null);

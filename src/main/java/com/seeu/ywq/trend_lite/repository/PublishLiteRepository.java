@@ -14,10 +14,13 @@ import java.util.List;
 public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> {
 
     @Query(value = "SELECT p.id, p.uid, p.weight, p.type, p.title, p.create_time, p.unlock_price, p.view_num, p.comment_num, p.like_num, p.labels, p.text, v.id as videoId, v.cover_url, v.src_url " +
-            ",if(pubu.uid is null,'0','1') " +
+            ",if(pubu.uid is null,'0','1')" +
+            ", p.received_diamonds " +
+            ", a.audio_url, a.audio_second " +
             "FROM ywq_user_tags ut " +
             "right join ywq_publish p on p.uid = ut.user_uid " +
             "left join ywq_video v on v.id = p.video_id " +
+            "left join ywq_publish_audio a on a.publish_id = p.id " +
             "left join ywq_publish_liked_users pubu on pubu.publish_id = p.id and pubu.uid = :uid " +
 //          "where p.status = 0 and ut.tags_id in (:labels) " +   // 2018-01-18 night update (replace it)
             "where p.status = 0 and ut.tags_id in (:labels) and p.uid != :uid " +
@@ -32,10 +35,13 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
     Integer countItUseMyTags(@Param("labels") Collection<Long> labels);
 
     @Query(value = "SELECT p.id, p.uid, p.weight, p.type, p.title, p.create_time, p.unlock_price, p.view_num, p.comment_num, p.like_num, p.labels, p.text, v.id as videoId, v.cover_url, v.src_url " +
-            ",if(pubu.uid is null,'0','1') " +
+            ",if(pubu.uid is null,'0','1')" +
+            ", p.received_diamonds " +
+            ", a.audio_url, a.audio_second " +
             "FROM ywq_fans f " +
             "right join ywq_publish p on p.uid = f.followed_uid " +
             "left join ywq_video v on v.id = p.video_id " +
+            "left join ywq_publish_audio a on a.publish_id = p.id " +
             "left join ywq_publish_liked_users pubu on pubu.publish_id = p.id and pubu.uid = :uid " +
             "where p.status = 0 and f.followed_uid in (:labels) " +
             "group by p.id " +
