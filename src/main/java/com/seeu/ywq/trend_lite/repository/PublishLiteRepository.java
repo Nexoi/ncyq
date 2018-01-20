@@ -20,7 +20,7 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
             "FROM ywq_user_tags ut " +
             "right join ywq_publish p on p.uid = ut.user_uid " +
             "left join ywq_video v on v.id = p.video_id " +
-            "left join ywq_publish_audio a on a.publish_id = p.id " +
+            "left join ywq_publish_audio a on a.id = p.audio_id " +
             "left join ywq_publish_liked_users pubu on pubu.publish_id = p.id and pubu.uid = :uid " +
 //          "where p.status = 0 and ut.tags_id in (:labels) " +   // 2018-01-18 night update (replace it)
             "where p.status = 0 and ut.tags_id in (:labels) and p.uid != :uid " +
@@ -41,7 +41,7 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
             "FROM ywq_fans f " +
             "right join ywq_publish p on p.uid = f.followed_uid " +
             "left join ywq_video v on v.id = p.video_id " +
-            "left join ywq_publish_audio a on a.publish_id = p.id " +
+            "left join ywq_publish_audio a on a.id = p.audio_id " +
             "left join ywq_publish_liked_users pubu on pubu.publish_id = p.id and pubu.uid = :uid " +
             "where p.status = 0 and f.followed_uid in (:labels) " +
             "group by p.id " +
@@ -53,7 +53,7 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
             "where p.status = 0 and p.uid in (:labels)", nativeQuery = true)
     Integer countItUseFollowedUids(@Param("labels") Collection<Long> labels);
 
-    // find my/her trend
+    // find my/her trends
     Page findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") Publish.STATUS status, Pageable pageable);
 
 }
