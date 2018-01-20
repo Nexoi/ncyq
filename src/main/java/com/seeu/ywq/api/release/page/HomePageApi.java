@@ -84,40 +84,4 @@ public class HomePageApi {
 //        return ResponseEntity.ok(map);
     }
 
-//    @ApiOperation(value = "视频", notes = "字段：hd 表示“高清视频”；字段：vr 表示“VR视频”")
-//    @GetMapping("/video")
-//    public ResponseEntity video(@AuthenticationPrincipal UserLogin authUser) {
-//        Long visitorUid = null;
-//        if (authUser != null) visitorUid = authUser.getUid();
-//        Map map = new HashMap();
-//        map.put("hd", homePageVideoService.getVideo_HD(visitorUid));
-//        map.put("vr", homePageVideoService.getVideo_VR(visitorUid));
-//        return ResponseEntity.ok(map);
-//    }
-
-    @ApiOperation(value = "视频（VR）")
-    @GetMapping("/video/vr")
-    public ResponseEntity videoVR(@AuthenticationPrincipal UserLogin authUser,
-                                  @RequestParam(defaultValue = "0") Integer page,
-                                  @RequestParam(defaultValue = "10") Integer size) {
-        Long visitorUid = null;
-        if (authUser != null) visitorUid = authUser.getUid();
-        return ResponseEntity.ok(homePageVideoService.getVideo_VR(visitorUid, new PageRequest(page, size)));
-    }
-
-    @ApiOperation(value = "视频（高清）")
-    @GetMapping("/video/hd")
-    public ResponseEntity videoHD(@AuthenticationPrincipal UserLogin authUser,
-                                  @RequestParam(defaultValue = "0") Integer page,
-                                  @RequestParam(defaultValue = "10") Integer size) {
-        Long visitorUid = null;
-        if (authUser != null) visitorUid = authUser.getUid();
-        return ResponseEntity.ok(homePageVideoService.getVideo_HD(visitorUid, new PageRequest(page, size)));
-    }
-
-    @ApiOperation(value = "视频页广告")
-    @GetMapping("/video/advertisements")
-    public ResponseEntity videoAdvertisements() {
-        return ResponseEntity.ok(advertisementService.getAdvertisements(Advertisement.CATEGORY.VideoPage));
-    }
 }
