@@ -14,9 +14,9 @@ import java.util.List;
 public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> {
 
     @Query(value = "SELECT p.id, p.uid, p.weight, p.type, p.title, p.create_time, p.unlock_price, p.view_num, p.comment_num, p.like_num, p.labels, p.text, v.id as videoId, v.cover_url, v.src_url " +
-            ",if(pubu.uid is null,'0','1')" +
             ", p.received_diamonds " +
             ", a.audio_url, a.audio_second " +
+            ",if(pubu.uid is null,'0','1')" +
             "FROM ywq_user_tags ut " +
             "right join ywq_publish p on p.uid = ut.user_uid " +
             "left join ywq_video v on v.id = p.video_id " +
@@ -35,9 +35,9 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
     Integer countItUseMyTags(@Param("labels") Collection<Long> labels);
 
     @Query(value = "SELECT p.id, p.uid, p.weight, p.type, p.title, p.create_time, p.unlock_price, p.view_num, p.comment_num, p.like_num, p.labels, p.text, v.id as videoId, v.cover_url, v.src_url " +
-            ",if(pubu.uid is null,'0','1')" +
             ", p.received_diamonds " +
             ", a.audio_url, a.audio_second " +
+            ",if(pubu.uid is null,'0','1')" +
             "FROM ywq_fans f " +
             "right join ywq_publish p on p.uid = f.followed_uid " +
             "left join ywq_video v on v.id = p.video_id " +

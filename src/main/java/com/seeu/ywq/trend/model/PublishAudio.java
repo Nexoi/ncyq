@@ -30,6 +30,7 @@ public class PublishAudio {
 
 
     @ApiParam(hidden = true)
+    @Column(length = 400)
     private String audioUrl;
 
     @ApiParam(hidden = true)

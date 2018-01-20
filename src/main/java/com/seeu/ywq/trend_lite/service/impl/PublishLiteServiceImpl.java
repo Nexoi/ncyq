@@ -157,7 +157,13 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         List<PublishLiteVO> vos = new ArrayList<>();
         for (PublishLite publish : publishs) {
             if (publish == null) continue;
-            boolean canVisit = visitorUid == publish.getUid() || resourceAuthService.canVisitPublish(visitorUid, publish.getId());
+            boolean canVisit = publish.getType() == null
+                    || publish.getUnlockPrice() == null
+                    || publish.getUnlockPrice().longValue() <= 0
+                    || publish.getType() == Publish.PUBLISH_TYPE.word
+                    || publish.getType() == Publish.PUBLISH_TYPE.audio
+                    || visitorUid == publish.getUid()
+                    || resourceAuthService.canVisitPublish(visitorUid, publish.getId());
             publish.setStatus(null); // 消除不必要的数据
             vos.add(transferToVO(publish, canVisit));
         }
@@ -189,14 +195,15 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         publishVideo.setVideo(video);
         vo.setVideo(publishVideo);
         vo.setPictures(new ArrayList<>());
-        vo.setLikedIt(1 == appVOUtils.parseInt(objects[15]));
         // 新增动态收入信息
-        vo.setReceivedDiamonds(appVOUtils.parseLong(objects[16]));
+        vo.setReceivedDiamonds(appVOUtils.parseLong(objects[15]));
         // 音频信息
         PublishAudio audio = new PublishAudio();
-        audio.setAudioUrl(appVOUtils.parseString(objects[17]));
-        audio.setAudioSecond(appVOUtils.parseLong(objects[18]));
+        audio.setAudioUrl(appVOUtils.parseString(objects[16]));
+        audio.setAudioSecond(appVOUtils.parseLong(objects[17]));
         vo.setAudio(audio);
+        // 是否喜欢该动态
+        vo.setLikedIt(1 == appVOUtils.parseInt(objects[18]));
         return vo;
     }
 
