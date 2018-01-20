@@ -24,7 +24,7 @@ public class HomeUser {
         hotperson
     }
 
-    public enum DELETE{
+    public enum DELETE {
         show,
         delete
     }
@@ -34,6 +34,7 @@ public class HomeUser {
     private String coverImageUrl;
     @Column(name = "label")
     private LABEL label;
+    @Enumerated
     private DELETE deleteFlag;
     private Date createTime;
 
