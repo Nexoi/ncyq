@@ -28,21 +28,31 @@ public class AppPublishPageServiceImpl implements AppPublishPageService {
     @Override
     public Page<PublishLiteVO> getTuijian(Long uid, Pageable pageable) {
         Long[] ids = null;
-        List<UserTagVO> myTags = tagService.findAllVO(uid);
-        if (myTags.size() != 0) {
-            // 如果用户有关注标签
-            ids = new Long[myTags.size()];
-            for (int i = 0; i < ids.length; i++) {
-                UserTagVO tag = myTags.get(i);
-                ids[i] = tag.getId();
-            }
-        } else {
-            // 如果用户未关注任何标签
+        if (uid == null) {
+            // 全部都给他
             List<TagVO> allTags = tagService.findAll();
             ids = new Long[allTags.size()];
             for (int i = 0; i < ids.length; i++) {
                 TagVO vo = allTags.get(i);
                 ids[i] = vo.getId();
+            }
+        } else {
+            List<UserTagVO> myTags = tagService.findAllVO(uid);
+            if (myTags.size() != 0) {
+                // 如果用户有关注标签
+                ids = new Long[myTags.size()];
+                for (int i = 0; i < ids.length; i++) {
+                    UserTagVO tag = myTags.get(i);
+                    ids[i] = tag.getId();
+                }
+            } else {
+                // 如果用户未关注任何标签
+                List<TagVO> allTags = tagService.findAll();
+                ids = new Long[allTags.size()];
+                for (int i = 0; i < ids.length; i++) {
+                    TagVO vo = allTags.get(i);
+                    ids[i] = vo.getId();
+                }
             }
         }
         Page page = publishLiteService.findAllByTagIds(uid, pageable, ids);

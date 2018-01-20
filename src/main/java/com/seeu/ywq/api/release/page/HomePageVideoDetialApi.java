@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * 视频详情页面
  */
-@Api(tags = "APP页面数据视频详情+评论（管理员置入的视频）", description = "获取视频详情信息/评论视频")
+@Api(tags = "APP页面数据视频详情+评论", description = "获取视频详情信息/评论视频")
 @RestController
 @RequestMapping("/api/v1/video")
 public class HomePageVideoDetialApi {

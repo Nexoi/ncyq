@@ -35,12 +35,12 @@ public class PagePublishApi {
 
     @ApiOperation(value = "推荐【需要登录】", notes = "根据用户信息（关注标签）进行推荐，若匿名用户，则默认表示所有标签。按时间排序")
     @GetMapping("/recommends")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')") // 人人可访问
     public ResponseEntity getTuijian(@AuthenticationPrincipal UserLogin authUser,
                                      @RequestParam(defaultValue = "0") Integer page,
                                      @RequestParam(defaultValue = "10") Integer size) {
         // TODO 可以个性化推荐（根据标签？）
-        Long uid = 0L;
+        Long uid = null; // 要么 null，要么正确数值
         if (authUser != null)
             uid = authUser.getUid();
         return ResponseEntity.ok(appPublishPageService.getTuijian(uid, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime"))));

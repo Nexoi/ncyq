@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "APP页面数据视频接口", description = "视频列表")
+@Api(tags = "APP页面数据视频主页接口", description = "视频列表")
 @RestController
 @RequestMapping("/api/v1/page")
 public class HomePageVideoApi {
