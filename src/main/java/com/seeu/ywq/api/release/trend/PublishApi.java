@@ -1,7 +1,6 @@
 package com.seeu.ywq.api.release.trend;
 
 import com.seeu.core.R;
-import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.exception.PublishSRCTYPEConvertException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.resource.model.Video;
@@ -165,6 +164,7 @@ public class PublishApi {
                     publish.setVideo(publishVideoService.save(publishVideo));
                     publish.setPictures(null);
                     publish.setAudio(null);
+                    break;
                 case audio:
                     PublishAudio audio = new PublishAudio();
                     audio.setAudioUrl(audioUrl);
@@ -175,6 +175,7 @@ public class PublishApi {
                     publish.setAudio(publishAudioService.save(audio));
                     publish.setPictures(null);
                     publish.setVideo(null);
+                    break;
             }
             // 发布信息持久化
             publishService.save(publish);
