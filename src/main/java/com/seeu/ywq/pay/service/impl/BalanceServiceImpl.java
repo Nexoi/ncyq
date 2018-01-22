@@ -223,6 +223,11 @@ public class BalanceServiceImpl implements BalanceService {
                 if (diamonds == null) diamonds = 0L;
                 balance.setVideoReceive(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() + diamondsDelta); // 視頻收获
+            case DAY_SIGN_IN:
+                diamonds = balance.getSignInReceive();
+                if (diamonds == null) diamonds = 0L;
+                balance.setSignInReceive(diamonds + diamondsDelta);
+                balance.setBalance(balance.getBalance() + diamondsDelta); // 每日签到收获
             default:
                 break;
         }

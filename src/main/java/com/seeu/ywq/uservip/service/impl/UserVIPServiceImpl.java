@@ -1,5 +1,6 @@
 package com.seeu.ywq.uservip.service.impl;
 
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.uservip.model.UserVIP;
 import com.seeu.ywq.uservip.repository.UserVIPRepository;
 import com.seeu.ywq.uservip.service.UserVIPService;
@@ -48,6 +49,34 @@ public class UserVIPServiceImpl implements UserVIPService {
                 || vip.getVipLevel() == UserVIP.VIP.none
                 || vip.getTerminationDate() == null
                 || vip.getTerminationDate().before(new Date()));
+    }
+
+    @Override
+    public UserVIP active(Long uid, Long day) {
+        UserVIP vip = findOne(uid);
+        Date date = new Date();
+        if (vip == null) {
+            vip = new UserVIP();
+            vip.setVipLevel(UserVIP.VIP.none);
+            vip.setTerminationDate(date);
+            vip.setUid(uid);
+        }
+        if (vip.getTerminationDate() == null || vip.getTerminationDate().before(date))
+            vip.setTerminationDate(date);
+        vip.setVipLevel(UserVIP.VIP.vip);
+        vip.setUpdateTime(date);
+        vip.setTerminationDate(new Date(vip.getTerminationDate().getTime() + day * 24 * 60 * 60 * 1000));
+        return save(vip);
+    }
+
+    @Override
+    public UserVIP disable(Long uid) throws ResourceNotFoundException {
+        UserVIP vip = findOne(uid);
+        if (vip == null) throw new ResourceNotFoundException("找不到用户VIP信息");
+        vip.setTerminationDate(new Date());
+        vip.setVipLevel(UserVIP.VIP.none);
+        vip.setUpdateTime(new Date());
+        return save(vip);
     }
 
     @Override

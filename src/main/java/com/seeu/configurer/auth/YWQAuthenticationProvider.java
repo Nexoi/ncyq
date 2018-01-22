@@ -3,6 +3,7 @@ package com.seeu.configurer.auth;
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.USER_STATUS;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.service.ThirdPartTokenService;
 import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -23,6 +27,8 @@ public class YWQAuthenticationProvider implements AuthenticationProvider {
     private UserReactService userReactService;
     @Autowired
     private ThirdUserLoginService thirdUserLoginService;
+    @Autowired
+    private ThirdPartTokenService thirdPartTokenService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -39,19 +45,35 @@ public class YWQAuthenticationProvider implements AuthenticationProvider {
                 && user.getMemberStatus() != USER_STATUS.DISTORY) {
             return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
         }
+
+
         // third part login
+        // password 就是 token
         ThirdUserLogin tul = thirdUserLoginService.findByName(name);
         if (tul != null
-                && tul.getYwqUid() != null
-                && tul.getCredential().equals(password)) {
+                && tul.getYwqUid() != null) {
+            // 验证第三方
+            final Map<String, String> map = new HashMap();
+            thirdPartTokenService.validatedInfo(tul.getType(), name, password, (isValidated, username, nickname, headIconUrl) -> {
+                if (isValidated) {
+                    map.put("ok", "ok");
+                    map.put("nickname", nickname);
+                    map.put("headIconUrl", headIconUrl);
+                } else {
+                    map.put("ok", "notok");
+                    map.put("nickname", null);
+                    map.put("headIconUrl", null);
+                }
+            });
             // start find uid
-            UserLogin ul = userReactService.findOne(tul.getYwqUid());
-            if (ul != null
-                    && ul.getPassword().equals(password)
-                    && ul.getMemberStatus() != null
-                    && ul.getMemberStatus() != USER_STATUS.UNACTIVED
-                    && ul.getMemberStatus() != USER_STATUS.DISTORY) {
-                return new UsernamePasswordAuthenticationToken(ul, password, ul.getAuthorities());
+            if ("ok".equals(map.get("ok"))) {
+                UserLogin ul = userReactService.findOne(tul.getYwqUid());
+                if (ul != null
+                        && ul.getMemberStatus() != null
+                        && ul.getMemberStatus() != USER_STATUS.UNACTIVED
+                        && ul.getMemberStatus() != USER_STATUS.DISTORY) {
+                    return new UsernamePasswordAuthenticationToken(ul, password, ul.getAuthorities());
+                }
             }
         }
         return null;

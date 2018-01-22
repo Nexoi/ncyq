@@ -31,7 +31,8 @@ public class OrderLog {
         BUY_VIP(true),
         SEND_GIFT(true),
         UNLOCK_VIDEO(true),
-        RECEIVE_VIDEO(false);
+        RECEIVE_VIDEO(false),
+        DAY_SIGN_IN(false);
 
         boolean expense;
 

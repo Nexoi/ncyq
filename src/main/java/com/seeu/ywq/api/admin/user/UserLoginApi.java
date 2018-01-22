@@ -1,10 +1,10 @@
 package com.seeu.ywq.api.admin.user;
 
 import com.seeu.core.R;
-import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.dvo.UserVO;
 import com.seeu.ywq.user.service.UserInfoService;
-import com.seeu.ywq.user.service.UserPhotoWallService;
+import com.seeu.ywq.user.service.UserPictureService;
+import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.uservip.model.UserVIP;
 import com.seeu.ywq.uservip.service.UserVIPService;
 import io.swagger.annotations.Api;
@@ -26,20 +26,22 @@ import java.util.Map;
  * Time: 10:13 AM
  * Describe:
  */
-@Api(tags = "用户信息", description = "用户基本信息／标签／认证（粉丝／喜欢的具体信息不展示）")
+@Api(tags = "用户基础信息", description = "用户登录信息／")
 @RestController("adminUserApi")
 @RequestMapping("/api/admin/v1/user")
-public class UserInfoApi {
+public class UserLoginApi {
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
-    private UserPhotoWallService userPhotoWallService;
+    private UserReactService userReactService;
+    @Autowired
+    private UserPictureService userPictureService;
     @Autowired
     private UserVIPService userVIPService;
 
 
-    @ApiOperation("查詢用戶信息（具備搜索功能，默認按粉絲數排序）")
-    @GetMapping("/info/list")
+    @ApiOperation("查詢用戶信息（按照 uid 可搜索）")
+    @GetMapping("/basic/list")
     public ResponseEntity search(@RequestParam(required = false) String word,
                                  @RequestParam(required = false) USER search,
                                  @RequestParam(defaultValue = "0") Integer page,
@@ -76,36 +78,4 @@ public class UserInfoApi {
         return ResponseEntity.ok(map);
     }
 
-    @ApiOperation(value = "激活／删除用户 VIP 信息")
-    @PutMapping("/vip/{uid}")
-    public ResponseEntity updateVIP(@PathVariable Long uid,
-                                    @RequestParam(required = false) Long day,
-                                    @RequestParam(required = true) UserVIP.VIP vip) {
-        if (vip == UserVIP.VIP.vip && day == null)
-            return ResponseEntity.status(400).body(R.code(4000).message("天数不能为空"));
-        if (vip == UserVIP.VIP.vip) {
-            userVIPService.active(uid, day);
-            return ResponseEntity.ok(R.code(200).message("更新 VIP 成功！"));
-        } else {
-            try {
-                userVIPService.disable(uid);
-                return ResponseEntity.ok(R.code(200).message("删除用户 VIP 信息成功！"));
-            } catch (ResourceNotFoundException e) {
-                return ResponseEntity.status(404).body(R.code(404).message("用户没有 VIP 信息"));
-            }
-        }
-    }
-
-    @ApiOperation(value = "查询某个用户的照片墙")
-    @GetMapping("/photo/{uid}")
-    public ResponseEntity photos(@PathVariable Long uid) {
-        return ResponseEntity.ok(userPhotoWallService.findAllByUid(uid));
-    }
-
-    @ApiOperation(value = "删除某个用户的照片墙上的照片")
-    @GetMapping("/photo/{uid}/{id}")
-    public ResponseEntity deletePhotos(@PathVariable Long uid, @PathVariable Long id) {
-        userPhotoWallService.delete(uid, id);
-        return ResponseEntity.ok(R.code(200).message("删除成功！"));
-    }
 }

@@ -54,6 +54,8 @@ public class Balance {
 
     private Long sendGift;      // gift send
 
+    private Long signInReceive; // 每日签到收获
+
     private Date updateTime = new Date();
 
     public Long getUid() {
@@ -230,5 +232,13 @@ public class Balance {
 
     public void setVideoReceive(Long videoReceive) {
         this.videoReceive = videoReceive;
+    }
+
+    public Long getSignInReceive() {
+        return signInReceive;
+    }
+
+    public void setSignInReceive(Long signInReceive) {
+        this.signInReceive = signInReceive;
     }
 }
