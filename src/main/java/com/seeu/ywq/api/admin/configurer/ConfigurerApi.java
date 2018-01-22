@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.admin;
+package com.seeu.ywq.api.admin.configurer;
 
 
 import com.seeu.core.R;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 
-@Api(tags = "配置文件", description = "每日任务/账户交易系统")
+@Api(tags = "配置-钻石分成／每日任务", description = "每日任务/账户交易系统")
 @RestController
 @RequestMapping("/api/admin/v1/configurer")
 //@PreAuthorize("hasRole('ADMIN')")

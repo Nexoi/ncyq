@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * Time: 10:13 AM
  * Describe:
  */
-@Api(tags = "用户基础信息", description = "用户登录信息")
+@Api(tags = "用户-基础信息", description = "用户登录信息")
 @RestController("adminUserLoginApi")
 @RequestMapping("/api/admin/v1/user")
 public class UserLoginApi {

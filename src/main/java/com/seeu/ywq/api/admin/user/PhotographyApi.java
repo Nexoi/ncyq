@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.admin;
+package com.seeu.ywq.api.admin.user;
 
 import com.seeu.core.R;
 import com.seeu.ywq.photography.model.Photography;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-@Api(tags = "摄影集（下载作品）", description = "管理员根据用户 uid 上传摄影作品")
+@Api(tags = "用户-摄影集（下载作品）", description = "管理员根据用户 uid 上传摄影作品")
 @RestController("adminPhotographyApi")
 @RequestMapping("/api/admin/v1/photographs")
 //@PreAuthorize("hasRole('ADMIN')")

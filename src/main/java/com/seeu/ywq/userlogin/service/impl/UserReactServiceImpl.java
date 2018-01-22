@@ -232,11 +232,11 @@ public class UserReactServiceImpl implements UserReactService {
                 throw new ActionParameterException("参数必须为正整数数字");
             }
         if (searchType == USERLogin.uid)
-            return userLoginRepository.findAllByUidLike("%" + word + "%", pageable);
+            return userLoginRepository.findAllByUid(Long.parseLong(word), pageable);
         if (searchType == USERLogin.phone)
             return userLoginRepository.findAllByPhoneLike("%" + word + "%", pageable);
         if (searchType == USERLogin.nickname)
             return userLoginRepository.findAllByUsernameLike("%" + word + "%", pageable);
-        return null;
+        return findAll(pageable);
     }
 }

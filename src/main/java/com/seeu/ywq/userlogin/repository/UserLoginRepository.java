@@ -14,7 +14,7 @@ public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
 
     UserLogin findByPhone(@Param("phone") String phone);
 
-    Page<UserLogin> findAllByUidLike(@Param("uid") String uidLike, Pageable pageable);
+    Page<UserLogin> findAllByUid(@Param("uid") Long uid, Pageable pageable);
 
     Page<UserLogin> findAllByPhoneLike(@Param("phone") String phoneLike, Pageable pageable);
 

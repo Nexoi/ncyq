@@ -47,4 +47,18 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Modifying
     @Query("update Publish p set p.commentNum = p.commentNum - 1 where p.id = :id")
     void disCommentItOnce(@Param("id") Long id);
+
+
+    // admin //
+
+    Page<Publish> findAllByStatus(@Param("status") Publish.STATUS status, Pageable pageable);
+
+
+    Page<Publish> findAllByStatusAndId(@Param("status") Publish.STATUS status, @Param("id") Long id, Pageable pageable);
+
+    Page<Publish> findAllByStatusAndLabelsLike(@Param("status") Publish.STATUS status, @Param("labels") String labelsLike, Pageable pageable);
+
+    Page<Publish> findAllByStatusAndTextLike(@Param("status") Publish.STATUS status, @Param("text") String textLike, Pageable pageable);
+
+    Page<Publish> findAllByStatusAndUid(@Param("status") Publish.STATUS status, @Param("uid") Long uid, Pageable pageable);
 }

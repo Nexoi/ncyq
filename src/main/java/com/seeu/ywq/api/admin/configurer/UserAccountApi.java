@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.admin;
+package com.seeu.ywq.api.admin.configurer;
 
 import com.seeu.core.R;
 import com.seeu.ywq.pay.model.RechargeTable;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Api(tags = "充值配置", description = "配置充值类型")
+@Api(tags = "配置-充值列表", description = "配置充值类型")
 @RestController("adminUserAccountApi")
 @RequestMapping("/api/admin/v1/account")
 //@PreAuthorize("hasRole('ADMIN')")

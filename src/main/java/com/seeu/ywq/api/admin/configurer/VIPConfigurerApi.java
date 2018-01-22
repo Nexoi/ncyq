@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.admin;
+package com.seeu.ywq.api.admin.configurer;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ResourceNotFoundException;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "用户VIP配置", description = "配置VIP充值类型")
+@Api(tags = "配置-用户VIP购买列表", description = "配置VIP充值类型")
 @RestController("adminVIPApi")
 @RequestMapping("/api/admin/v1/user/vip")
 //@PreAuthorize("hasRole('ADMIN')")

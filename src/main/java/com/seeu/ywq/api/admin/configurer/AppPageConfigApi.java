@@ -1,4 +1,4 @@
-package com.seeu.ywq.api.admin;
+package com.seeu.ywq.api.admin.configurer;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ResourceAddException;
@@ -20,7 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Api(tags = "APP 页面配置/广告配置", description = "APP 首页四个页面内容")
+@Api(tags = "配置-APP 页面配置/广告配置", description = "APP 首页四个页面内容")
 @RestController("adminAppPageConfigApi")
 @RequestMapping("/api/admin/v1/app/page")
 //@PreAuthorize("hasRole('ADMIN')")

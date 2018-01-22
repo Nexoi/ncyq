@@ -26,7 +26,7 @@ import java.util.Map;
  * Time: 10:13 AM
  * Describe:
  */
-@Api(tags = "用户信息", description = "用户基本信息／标签／认证（粉丝／喜欢的具体信息不展示）")
+@Api(tags = "用户-常用信息", description = "用户基本信息／标签／认证（粉丝／喜欢的具体信息不展示）")
 @RestController("adminUserInfoApi")
 @RequestMapping("/api/admin/v1/user")
 public class UserInfoApi {

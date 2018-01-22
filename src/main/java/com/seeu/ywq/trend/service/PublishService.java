@@ -1,9 +1,7 @@
 package com.seeu.ywq.trend.service;
 
-import com.seeu.ywq.exception.ActionNotSupportException;
-import com.seeu.ywq.exception.PublishTYPENotAllowedException;
-import com.seeu.ywq.exception.ResourceAlreadyExistedException;
-import com.seeu.ywq.exception.ResourceNotFoundException;
+import com.seeu.ywq.api.admin.trend.PUBLISH;
+import com.seeu.ywq.exception.*;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.model.PublishComment;
@@ -66,4 +64,10 @@ public interface PublishService {
     Long getUnlockDiamonds(Long publishId) throws ResourceNotFoundException, PublishTYPENotAllowedException;
 
 
+    // admin //
+    Page<Publish> findAll(Pageable pageable);
+
+    Page<Publish> searchAll(PUBLISH search, String word, Pageable pageable) throws ActionParameterException;
+
+    Publish getOne(Long publishId) throws ResourceNotFoundException;
 }

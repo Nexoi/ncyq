@@ -1,11 +1,9 @@
 package com.seeu.ywq.trend.service.impl;
 
+import com.seeu.ywq.api.admin.trend.PUBLISH;
 import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
-import com.seeu.ywq.exception.ActionNotSupportException;
-import com.seeu.ywq.exception.PublishTYPENotAllowedException;
-import com.seeu.ywq.exception.ResourceAlreadyExistedException;
-import com.seeu.ywq.exception.ResourceNotFoundException;
+import com.seeu.ywq.exception.*;
 import com.seeu.ywq.resource.model.*;
 import com.seeu.ywq.trend.dvo.PublishVO;
 import com.seeu.ywq.trend.dvo.PublishVOAudio;
@@ -331,5 +329,40 @@ public class PublishServiceImpl implements PublishService {
         if (p.getType() == null || p.getType() == Publish.PUBLISH_TYPE.word)
             throw new PublishTYPENotAllowedException(p.getType());
         return p.getUnlockPrice();
+    }
+
+    @Override
+    public Page<Publish> findAll(Pageable pageable) {
+        return publishRepository.findAllByStatus(Publish.STATUS.normal, pageable);
+    }
+
+    @Override
+    public Page<Publish> searchAll(PUBLISH searchType, String word, Pageable pageable) throws ActionParameterException {
+        if (searchType == null || word == null || "".equals(word.trim()))
+            return findAll(pageable);
+        if (searchType == PUBLISH.uid || searchType == PUBLISH.id)
+            try {
+                if (Long.parseLong(word) < 0)
+                    throw new ActionParameterException("参数必须为正整数数字");
+            } catch (Exception e) {
+                throw new ActionParameterException("参数必须为正整数数字");
+            }
+        if (searchType == PUBLISH.uid)
+            return publishRepository.findAllByStatusAndUid(Publish.STATUS.normal, Long.parseLong(word), pageable);
+        if (searchType == PUBLISH.id)
+            return publishRepository.findAllByStatusAndId(Publish.STATUS.normal, Long.parseLong(word), pageable);
+        if (searchType == PUBLISH.labels)
+            return publishRepository.findAllByStatusAndLabelsLike(Publish.STATUS.normal, "%" + word + "%", pageable);
+        if (searchType == PUBLISH.text)
+            return publishRepository.findAllByStatusAndTextLike(Publish.STATUS.normal, "%" + word + "%", pageable);
+        return findAll(pageable);
+    }
+
+    @Override
+    public Publish getOne(Long publishId) throws ResourceNotFoundException {
+        Publish publish = findOne(publishId);
+        if (publish == null)
+            throw new ResourceNotFoundException("找不到该动态");
+        return publish;
     }
 }
