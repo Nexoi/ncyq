@@ -1,8 +1,12 @@
 package com.seeu.ywq.userlogin.service;
 
+import com.seeu.ywq.api.admin.user.USERLogin;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -60,4 +64,10 @@ public interface UserReactService {
         not_exist,
         contradiction // 矛盾
     }
+
+    // admin //
+
+    Page<UserLogin> findAll(Pageable pageable);
+
+    Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable);
 }

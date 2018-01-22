@@ -27,7 +27,7 @@ import java.util.Map;
  * Describe:
  */
 @Api(tags = "用户信息", description = "用户基本信息／标签／认证（粉丝／喜欢的具体信息不展示）")
-@RestController("adminUserApi")
+@RestController("adminUserInfoApi")
 @RequestMapping("/api/admin/v1/user")
 public class UserInfoApi {
     @Autowired
