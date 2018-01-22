@@ -1,18 +1,24 @@
 package com.seeu.ywq.userlogin.repository;
 
 import com.seeu.ywq.userlogin.model.UserLogin;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 
 public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
 
     UserLogin findByPhone(@Param("phone") String phone);
+
+    Page<UserLogin> findAllByUidLike(@Param("uid") String uidLike, Pageable pageable);
+
+    Page<UserLogin> findAllByPhoneLike(@Param("phone") String phoneLike, Pageable pageable);
+
+    Page<UserLogin> findAllByUsernameLike(@Param("username") String usernameLike, Pageable pageable);
 
     /**
      * 某人查找一组用户，该用户包含：VIP、个人认证、是否关注信息

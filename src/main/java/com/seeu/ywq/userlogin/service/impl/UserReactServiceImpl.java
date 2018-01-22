@@ -1,5 +1,7 @@
 package com.seeu.ywq.userlogin.service.impl;
 
+import com.seeu.ywq.api.admin.user.USERLogin;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
@@ -15,6 +17,8 @@ import com.seeu.ywq.userlogin.repository.UserLoginRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -208,6 +212,31 @@ public class UserReactServiceImpl implements UserReactService {
             ul.setNickname(nickname);
             return userLoginRepository.save(ul);
         }
+        return null;
+    }
+
+    @Override
+    public Page<UserLogin> findAll(Pageable pageable) {
+        return userLoginRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable) throws ActionParameterException {
+        if (searchType == null || word == null || "".equals(word.trim()))
+            return findAll(pageable);
+        if (searchType == USERLogin.phone || searchType == USERLogin.uid)
+            try {
+                if (Long.parseLong(word) < 0)
+                    throw new ActionParameterException("参数必须为正整数数字");
+            } catch (Exception e) {
+                throw new ActionParameterException("参数必须为正整数数字");
+            }
+        if (searchType == USERLogin.uid)
+            return userLoginRepository.findAllByUidLike("%" + word + "%", pageable);
+        if (searchType == USERLogin.phone)
+            return userLoginRepository.findAllByPhoneLike("%" + word + "%", pageable);
+        if (searchType == USERLogin.nickname)
+            return userLoginRepository.findAllByUsernameLike("%" + word + "%", pageable);
         return null;
     }
 }

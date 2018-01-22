@@ -1,6 +1,7 @@
 package com.seeu.ywq.userlogin.service;
 
 import com.seeu.ywq.api.admin.user.USERLogin;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -69,5 +70,5 @@ public interface UserReactService {
 
     Page<UserLogin> findAll(Pageable pageable);
 
-    Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable);
+    Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable) throws ActionParameterException;
 }

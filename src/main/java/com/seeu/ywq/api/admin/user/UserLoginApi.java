@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.admin.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.Api;
@@ -40,7 +41,11 @@ public class UserLoginApi {
         if (null == search || null == word) {
             return ResponseEntity.ok(userReactService.findAll(request));
         } else {
-            return ResponseEntity.ok(userReactService.searchAll(search, word, request));
+            try {
+                return ResponseEntity.ok(userReactService.searchAll(search, word, request));
+            } catch (ActionParameterException e) {
+                return ResponseEntity.status(400).body(R.code(400).message("搜索 uid 或 phone 时必须传入数字"));
+            }
         }
     }
 
