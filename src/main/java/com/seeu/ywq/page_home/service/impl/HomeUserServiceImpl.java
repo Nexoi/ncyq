@@ -74,14 +74,15 @@ public class HomeUserServiceImpl implements HomeUserService {
 
     @Override
     public Page<HomeUser> findAll(Pageable pageable) {
-        return repository.findAllByDeleteFlag(HomeUser.DELETE.show,pageable);
+        return repository.findAllByDeleteFlag(HomeUser.DELETE.show, pageable);
     }
 
     @Override
     public HomeUser findOne(Long uid) throws ResourceNotFoundException {
         if (uid == null) throw new ResourceNotFoundException("找不到该配置");
         HomeUser user = repository.findOne(uid);
-        if (user == null) throw new ResourceNotFoundException("找不到该配置");
+        if (user == null || user.getDeleteFlag() == HomeUser.DELETE.delete)
+            throw new ResourceNotFoundException("找不到该配置");
         return user;
     }
 
@@ -107,7 +108,9 @@ public class HomeUserServiceImpl implements HomeUserService {
     @Override
     public HomeUser save(Long uid, HomeUser.LABEL label, String coverImageUrl, String videoUrl) throws ActionParameterException, ResourceAlreadyExistedException {
         if (uid == null || label == null || coverImageUrl == null) throw new ActionParameterException("uid");
-        if (repository.exists(uid)) throw new ResourceAlreadyExistedException("资源已存在，请勿重复添加");
+        HomeUser homeUser = repository.findOne(uid);
+        if (null != homeUser && homeUser.getDeleteFlag() == HomeUser.DELETE.show)
+            throw new ResourceAlreadyExistedException("资源已存在，请勿重复添加");
         HomeUser user = new HomeUser();
         user.setUid(uid);
         user.setCoverImageUrl(coverImageUrl);
