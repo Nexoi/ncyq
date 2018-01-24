@@ -176,9 +176,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public RewardOrder createReward(Long uid, Long herUid, Long rewardResourceId, Integer amount) throws BalanceNotEnoughException, ResourceNotFoundException, AmountCannotBeNegetiveException, ActionNotSupportException {
         // 判断资源是否存在
-        Reward reward = rewardService.findOne(rewardResourceId);
-        if (reward == null)
-            throw new ResourceNotFoundException("Can not found Resource [Reward ID: " + rewardResourceId + " ]");
+        Reward reward = rewardService.findOne(rewardResourceId); // throw ResourceNotFoundException
         // 计算总价
         if (amount <= 0) throw new AmountCannotBeNegetiveException();
         Long price = reward.getDiamonds() * amount;
@@ -207,8 +205,6 @@ public class OrderServiceImpl implements OrderService {
     public GiftOrder createSendGift(Long uid, Long herUid, Long resourceId, Integer amount) throws BalanceNotEnoughException, ActionNotSupportException, ResourceNotFoundException, AmountCannotBeNegetiveException {
         // 判断资源是否存在
         Gift gift = giftService.findOne(resourceId);
-        if (gift == null)
-            throw new ResourceNotFoundException("Can not found Resource [Reward ID: " + resourceId + " ]");
         // 计算总价
         if (amount <= 0) throw new AmountCannotBeNegetiveException();
         Long price = gift.getDiamonds() * amount;

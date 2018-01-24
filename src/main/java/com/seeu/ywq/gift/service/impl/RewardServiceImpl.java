@@ -1,5 +1,6 @@
 package com.seeu.ywq.gift.service.impl;
 
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.gift.model.Reward;
 import com.seeu.ywq.gift.repository.RewardRepository;
 import com.seeu.ywq.gift.service.RewardService;
@@ -16,8 +17,13 @@ public class RewardServiceImpl implements RewardService {
     private RewardRepository repository;
 
     @Override
-    public Reward findOne(Long id) {
-        return repository.findOne(id);
+    public Reward findOne(Long id) throws ResourceNotFoundException {
+        if (id == null)
+            throw new ResourceNotFoundException("Can not found Resource [" + id + "]");
+        Reward reward = repository.findOne(id);
+        if (reward == null)
+            throw new ResourceNotFoundException("Can not found Resource [" + id + "]");
+        return reward;
     }
 
     @Override
@@ -32,6 +38,14 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public Reward save(Reward reward) {
+        return repository.save(reward);
+    }
+
+    @Override
+    public Reward update(Reward reward) throws ResourceNotFoundException {
+        if (reward.getId() == null) throw new ResourceNotFoundException("Can not found Resource [ reward ]");
+        Reward reward1 = repository.findOne(reward.getId());
+        if (reward1 == null) throw new ResourceNotFoundException("Can not found Resource [" + reward.getId() + "]");
         return repository.save(reward);
     }
 

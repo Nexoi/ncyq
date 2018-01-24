@@ -31,9 +31,9 @@ public interface HomeUserService {
 
     HomeUser findOne(Long uid) throws ResourceNotFoundException;
 
-    HomeUser save(Long uid, HomeUser.LABEL label, String coverImageUrl) throws ActionParameterException, ResourceAlreadyExistedException;
+    HomeUser save(Long uid, HomeUser.LABEL label, String coverImageUrl, String videoUrl) throws ActionParameterException, ResourceAlreadyExistedException;
 
     void delete(Long uid) throws ResourceNotFoundException; // deleteFlag
 
-    HomeUser update(Long uid, HomeUser.LABEL label, String coverImageUrl) throws ResourceNotFoundException;
+    HomeUser update(Long uid, HomeUser.LABEL label, String coverImageUrl, String videoUrl) throws ResourceNotFoundException;
 }

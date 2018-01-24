@@ -1,5 +1,6 @@
 package com.seeu.ywq.utils.impl;
 
+import com.seeu.ywq.page_home.model.HomeUser;
 import com.seeu.ywq.page_video.model.HomePageVideo;
 import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.trend.model.Publish;
@@ -129,5 +130,14 @@ public class AppVOUtilsImpl implements AppVOUtils {
             default:
                 return UserVIP.VIP.none;
         }
+    }
+
+    @Override
+    public HomeUser.TYPE paresHomeUserTYPE(Object object) {
+        if (object == null) return null;
+        int type = parseInt(object);
+        if (type == 0) return HomeUser.TYPE.picture;
+        if (type == 1) return HomeUser.TYPE.video;
+        return null;
     }
 }

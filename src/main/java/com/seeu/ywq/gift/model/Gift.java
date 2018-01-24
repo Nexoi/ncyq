@@ -1,18 +1,26 @@
 package com.seeu.ywq.gift.model;
 
+import io.swagger.annotations.ApiParam;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ywq_gift")
 public class Gift {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @ApiParam(hidden = true)
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String iconUrl;
     @Min(0)
+    @NotNull
     private Long diamonds;
+    @NotNull
     private Integer sortId;
 
     public Long getId() {

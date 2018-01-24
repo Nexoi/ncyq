@@ -46,9 +46,12 @@ public class HomePageUserApi {
 
 
     @PostMapping
-    public ResponseEntity add(Long uid, HomeUser.LABEL label, String coverImageUrl) {
+    public ResponseEntity add(Long uid,
+                              HomeUser.LABEL label,
+                              String coverImageUrl,
+                              @RequestParam(required = false) String videoUrl) {
         try {
-            return ResponseEntity.ok(homeUserService.save(uid, label, coverImageUrl));
+            return ResponseEntity.ok(homeUserService.save(uid, label, coverImageUrl, videoUrl));
         } catch (ActionParameterException e) {
             return ResponseEntity.badRequest().body(R.code(4000).message("参数错误"));
         } catch (ResourceAlreadyExistedException e) {
@@ -57,9 +60,12 @@ public class HomePageUserApi {
     }
 
     @PutMapping("/{uid}")
-    public ResponseEntity update(@PathVariable Long uid, HomeUser.LABEL label, String coverImageUrl) {
+    public ResponseEntity update(@PathVariable Long uid,
+                                 HomeUser.LABEL label,
+                                 String coverImageUrl,
+                                 @RequestParam(required = false) String videoUrl) {
         try {
-            return ResponseEntity.ok(homeUserService.update(uid, label, coverImageUrl));
+            return ResponseEntity.ok(homeUserService.update(uid, label, coverImageUrl, videoUrl));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(R.code(404).message("找不到该配置"));
         }

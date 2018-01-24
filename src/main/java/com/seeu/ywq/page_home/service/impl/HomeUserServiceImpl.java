@@ -95,16 +95,17 @@ public class HomeUserServiceImpl implements HomeUserService {
     }
 
     @Override
-    public HomeUser update(Long uid, HomeUser.LABEL label, String coverImageUrl) throws ResourceNotFoundException {
+    public HomeUser update(Long uid, HomeUser.LABEL label, String coverImageUrl, String videoUrl) throws ResourceNotFoundException {
         HomeUser user = repository.findOne(uid);
         if (null == user) throw new ResourceNotFoundException("找不到该配置");
         if (label != null) user.setLabel(label);
         if (coverImageUrl != null) user.setCoverImageUrl(coverImageUrl);
+        if (HomeUser.TYPE.video == user.getType() && null != videoUrl) user.setVideoUrl(videoUrl);
         return repository.save(user);
     }
 
     @Override
-    public HomeUser save(Long uid, HomeUser.LABEL label, String coverImageUrl) throws ActionParameterException, ResourceAlreadyExistedException {
+    public HomeUser save(Long uid, HomeUser.LABEL label, String coverImageUrl, String videoUrl) throws ActionParameterException, ResourceAlreadyExistedException {
         if (uid == null || label == null || coverImageUrl == null) throw new ActionParameterException("uid");
         if (repository.exists(uid)) throw new ResourceAlreadyExistedException("资源已存在，请勿重复添加");
         HomeUser user = new HomeUser();
@@ -113,6 +114,12 @@ public class HomeUserServiceImpl implements HomeUserService {
         user.setLabel(label);
         user.setDeleteFlag(HomeUser.DELETE.show);
         user.setCreateTime(new Date());
+        if (videoUrl == null)
+            user.setType(HomeUser.TYPE.picture);
+        else {
+            user.setType(HomeUser.TYPE.video);
+            user.setVideoUrl(videoUrl);
+        }
         user = repository.save(user);
         user.setDeleteFlag(null);
         return user;
@@ -129,7 +136,7 @@ public class HomeUserServiceImpl implements HomeUserService {
     }
 
     private HomeUser transferToHomeUser(Object[] objects) {
-        if (objects == null || objects.length != 8 && objects.length != 9) return null;
+        if (objects == null || objects.length != 10 && objects.length != 11) return null;
         HomeUser user = new HomeUser();
         user.setUid(appVOUtils.parseLong(objects[0]));
         user.setDeleteFlag(null);
@@ -140,8 +147,10 @@ public class HomeUserServiceImpl implements HomeUserService {
         user.setCoverImageUrl(appVOUtils.parseString(objects[5]));
         user.setLabel(praseLabel(appVOUtils.parseInt(objects[6])));
         user.setCreateTime(appVOUtils.parseDate(objects[7]));
-        if (objects.length == 9)
-            user.setLikeIt(1 == appVOUtils.parseInt(objects[8]));
+        user.setVideoUrl(appVOUtils.parseString(objects[8]));
+        user.setType(appVOUtils.paresHomeUserTYPE(objects[9]));
+        if (objects.length == 11)
+            user.setLikeIt(1 == appVOUtils.parseInt(objects[10]));
         else
             user.setLikeIt(false);
         return user;

@@ -19,7 +19,7 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
     // 默认按照时间排序，// 【update！不考虑随机】加入随机机制（ uid % num == 0 即可）
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
             " if(ulike.uid is null,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
@@ -37,7 +37,7 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
     // 不需要加入用户个人影响
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
             "left join ywq_user us on us.uid = ul.uid " +
@@ -59,7 +59,7 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
     ////// by label
     // 默认按照时间排序，// 【update！不考虑随机】加入随机机制（ uid % num == 0 即可）
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
             " if(ulike.uid is null,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
@@ -78,7 +78,7 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
     // 不需要加入用户个人影响
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
             "left join ywq_user us on us.uid = ul.uid " +

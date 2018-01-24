@@ -1,5 +1,6 @@
 package com.seeu.ywq.utils;
 
+import com.seeu.ywq.page_home.model.HomeUser;
 import com.seeu.ywq.page_video.model.HomePageVideo;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -29,4 +30,6 @@ public interface AppVOUtils {
     public UserLogin.GENDER parseGENDER(Object object);
 
     public UserVIP.VIP parseVIP(Object object);
+
+    public HomeUser.TYPE paresHomeUserTYPE(Object object);
 }

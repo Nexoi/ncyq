@@ -29,9 +29,17 @@ public class HomeUser {
         delete
     }
 
+    public enum TYPE {
+        picture,
+        video
+    }
+
     @Id
     private Long uid;
+    @Enumerated
+    private TYPE type;
     private String coverImageUrl;
+    private String videoUrl; // 如果有视频的话
     @Column(name = "label")
     private LABEL label;
     @Enumerated
@@ -133,5 +141,21 @@ public class HomeUser {
 
     public void setIdentifications(List<Long> identifications) {
         this.identifications = identifications;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public TYPE getType() {
+        return type;
+    }
+
+    public void setType(TYPE type) {
+        this.type = type;
     }
 }
