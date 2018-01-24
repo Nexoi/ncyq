@@ -74,7 +74,7 @@ public class HomeUserServiceImpl implements HomeUserService {
 
     @Override
     public Page<HomeUser> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return repository.findAllByDeleteFlag(HomeUser.DELETE.show,pageable);
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.seeu.ywq.page_home.repository;
 
 import com.seeu.ywq.page_home.model.HomeUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 
 /**
@@ -97,4 +98,6 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
             "where hu.delete_flag = 0 and hu.label = :label ",
             nativeQuery = true)
     Integer countPageByLabel(@Param("label") Integer label);
+
+    Page findAllByDeleteFlag(@Param("deleteFlag") HomeUser.DELETE deleteFlag, Pageable pageable);
 }
