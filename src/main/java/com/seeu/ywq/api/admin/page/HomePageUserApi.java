@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * Time: 5:44 PM
  * Describe:
  */
-@Api(tags = "首页人物配置", description = "首页")
+@Api(tags = "配置-首页人物配置", description = "首页")
 @RestController("adminHomePageUsersApi")
 @RequestMapping("/api/admin/v1/app/home")
 //@PreAuthorize("hasRole('ADMIN')")

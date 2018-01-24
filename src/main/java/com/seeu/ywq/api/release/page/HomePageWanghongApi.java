@@ -1,7 +1,5 @@
 package com.seeu.ywq.api.release.page;
 
-import com.seeu.ywq.page.model.HomePageCategory;
-import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page_home.model.HomeUser;
 import com.seeu.ywq.page_home.service.HomeUserService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -23,23 +21,17 @@ import java.util.List;
 @RequestMapping("/api/v1/page")
 public class HomePageWanghongApi {
     @Autowired
-    private AppHomePageService appHomePageService;
-    @Autowired
     private HomeUserService homeUserService;
 
     @ApiOperation(value = "网红（固定长度数据）")
     @GetMapping("/hot-person")
-    public ResponseEntity hotPerson(@AuthenticationPrincipal UserLogin authUser) {
-        List<HomePageCategory> categoryList = null;
+    public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+        List<HomeUser> categoryList = null;
         if (authUser == null)
-            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.hotsperson);
+            categoryList = homeUserService.queryAll(HomeUser.LABEL.hotperson, size);
         else
-            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.hotsperson);
+            categoryList = homeUserService.queryAll(authUser.getUid(), HomeUser.LABEL.hotperson, size);
         return ResponseEntity.ok(categoryList);
-//        Map map = new HashMap();
-//        map.put("news", appHomePageService.getHotsPerson_New());
-//        map.put("suggestion", appHomePageService.getHotsPerson_Suggestion());
-//        return ResponseEntity.ok(map);
     }
 
     @ApiOperation(value = "网红上拉加载数据")

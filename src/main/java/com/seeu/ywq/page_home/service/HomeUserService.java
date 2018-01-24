@@ -7,6 +7,8 @@ import com.seeu.ywq.page_home.model.HomeUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by suneo.
  * User: neo
@@ -16,6 +18,15 @@ import org.springframework.data.domain.Pageable;
  */
 
 public interface HomeUserService {
+
+    // 首页推荐／固定栏目
+
+    List<HomeUser> queryAll(Long uid, HomeUser.LABEL label, Integer size);
+
+    List<HomeUser> queryAll(HomeUser.LABEL label, Integer size);
+
+    // 首页人物上拉加载
+
     Page<HomeUser> queryAll(Long uid, Pageable pageable);
 
     Page<HomeUser> queryAll(Pageable pageable);

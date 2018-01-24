@@ -19,9 +19,45 @@ import java.util.List;
 
 public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
+
+    @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
+            " if(ulike.uid is null,0,1) as likeher, " +
+            " ROUND(RAND()) AS newno " +
+            "from ywq_page_home_users hu " +
+            "left join ywq_user_login ul on hu.uid = ul.uid " +
+            "left join ywq_user us on us.uid = ul.uid " +
+            "left join ywq_user_identifications iden on iden.uid = ul.uid " +
+            "left join ywq_user_like ulike on ulike.liked_uid = ul.uid and ulike.uid = :uid " +
+            "where hu.delete_flag = 0 and hu.label = :label " +
+            "group by hu.uid " +
+            "order by newno ASC " +
+            "limit :size ", nativeQuery = true)
+    List<Object[]> queryListByLabel(@Param("uid") Long uid,
+                                    @Param("label") Integer label,
+                                    @Param("size") Integer size);
+
+    // 不需要加入用户个人影响
+    @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
+            " if(1=1,0,1) as likeher, " +
+            " ROUND(RAND()) AS newno " +
+            "from ywq_page_home_users hu " +
+            "left join ywq_user_login ul on hu.uid = ul.uid " +
+            "left join ywq_user us on us.uid = ul.uid " +
+            "left join ywq_user_identifications iden on iden.uid = ul.uid " +
+            "where hu.delete_flag = 0 and hu.label = :label " +
+            "group by hu.uid " +
+            "order by newno ASC " +
+            "limit :size ", nativeQuery = true)
+    List<Object[]> queryListByLabel(@Param("label") Integer label,
+                                    @Param("size") Integer size);
+
+
+
     // 默认按照时间排序，// 【update！不考虑随机】加入随机机制（ uid % num == 0 即可）
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
             " if(ulike.uid is null,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
@@ -39,7 +75,8 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
     // 不需要加入用户个人影响
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
+            " if(1=1,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
             "left join ywq_user us on us.uid = ul.uid " +
@@ -61,7 +98,7 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
     ////// by label
     // 默认按照时间排序，// 【update！不考虑随机】加入随机机制（ uid % num == 0 即可）
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
             " if(ulike.uid is null,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
@@ -80,7 +117,8 @@ public interface HomeUserRepository extends JpaRepository<HomeUser, Long> {
 
     // 不需要加入用户个人影响
     @Query(value = "select ul.uid, ul.nickname, us.like_num, ul.head_icon_url, GROUP_CONCAT(distinct iden.identification_id SEPARATOR ',') identification_ids, " +
-            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type " +
+            " hu.cover_image_url, hu.label, hu.create_time, hu.video_url, hu.type, " +
+            " if(1=1,0,1) as likeher " +
             "from ywq_page_home_users hu " +
             "left join ywq_user_login ul on hu.uid = ul.uid " +
             "left join ywq_user us on us.uid = ul.uid " +

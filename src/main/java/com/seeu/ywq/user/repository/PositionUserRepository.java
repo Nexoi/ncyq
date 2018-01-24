@@ -1,7 +1,6 @@
 package com.seeu.ywq.user.repository;
 
-import com.seeu.ywq.page.model.HomePageUser;
-import com.seeu.ywq.page.model.HomePageUserPKeys;
+import com.seeu.ywq.page_home.model.HomeUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 // Entity 随便加的
-public interface PositionUserRepository extends JpaRepository<HomePageUser, HomePageUserPKeys> {
+public interface PositionUserRepository extends JpaRepository<HomeUser, Long> {
 
 //    List<Object[]> findAllByPosition(@Param("longitude") Long longitude, @Param("latitude") Long latitude);
 

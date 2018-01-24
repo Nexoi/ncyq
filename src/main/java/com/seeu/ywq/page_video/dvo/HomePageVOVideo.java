@@ -1,4 +1,4 @@
-package com.seeu.ywq.page.dvo;
+package com.seeu.ywq.page_video.dvo;
 
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.resource.model.Video;

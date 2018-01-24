@@ -5,14 +5,14 @@ import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.uservip.model.VIPTable;
 import com.seeu.ywq.uservip.service.VIPTableService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags = "配置-用户VIP购买列表", description = "配置VIP充值类型")
 @RestController("adminVIPApi")
@@ -21,6 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class VIPConfigurerApi {
     @Autowired
     private VIPTableService vipTableService;
+
+
+    @ApiOperation("查询列表")
+    @GetMapping("/configurer")
+    public List list() {
+        return vipTableService.findAll();
+    }
+
 
     @PostMapping("/configurer")
     public ResponseEntity configurerAdd(@Validated VIPTable vip) {

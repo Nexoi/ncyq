@@ -1,7 +1,5 @@
 package com.seeu.ywq.api.release.page;
 
-import com.seeu.ywq.page.model.HomePageCategory;
-import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page_home.model.HomeUser;
 import com.seeu.ywq.page_home.service.HomeUserService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -23,23 +21,17 @@ import java.util.List;
 @RequestMapping("/api/v1/page")
 public class HomePageYouwuApi {
     @Autowired
-    private AppHomePageService appHomePageService;
-    @Autowired
     private HomeUserService homeUserService;
 
     @ApiOperation(value = "尤物（固定长度数据）")
     @GetMapping("/youwu")
-    public ResponseEntity youwu(@AuthenticationPrincipal UserLogin authUser) {
-        List<HomePageCategory> categoryList = null;
+    public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+        List<HomeUser> categoryList = null;
         if (authUser == null)
-            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.youwu);
+            categoryList = homeUserService.queryAll(HomeUser.LABEL.youwu, size);
         else
-            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.youwu);
+            categoryList = homeUserService.queryAll(authUser.getUid(), HomeUser.LABEL.youwu, size);
         return ResponseEntity.ok(categoryList);
-//        Map map = new HashMap();
-//        map.put("news", appHomePageService.getYouWuPage_New());
-//        map.put("suggestion", appHomePageService.getYouWuPage_Suggestion());
-//        return ResponseEntity.ok(map);
     }
 
     @ApiOperation(value = "尤物上拉加载数据")

@@ -1,9 +1,8 @@
 package com.seeu.ywq.api.release.page;
 
-import com.seeu.ywq.page.model.HomePageCategory;
-import com.seeu.ywq.page.service.AppHomePageService;
 import com.seeu.ywq.page_advertisement.model.Advertisement;
 import com.seeu.ywq.page_advertisement.service.AdvertisementService;
+import com.seeu.ywq.page_home.model.HomeUser;
 import com.seeu.ywq.page_home.service.HomeUserService;
 import com.seeu.ywq.user.service.UserPositionService;
 import com.seeu.ywq.userlogin.model.UserLogin;
@@ -26,8 +25,6 @@ import java.util.List;
 @RequestMapping("/api/v1/page")
 public class HomePageApi {
     @Autowired
-    private AppHomePageService appHomePageService;
-    @Autowired
     private AdvertisementService advertisementService;
     @Autowired
     private UserPositionService userPositionService;
@@ -41,24 +38,32 @@ public class HomePageApi {
     }
 
     @ApiOperation(value = "首页固定长度数据")
-    @GetMapping("/homepage")
-    public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser) {
-        List<HomePageCategory> categoryList = null;
+    @GetMapping("/homepage/youwu")
+    public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+        List<HomeUser> categoryList = null;
         if (authUser == null)
-            categoryList = appHomePageService.queryAllByPage(HomePageCategory.PAGE.home);
+            categoryList = homeUserService.queryAll(HomeUser.LABEL.youwu, size);
         else
-            categoryList = appHomePageService.queryAllByPage(authUser.getUid(), HomePageCategory.PAGE.home);
+            categoryList = homeUserService.queryAll(authUser.getUid(), HomeUser.LABEL.youwu, size);
         return ResponseEntity.ok(categoryList);
-//        Map map = new HashMap();
-//        map.put("newHotPerson", appHomePageService.getHomePage_NewHotsPerson());
-//        map.put("newActor", appHomePageService.getHomePage_NewActors());
-//        return ResponseEntity.ok(map);
+    }
+
+
+    @ApiOperation(value = "首页固定长度数据")
+    @GetMapping("/homepage/hot-person")
+    public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+        List<HomeUser> categoryList = null;
+        if (authUser == null)
+            categoryList = homeUserService.queryAll(HomeUser.LABEL.hotperson, size);
+        else
+            categoryList = homeUserService.queryAll(authUser.getUid(), HomeUser.LABEL.hotperson, size);
+        return ResponseEntity.ok(categoryList);
     }
 
 
     @ApiOperation(value = "首页上拉加载数据")
     @GetMapping("/homepage/more")
-    public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser,
+    public ResponseEntity homePage3(@AuthenticationPrincipal UserLogin authUser,
                                     @RequestParam(defaultValue = "0") Integer page,
                                     @RequestParam(defaultValue = "10") Integer size) {
         if (authUser != null)

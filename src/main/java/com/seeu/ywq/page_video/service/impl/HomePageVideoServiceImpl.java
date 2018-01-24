@@ -3,7 +3,7 @@ package com.seeu.ywq.page_video.service.impl;
 import com.seeu.third.filestore.FileUploadService;
 import com.seeu.ywq.exception.ResourceAddException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
-import com.seeu.ywq.page.dvo.HomePageVOVideo;
+import com.seeu.ywq.page_video.dvo.HomePageVOVideo;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.utils.AppVOUtils;

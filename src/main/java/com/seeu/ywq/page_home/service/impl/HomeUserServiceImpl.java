@@ -33,6 +33,20 @@ public class HomeUserServiceImpl implements HomeUserService {
     private AppVOUtils appVOUtils;
 
     @Override
+    public List<HomeUser> queryAll(Long uid, HomeUser.LABEL label, Integer size) {
+        if (size == null || size == 0) size = 2;
+        if (uid == null)
+            return transferToHomeUser(repository.queryListByLabel(label.ordinal(), size));
+        else
+            return transferToHomeUser(repository.queryListByLabel(uid, label.ordinal(), size));
+    }
+
+    @Override
+    public List<HomeUser> queryAll(HomeUser.LABEL label, Integer size) {
+        return queryAll(null, label, size);
+    }
+
+    @Override
     public Page<HomeUser> queryAll(Long uid, Pageable pageable) {
         List<Object[]> list = null;
         if (uid != null)
@@ -61,7 +75,7 @@ public class HomeUserServiceImpl implements HomeUserService {
             list = repository.queryPageByLabel(label.ordinal(), pageable.getPageNumber(), pageable.getPageSize());
         if (list == null || list.size() == 0) return new PageImpl<>(new ArrayList<>());
         // counts
-        int totalEls = repository.countPage();
+        int totalEls = repository.countPageByLabel(label.ordinal());
         // transfer
         List<HomeUser> transferList = transferToHomeUser(list);
         return new PageImpl<>(transferList, pageable, totalEls);
@@ -139,7 +153,7 @@ public class HomeUserServiceImpl implements HomeUserService {
     }
 
     private HomeUser transferToHomeUser(Object[] objects) {
-        if (objects == null || objects.length != 10 && objects.length != 11) return null;
+        if (objects == null || objects.length != 11 && objects.length != 12) return null;
         HomeUser user = new HomeUser();
         user.setUid(appVOUtils.parseLong(objects[0]));
         user.setDeleteFlag(null);
@@ -152,10 +166,7 @@ public class HomeUserServiceImpl implements HomeUserService {
         user.setCreateTime(appVOUtils.parseDate(objects[7]));
         user.setVideoUrl(appVOUtils.parseString(objects[8]));
         user.setType(appVOUtils.paresHomeUserTYPE(objects[9]));
-        if (objects.length == 11)
-            user.setLikeIt(1 == appVOUtils.parseInt(objects[10]));
-        else
-            user.setLikeIt(false);
+        user.setLikeIt(1 == appVOUtils.parseInt(objects[10]));
         return user;
     }
 
