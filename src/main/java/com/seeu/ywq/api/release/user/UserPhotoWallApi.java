@@ -94,11 +94,12 @@ public class UserPhotoWallApi {
                               MultipartFile[] images) {
         if (images == null || images.length == 0)
             return ResponseEntity.badRequest().body(R.code(4001).message("请传入至少一张图片").build());
+        int maxSize = 6;
         // 查看已有多少张，看是否传入超额，最多 5 张
-        if (images.length > 5)
-            return ResponseEntity.badRequest().body(R.code(4002).message("传入图片过多，请不要超过 5 张").build());
-        if (userPhotoWallService.countExistPhotos(authUser.getUid()) + images.length > 5)
-            return ResponseEntity.badRequest().body(R.code(4003).message("传入图片过多，照片墙上照片数总量不能超过 5 张").build());
+        if (images.length > maxSize)
+            return ResponseEntity.badRequest().body(R.code(4002).message("传入图片过多，请不要超过 " + maxSize + " 张").build());
+        if (userPhotoWallService.countExistPhotos(authUser.getUid()) + images.length > maxSize)
+            return ResponseEntity.badRequest().body(R.code(4003).message("传入图片过多，照片墙上照片数总量不能超过 " + maxSize + " 张").build());
         try {
             List<PhotoWallVO> photoWallVOS = userPhotoWallService.saveImages(authUser.getUid(), images);
             return photoWallVOS.size() == 0 ? ResponseEntity.badRequest().body(R.code(4001).message("请至少传入一张图片").build()) : ResponseEntity.status(201).body(photoWallVOS);

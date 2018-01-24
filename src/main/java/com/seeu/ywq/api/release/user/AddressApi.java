@@ -24,7 +24,7 @@ import java.util.List;
  * Describe:
  */
 
-@Api(tags = "用户个人中心收获地址信息", description = "收获地址")
+@Api(tags = "用户个人中心收货地址信息", description = "收货地址")
 @RestController
 @RequestMapping("/api/v1/user/address")
 public class AddressApi {
