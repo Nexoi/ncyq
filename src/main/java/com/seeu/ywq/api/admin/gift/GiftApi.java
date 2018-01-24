@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Api(tags = "配置-在线送礼/打赏礼物配置", description = "送礼礼物列表")
-@RestController("adminRewardApi")
+@RestController("adminGiftApi")
 @RequestMapping("/api/admin/v1/gift")
 public class GiftApi {
     @Autowired
