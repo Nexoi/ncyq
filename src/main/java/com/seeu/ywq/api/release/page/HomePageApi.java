@@ -61,7 +61,7 @@ public class HomePageApi {
     public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser,
                                     @RequestParam(defaultValue = "0") Integer page,
                                     @RequestParam(defaultValue = "10") Integer size) {
-        if (authUser == null)
+        if (authUser != null)
             return ResponseEntity.ok(homeUserService.queryAll(authUser.getUid(), new PageRequest(page, size)));
         else
             return ResponseEntity.ok(homeUserService.queryAll(new PageRequest(page, size)));
