@@ -1,14 +1,18 @@
 package com.seeu.ywq.user.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import io.swagger.annotations.ApiParam;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ywq_user_address")
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @ApiParam(hidden = true)
     private Long id;
+
     private Long uid;
     private String province;
     private String city;

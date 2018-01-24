@@ -1,8 +1,10 @@
 package com.seeu.ywq.user.service.impl;
 
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.user.model.Address;
 import com.seeu.ywq.user.repository.AddressRepository;
 import com.seeu.ywq.user.service.AddressService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +26,14 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public Address findOneByUid(Long id, Long uid) throws ResourceNotFoundException {
+        if (id == null || uid == null) throw new ResourceNotFoundException("无此地址");
+        Address address = repository.findOneByIdAndUid(id, uid);
+        if (address == null) throw new ResourceNotFoundException("无此地址");
+        return address;
+    }
+
+    @Override
     public List<Address> findOneByUid(Long uid) {
         return repository.findAllByUid(uid);
     }
@@ -31,6 +41,13 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address save(Address address) {
         return repository.save(address);
+    }
+
+    @Override
+    public Address update(Address address) throws ResourceNotFoundException {
+        Address address1 = findOneByUid(address.getId(), address.getUid());
+        BeanUtils.copyProperties(address, address1);
+        return save(address1);
     }
 
     @Override

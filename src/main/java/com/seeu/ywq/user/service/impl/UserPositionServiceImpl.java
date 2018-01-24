@@ -60,6 +60,7 @@ public class UserPositionServiceImpl implements UserPositionService {
 //        Page page = positionUserRepository.findAllByPositionBolck(uid, convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pb);
 //        List<Object[]> list = page.getContent();
 //        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
+        if (uid == null) uid = 0L;
         List list = positionUserRepository.findAllWithDistanceByPositionBlock(uid, (latitude), (longitude), distance, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = positionUserRepository.countWithDistancePositionBlock(uid, latitude, longitude, distance);
         List<PositionUserVO> voList = formPositionDistanceUserVO(list);
@@ -71,6 +72,7 @@ public class UserPositionServiceImpl implements UserPositionService {
 //        Page page = positionUserRepository.findAllByPositionBolckAndGender(uid, gender.ordinal(), convertPositionToBlock(latitude), convertPositionToBlock(longitude), distance, pb);
 //        List<Object[]> list = page.getContent();
 //        List<PositionUserVO> voList = appVOService.formPositionUserVO(list, longitude, latitude);
+        if (uid == null) uid = 0L;
         List list = positionUserRepository.findAllWithDistanceByPositionBlockAndGender(uid, gender.ordinal(), (latitude), (longitude), distance, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         Integer totalSize = positionUserRepository.countWithDistancePositionBlockGender(uid, gender.ordinal(), latitude, longitude, distance);
         List<PositionUserVO> voList = formPositionDistanceUserVO(list);

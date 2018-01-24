@@ -1,3 +1,4 @@
+use ywq_app;
 INSERT INTO `ywq_user_auth_role` (`id`,`name`) VALUES (1,'ROLE_USER');
 INSERT INTO `ywq_user_auth_role` (`id`,`name`) VALUES (2,'ROLE_ADMIN');
 INSERT INTO `ywq_config_global` (`attr_key`,`attr_value`) VALUES ('binduser.diamond.percent','0.1');
@@ -20,13 +21,6 @@ INSERT INTO `ywq_identification` (`id`,`identification_name`,`icon_active_url`,`
 INSERT INTO `ywq_identification` (`id`,`identification_name`,`icon_active_url`,`icon_url`) VALUES (9,'运动达人','http://o7k6tx0fl.bkt.clouddn.com/ywqac0affe6-82cc-4815-8d97-4ccec033b22a','http://o7k6tx0fl.bkt.clouddn.com/ywqac0affe6-82cc-4815-8d97-4ccec033b22a?imageMogr2/blur/25x10');
 INSERT INTO `ywq_identification` (`id`,`identification_name`,`icon_active_url`,`icon_url`) VALUES (10,'摄影达人','http://o7k6tx0fl.bkt.clouddn.com/ywqd744bff7-d6a2-4c7f-a704-9014957d81b0','http://o7k6tx0fl.bkt.clouddn.com/ywqd744bff7-d6a2-4c7f-a704-9014957d81b0?imageMogr2/blur/25x10');
 INSERT INTO `ywq_identification` (`id`,`identification_name`,`icon_active_url`,`icon_url`) VALUES (11,'穿搭达人','http://o7k6tx0fl.bkt.clouddn.com/ywqeed87789-852d-4172-ad74-ed427a462906','http://o7k6tx0fl.bkt.clouddn.com/ywqeed87789-852d-4172-ad74-ed427a462906?imageMogr2/blur/25x10');
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (1,'最热尤物',0);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (2,'新晋尤物',0);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (3,'新晋网红',0);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (4,'新晋尤物',2);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (5,'推荐尤物',2);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (6,'新晋网红',1);
-INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (7,'推荐网红',1);
 INSERT INTO `ywq_tag` (`id`,`create_time`,`delete_flag`,`tag_name`) VALUES (1,'2018-01-03 10:33:00',0,'写真秀');
 INSERT INTO `ywq_tag` (`id`,`create_time`,`delete_flag`,`tag_name`) VALUES (2,'2018-01-03 10:33:00',0,'小萝莉');
 INSERT INTO `ywq_tag` (`id`,`create_time`,`delete_flag`,`tag_name`) VALUES (3,'2018-01-03 10:33:00',0,'小清新');
@@ -51,3 +45,10 @@ INSERT INTO `ywq_task_category` (`coin`,`sub_title`,`title`,`total_progress`,`ty
 INSERT INTO `ywq_task_category` (`coin`,`sub_title`,`title`,`total_progress`,`type`,`update_time`,`category`) VALUES (50,'您对内容的点评是我们无上的喜悦','热心评论',5,0,'2018-01-11 14:13:27',2);
 INSERT INTO `ywq_task_category` (`coin`,`sub_title`,`title`,`total_progress`,`type`,`update_time`,`category`) VALUES (50,'为您喜爱的内容点赞，每天都有金币拿','精彩点赞',5,0,'2018-01-11 14:13:27',3);
 INSERT INTO `ywq_task_category` (`coin`,`sub_title`,`title`,`total_progress`,`type`,`update_time`,`category`) VALUES (100,'我们为每一位新人都准备了一份豪礼哦','新人福利',1,1,'2018-01-11 14:13:27',4);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (1,'最热尤物',0);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (2,'新晋尤物',0);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (3,'新晋网红',0);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (4,'新晋尤物',2);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (5,'推荐尤物',2);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (6,'新晋网红',1);
+-- INSERT INTO `ywq_page_category` (`category`,`category_title`,`page`) VALUES (7,'推荐网红',1);

@@ -25,7 +25,8 @@ public class HomePageYouwuApi {
 
     @ApiOperation(value = "尤物（固定长度数据）")
     @GetMapping("/youwu")
-    public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+    public ResponseEntity homePage1(@AuthenticationPrincipal UserLogin authUser,
+                                    @RequestParam(required = false) Integer size) {
         List<HomeUser> categoryList = null;
         if (authUser == null)
             categoryList = homeUserService.queryAll(HomeUser.LABEL.youwu, size);

@@ -25,7 +25,8 @@ public class HomePageWanghongApi {
 
     @ApiOperation(value = "网红（固定长度数据）")
     @GetMapping("/hot-person")
-    public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser, Integer size) {
+    public ResponseEntity homePage2(@AuthenticationPrincipal UserLogin authUser,
+                                    @RequestParam(required = false) Integer size) {
         List<HomeUser> categoryList = null;
         if (authUser == null)
             categoryList = homeUserService.queryAll(HomeUser.LABEL.hotperson, size);
