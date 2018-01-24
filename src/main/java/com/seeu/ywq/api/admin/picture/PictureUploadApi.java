@@ -23,16 +23,25 @@ import java.io.IOException;
 
 @Api(tags = "图片上传接口", description = "上传图片，返回 URL")
 @RestController("adminPictureUploadApi")
-@RequestMapping("/api/admin/v1/picture")
+@RequestMapping("/api/admin/v1")
 public class PictureUploadApi {
 
     @Autowired
     private FileUploadService fileUploadService;
 
-    @PostMapping("/upload")
-    public ResponseEntity upload(MultipartFile image) {
+    @PostMapping("/picture/upload")
+    public ResponseEntity uploadPicture(MultipartFile image) {
         try {
             return ResponseEntity.ok(fileUploadService.uploadImage(image));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(R.code(500).message("上传失败！"));
+        }
+    }
+
+    @PostMapping("/video/upload")
+    public ResponseEntity uploadVideo(MultipartFile image) {
+        try {
+            return ResponseEntity.ok(fileUploadService.upload(image));
         } catch (IOException e) {
             return ResponseEntity.status(500).body(R.code(500).message("上传失败！"));
         }
