@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by suneo.
@@ -21,10 +23,10 @@ import java.io.IOException;
  */
 
 
-@Api(tags = "图片上传接口", description = "上传图片，返回 URL")
-@RestController("adminPictureUploadApi")
+@Api(tags = "上传接口", description = "上传图片、视频，返回 URL")
+@RestController("adminUploadApi")
 @RequestMapping("/api/admin/v1")
-public class PictureUploadApi {
+public class UploadApi {
 
     @Autowired
     private FileUploadService fileUploadService;
@@ -41,7 +43,9 @@ public class PictureUploadApi {
     @PostMapping("/video/upload")
     public ResponseEntity uploadVideo(MultipartFile image) {
         try {
-            return ResponseEntity.ok(fileUploadService.upload(image));
+            Map map = new HashMap();
+            map.put("url", fileUploadService.upload(image));
+            return ResponseEntity.ok(map);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(R.code(500).message("上传失败！"));
         }
