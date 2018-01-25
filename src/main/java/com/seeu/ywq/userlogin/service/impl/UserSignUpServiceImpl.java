@@ -20,6 +20,7 @@ import com.seeu.ywq.userlogin.service.ThirdPartTokenService;
 import com.seeu.ywq.utils.jwt.JwtConstant;
 import com.seeu.ywq.utils.jwt.JwtUtil;
 import com.seeu.ywq.utils.jwt.PhoneCodeToken;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -205,8 +206,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         UserLogin savedUserLogin = userReactService.save(userLogin);
         // 更新昵称
         if (name == null) {
-            savedUserLogin.setNickname("user_" + savedUserLogin.getUid());
-            savedUserLogin = userReactService.save(savedUserLogin);
+            userLogin.setNickname("user_" + userLogin.getUid());
+            savedUserLogin = userReactService.save(userLogin);
         }
         // 添加用户基本信息 //
         User user = new User();

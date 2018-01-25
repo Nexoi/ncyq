@@ -202,6 +202,7 @@ public class UserReactServiceImpl implements UserReactService {
 
     @Override
     public UserLogin save(UserLogin userLogin) {
+        if (userLogin == null) return null;
         return userLoginRepository.save(userLogin);
     }
 
