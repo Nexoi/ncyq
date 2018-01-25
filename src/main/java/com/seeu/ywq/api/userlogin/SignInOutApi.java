@@ -2,7 +2,6 @@ package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
 import com.seeu.ywq.user.service.UserPositionService;
-import com.seeu.ywq.userlogin.exception.JwtCodeException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.TokenPersistentRepository;
 import com.seeu.ywq.utils.AppAuthFlushService;
