@@ -18,6 +18,7 @@ public class Address {
     @ApiParam(hidden = true)
     @Column(name = "uid")
     private Long uid;
+    private String name;
     private String province;
     private String city;
     private String detail;
@@ -78,5 +79,13 @@ public class Address {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -14,6 +14,7 @@ import com.seeu.ywq.userlogin.repository.UserAuthRoleRepository;
 import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
+import com.seeu.ywq.utils.AppAuthFlushService;
 import com.seeu.ywq.utils.MD5Service;
 import com.seeu.ywq.userlogin.service.ThirdPartTokenService;
 import com.seeu.ywq.utils.jwt.JwtConstant;
@@ -36,6 +37,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     UserInfoRepository userInfoRepository;
     @Resource
     BalanceService balanceService;
+    @Autowired
+    private AppAuthFlushService appAuthFlushService;
     @Autowired
     private ThirdUserLoginService thirdUserLoginService;
     @Autowired
@@ -218,6 +221,8 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         // 初始化用户余额系统 //
         balanceService.initAccount(savedUserLogin.getUid(), null);
         //...
+        // 自動登陸
+        appAuthFlushService.flush(savedUserLogin.getUid());
         return savedUserLogin;
     }
 

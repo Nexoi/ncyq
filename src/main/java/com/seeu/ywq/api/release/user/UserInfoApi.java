@@ -20,6 +20,7 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.uservip.model.UserVIP;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.uservip.service.UserVIPService;
+import com.seeu.ywq.utils.AppAuthFlushService;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,8 @@ public class UserInfoApi {
     private TagService tagService;
     @Autowired
     private FansService fansService;
+    @Autowired
+    private AppAuthFlushService appAuthFlushService;
 
     @ApiOperation(value = "查看用户头像、关注、喜欢状态等信息")
     @GetMapping("/{uid}/bar")
@@ -257,9 +260,11 @@ public class UserInfoApi {
         try {
             UserLogin userLogin = userInfoService.setGender(authUser.getUid(), gender);
             // 刷新性别
-            SecurityContext context = SecurityContextHolder.getContext();
-            Authentication auth = new UsernamePasswordAuthenticationToken(userLogin, authUser.getPassword(), authUser.getAuthorities());
-            context.setAuthentication(auth); //重新设置上下文中存储的用户权限
+//            SecurityContext context = SecurityContextHolder.getContext();
+//            Authentication auth = new UsernamePasswordAuthenticationToken(userLogin, authUser.getPassword(), authUser.getAuthorities());
+//            context.setAuthentication(auth); //重新设置上下文中存储的用户权限
+
+            appAuthFlushService.flush(authUser.getUid());
             return ResponseEntity.ok(R.code(200).message("设置成功！").build());
         } catch (ActionParameterException e) {
             return ResponseEntity.badRequest().body(R.code(4001).message("设定失败，參數異常，请稍后再试").build());
