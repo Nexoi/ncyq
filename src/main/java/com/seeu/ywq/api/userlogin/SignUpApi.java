@@ -106,7 +106,7 @@ public class SignUpApi {
 
     @ApiOperation("查看是否有该用户，第三方登录使用")
     @GetMapping("/signup/{username}")
-    public ResponseEntity hasAccount(String username) {
+    public ResponseEntity hasAccount(@PathVariable String username) {
         ThirdUserLogin thirdUserLogin = thirdUserLoginService.findByName(username);
         if (thirdUserLogin == null)
             return ResponseEntity.notFound().build();
