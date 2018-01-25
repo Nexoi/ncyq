@@ -125,7 +125,7 @@ public class SignUpApi {
     @PostMapping("/signup/{type}")
     public ResponseEntity signUpWithThirdPart(@PathVariable ThirdUserLogin.TYPE type,
                                               @RequestParam(required = true) String username,
-                                              @RequestParam(required = false) String token,
+                                              @RequestParam(required = true) String token,
                                               @RequestParam(required = true) String phone,
                                               @RequestParam(required = true) String code,
                                               @ApiParam(hidden = true)
