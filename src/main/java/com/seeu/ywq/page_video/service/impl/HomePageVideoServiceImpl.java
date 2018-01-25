@@ -160,7 +160,7 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
         if (page == null) page = 0;
         if (size == null) size = 0;
         Long totalSize = repository.countThem(category);
-        List<HomePageVOVideo> list = formVOs(visitorUid, category, page, size);
+        List<HomePageVOVideo> list = formVOs(visitorUid, category, page * size, size);
         return new PageImpl<>(list, pageable, totalSize);
     }
 

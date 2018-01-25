@@ -56,7 +56,7 @@ public class AddressApi {
     @ResponseStatus(HttpStatus.CREATED)
     public Address add(@AuthenticationPrincipal UserLogin authUser,
                        Address address) {
-        address.setUid(address.getId());
+        address.setUid(authUser.getUid());
         return addressService.save(address);
     }
 
@@ -68,7 +68,7 @@ public class AddressApi {
                                  @PathVariable Long id,
                                  Address address) {
         address.setId(id);
-        address.setUid(address.getId());
+        address.setUid(authUser.getUid());
         try {
             return ResponseEntity.ok(addressService.update(address));
         } catch (ResourceNotFoundException e) {

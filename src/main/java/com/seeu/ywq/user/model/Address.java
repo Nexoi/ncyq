@@ -6,13 +6,17 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ywq_user_address")
+@Table(name = "ywq_user_address", indexes = {
+        @Index(name = "address_index1", columnList = "uid")
+})
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @ApiParam(hidden = true)
     private Long id;
 
+    @ApiParam(hidden = true)
+    @Column(name = "uid")
     private Long uid;
     private String province;
     private String city;
