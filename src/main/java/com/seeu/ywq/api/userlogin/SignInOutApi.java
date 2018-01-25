@@ -2,14 +2,20 @@ package com.seeu.ywq.api.userlogin;
 
 import com.seeu.core.R;
 import com.seeu.ywq.user.service.UserPositionService;
+import com.seeu.ywq.userlogin.exception.JwtCodeException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.repository.TokenPersistentRepository;
+import com.seeu.ywq.utils.AppAuthFlushService;
+import com.seeu.ywq.utils.jwt.JwtConstant;
+import com.seeu.ywq.utils.jwt.JwtUtil;
+import com.seeu.ywq.utils.jwt.PhoneCodeToken;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 该 api 登陆/注销功能已由 spring security 自动实现
@@ -30,6 +38,50 @@ public class SignInOutApi {
     private UserPositionService userPositionService;
     @Resource
     private TokenPersistentRepository tokenPersistentRepository;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private JwtConstant jwtConstant;
+    @Autowired
+    private AppAuthFlushService appAuthFlushService;
+
+
+    @ApiOperation("刷新 TOKEN")
+    @GetMapping("/api/v1/token")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity flushToken(@AuthenticationPrincipal UserLogin authUser) {
+        PhoneCodeToken codeToken = new PhoneCodeToken();
+        codeToken.setPhone(authUser.getPhone());
+        codeToken.setCode("" + authUser.getUid());
+        String subject = jwtUtil.generalSubject(codeToken);
+        try {
+            String token = jwtUtil.createJWT(jwtConstant.getJWT_ID(), subject, jwtConstant.getJWT_TOKEN_INTERVAL());
+            Map map = new HashMap();
+            map.put("token", token);
+            return ResponseEntity.ok(map);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(R.code(500).message("TOKEN 生成失败！请稍后再试"));
+        }
+    }
+
+    @ApiOperation("用 TOKEN 登录")
+    @PostMapping("/api/v1/signin/use-token")
+    public ResponseEntity resetUserContext(@RequestParam(required = true) String token) {
+        // 验证 TOKEN
+        if (token == null || token.trim().length() == 0)
+            return ResponseEntity.status(403).body(R.code(403).message("TOKEN 验证失败！"));
+        // jwt 解析
+        PhoneCodeToken phoneCodeToken = jwtUtil.parseToken(token);
+        if (phoneCodeToken == null
+                || phoneCodeToken.getPhone() == null
+                || phoneCodeToken.getCode() == null
+                ) {
+            return ResponseEntity.status(403).body(R.code(403).message("TOKEN 验证失败！"));
+        }
+        appAuthFlushService.flush(Long.parseLong(phoneCodeToken.getCode()));
+        return ResponseEntity.ok().build();
+    }
+
 
     @ApiResponse(code = 200, message = "登陆成功")
     @ApiOperation(value = "登录账号", notes = "登陆成功只会返回 200 状态码，token 信息会自动写入 cookie，客户端需要支持 cookie；如需要退出账号，请使用 /api/v1/signout 清除 cookie 信息")

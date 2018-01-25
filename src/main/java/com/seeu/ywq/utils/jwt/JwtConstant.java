@@ -16,6 +16,8 @@ public class JwtConstant {
     private String JWT_ID;
     @Value("${com.seeu.jwt.interval}")
     private int JWT_INTERVAL;
+    @Value("${com.seeu.jwt.token_interval}")
+    private int JWT_TOKEN_INTERVAL;
 
     public String getJWT_SECRET() {
         return JWT_SECRET;
@@ -39,5 +41,13 @@ public class JwtConstant {
 
     public void setJWT_INTERVAL(int JWT_INTERVAL) {
         this.JWT_INTERVAL = JWT_INTERVAL;
+    }
+
+    public int getJWT_TOKEN_INTERVAL() {
+        return JWT_TOKEN_INTERVAL;
+    }
+
+    public void setJWT_TOKEN_INTERVAL(int JWT_TOKEN_INTERVAL) {
+        this.JWT_TOKEN_INTERVAL = JWT_TOKEN_INTERVAL;
     }
 }
