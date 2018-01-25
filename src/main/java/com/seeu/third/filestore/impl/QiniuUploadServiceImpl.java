@@ -12,6 +12,7 @@ import com.seeu.third.util.gaussion.GaussianFilter;
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.resource.model.Video;
 import com.seeu.ywq.trend.model.Picture;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -156,10 +157,20 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         Image openImage = uploadImage(bufferedImage);
         map.put(Picture.ALBUM_TYPE.open, openImage);
         if (album_type == Picture.ALBUM_TYPE.close) {
-            // upload close image
-            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
-            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
-            Image closeImage = uploadImage(hazyImage);
+            // 本地模糊，upload close image
+//            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
+//            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
+//            Image closeImage = uploadImage(hazyImage);
+//            map.put(Picture.ALBUM_TYPE.close, closeImage);
+            // 直接使用七牛云模糊
+            String imageBlur = "imageMogr2/blur/40x50";
+            Image closeImage = new Image();
+            BeanUtils.copyProperties(openImage, closeImage);
+            closeImage.setImageUrl(openImage.getImageUrl() + "?" + imageBlur);
+            closeImage.setThumbImage100pxUrl(openImage.getThumbImage100pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage200pxUrl(openImage.getThumbImage200pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage300pxUrl(openImage.getThumbImage300pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage500pxUrl(openImage.getThumbImage500pxUrl() + "&" + imageBlur);
             map.put(Picture.ALBUM_TYPE.close, closeImage);
         }
         return map;
@@ -171,10 +182,20 @@ public class QiniuUploadServiceImpl implements FileUploadService {
         Image openImage = uploadImage(bufferedImage);
         images.add(openImage);
         if (album_type == Picture.ALBUM_TYPE.close) {
-            // upload close image
-            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
-            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
-            Image closeImage = uploadImage(hazyImage);
+            // 本地模糊，upload close image
+//            BufferedImage imageContainer = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
+//            BufferedImage hazyImage = new GaussianFilter(80).filter(bufferedImage, imageContainer);
+//            Image closeImage = uploadImage(hazyImage);
+//            images.add(closeImage);
+            // 直接使用七牛云模糊
+            String imageBlur = "imageMogr2/blur/40x50";
+            Image closeImage = new Image();
+            BeanUtils.copyProperties(openImage, closeImage);
+            closeImage.setImageUrl(openImage.getImageUrl() + "?" + imageBlur);
+            closeImage.setThumbImage100pxUrl(openImage.getThumbImage100pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage200pxUrl(openImage.getThumbImage200pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage300pxUrl(openImage.getThumbImage300pxUrl() + "&" + imageBlur);
+            closeImage.setThumbImage500pxUrl(openImage.getThumbImage500pxUrl() + "&" + imageBlur);
             images.add(closeImage);
         }
         return images;

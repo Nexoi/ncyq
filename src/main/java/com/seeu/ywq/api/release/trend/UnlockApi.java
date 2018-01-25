@@ -36,6 +36,25 @@ public class UnlockApi {
     @Autowired
     private PublishService publishService;
 
+    @ApiOperation(value = "解锁某一条首页视频", notes = "根据发布视频的ID解锁动态【按天收取费用】，激活成功会返回支付订单记录信息")
+    @PostMapping("/video/{videoId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity unlockHomePageVideo(@AuthenticationPrincipal UserLogin authUser,
+                                              @PathVariable("videoId") Long videoId) {
+        try {
+            OrderLog log = orderService.createUnlockHomePageVideo(authUser.getUid(), videoId);
+            return ResponseEntity.ok(log);
+        } catch (BalanceNotEnoughException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("余额不足").build());
+        } catch (ResourceAlreadyActivedException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("该资源已经被解锁，无需重复解锁").build());
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4003).message("该资源设定解锁价格异常，无法解锁").build());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该视频资源").build());
+        }
+    }
+
     @ApiOperation(value = "解锁某一条动态", notes = "根据发布动态ID解锁动态【按天收取费用】，激活成功会返回支付订单记录信息")
     @PostMapping("/publish/{publishId}")
     @PreAuthorize("hasRole('USER')")

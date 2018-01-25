@@ -4,6 +4,7 @@ import com.seeu.core.R;
 import com.seeu.ywq.userlogin.exception.*;
 import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.service.ThirdUserLoginService;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.MD5Service;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Api(tags = "用户注册账号", description = "短信验证码发送/账号注册", position = 1)
 @RestController
@@ -26,6 +29,8 @@ public class SignUpApi {
     private UserReactService userReactService;
     @Autowired
     private UserSignUpService userSignUpService;
+    @Autowired
+    private ThirdUserLoginService thirdUserLoginService;
     @Autowired
     private MD5Service md5Service;
 
@@ -97,6 +102,20 @@ public class SignUpApi {
         userReactService.save(userLogin);
         return ResponseEntity.ok(R.code(200).message("修改密码成功").build());
     }
+
+
+    @ApiOperation("查看是否有该用户，第三方登录使用")
+    @GetMapping("/signup/{username}")
+    public ResponseEntity hasAccount(String username) {
+        ThirdUserLogin thirdUserLogin = thirdUserLoginService.findByName(username);
+        if (thirdUserLogin == null)
+            return ResponseEntity.notFound().build();
+        Map map = new HashMap();
+        map.put("username", thirdUserLogin.getName());
+        map.put("type", thirdUserLogin.getType());
+        return ResponseEntity.ok(map);
+    }
+
 
     @ApiOperation(
             value = "sign up with qq, weibo, wechat, etc.",

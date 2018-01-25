@@ -29,6 +29,7 @@ public class ThirdUserLogin {
     private TYPE type;
     @NotNull
     private String credential;
+    @NotNull
     @Column(name = "token")
     private String token;
     private String nickName;

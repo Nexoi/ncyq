@@ -24,7 +24,15 @@ public interface OrderService {
     // 充值
     OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds);
 
+    // 购买VIP卡
+    void createVIPCardUseAliPay(Long uid, Long day);
+
+    // 购买VIP卡
+    void createVIPCardUseWeChat(Long uid, Long day);
+
     /**
+     * 提現
+     *
      * @param uid
      * @param diamonds  钻石数量
      * @param payMethod 支付方式
@@ -36,10 +44,6 @@ public interface OrderService {
 
     // 购买VIP卡
     OrderLog createVIPCardUseDiamond(Long uid, Long day) throws ResourceNotFoundException, BalanceNotEnoughException;
-
-    void createVIPCardUseAliPay(Long uid, Long day);
-
-    void createVIPCardUseWeChat(Long uid, Long day);
 
     // 将钻石转化为金币
     OrderLog createTransferDiamondsToCoins(Long uid, Long diamonds) throws BalanceNotEnoughException, ActionNotSupportException;
