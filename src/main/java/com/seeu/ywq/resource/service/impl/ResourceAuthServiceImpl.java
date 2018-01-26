@@ -61,7 +61,7 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
     @Override
     public void activeVideoResource(Long uid, Long videoId, Integer day) {
         if (day == null || day <= 0) return;
-        ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, ResourceAuth.TYPE.publish, videoId));
+        ResourceAuth resourceAuth = resourceAuthRepository.findOne(new ResourceAuthPKeys(uid, ResourceAuth.TYPE.video, videoId));
         if (resourceAuth == null) {
             resourceAuth = new ResourceAuth();
             resourceAuth.setUid(uid);

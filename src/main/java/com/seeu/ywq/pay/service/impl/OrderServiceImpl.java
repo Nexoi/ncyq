@@ -272,7 +272,7 @@ public class OrderServiceImpl implements OrderService {
         Long transactionDiamonds = (long) (diamonds * globalConfigurerService.getUserDiamondsPercent());
         balanceService.update(orderID, herUid, OrderLog.EVENT.RECEIVE_VIDEO, transactionDiamonds);
         // 激活权限
-        resourceAuthService.activePublishResource(uid, videoId, timeInterval_Publish); // 默认一天
+        resourceAuthService.activeVideoResource(uid, videoId, timeInterval_Publish); // 默认一天
         // publish record
         Long receivedDiamonds = video.getReceivedDiamonds();
         if (receivedDiamonds == null) receivedDiamonds = 0L;
