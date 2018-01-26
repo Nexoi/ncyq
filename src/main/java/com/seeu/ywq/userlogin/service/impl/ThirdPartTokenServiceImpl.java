@@ -48,7 +48,7 @@ public class ThirdPartTokenServiceImpl implements ThirdPartTokenService {
         try {
             JSONObject jo = JSON.parseObject(voStr);
             if (null != jo.getString("nickname"))
-                processor.process(true, openId, jo.getString("nickname"), jo.getString("figureurl_qq_1"));
+                processor.process(true, openId, jo.getString("nickname"), jo.getString("figureurl_qq_2"));
             else
                 processor.process(false, null, null, null);
             return;

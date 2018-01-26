@@ -172,13 +172,16 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         String credential = "defaultPassword";
         UserLogin ul = initAccount(map.get("nickname"), phone, credential, map.get("headIconUrl"));
         // record third part info
-        if (ul == null)
+        if (null == ul)
             return null;
+        String nickName = map.get("nickname");
+        if (nickName == null)
+            nickName = "user_" + ul.getUid();
         thirdUserLogin = new ThirdUserLogin();
         thirdUserLogin.setYwqUid(ul.getUid());
-        thirdUserLogin.setCredential(md5Service.encode(credential));
+        thirdUserLogin.setCredential(md5Service.encode(credential)); // 默认值：defaultPassword
         thirdUserLogin.setName(name);
-        thirdUserLogin.setNickName(map.get("nickname"));
+        thirdUserLogin.setNickName(nickName);
         thirdUserLogin.setToken(token);
         thirdUserLogin.setType(type);
         thirdUserLogin.setUpdateTime(new Date());

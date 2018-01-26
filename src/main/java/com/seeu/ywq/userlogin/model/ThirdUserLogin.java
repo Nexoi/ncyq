@@ -21,7 +21,7 @@ public class ThirdUserLogin {
     }
 
     @Id
-    @Column(length = 30)
+    @Column(length = 45)
     @NotNull
     private String name; // like uid
     @Enumerated
