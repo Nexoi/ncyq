@@ -107,7 +107,7 @@ public class PublishApi {
             @ApiResponse(code = 500, message = "500 服务器异常，文件传输失败"),
     })
     @PostMapping
-    public ResponseEntity add(@PathVariable Long uid,
+    public ResponseEntity add(@RequestParam(required = true) Long uid,
                               Publish publish,
                               @ApiParam(value = "照片/视频类型，数组，用逗号隔开，可选值：open、close，分别表示：公开、私密。如：open,close,close", example = "open,close,open")
                               @RequestParam(required = false) String srcTypes,
