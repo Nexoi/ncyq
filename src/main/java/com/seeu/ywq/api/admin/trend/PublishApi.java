@@ -204,12 +204,12 @@ public class PublishApi {
         } catch (Exception e) {
             // 注意回滚（如果异常，阿里云可能会存储部分图片，但本地可能无对应图片信息）
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.code(500).message("服务器异常，文件传输失败").build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.code(500).message("服务器异常，文件传输失败 :: " + e.getMessage()).build());
         }
     }
 
     private Picture.ALBUM_TYPE[] formPictureTypes(String string) throws PublishSRCTYPEConvertException {
-        if (string == null) return null;
+        if (string == null) return new Picture.ALBUM_TYPE[0];
         try {
             String[] arr = string.split(",");
             Picture.ALBUM_TYPE[] types = new Picture.ALBUM_TYPE[arr.length];

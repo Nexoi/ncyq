@@ -377,7 +377,7 @@ public class PublishApi {
     }
 
     private Picture.ALBUM_TYPE[] formPictureTypes(String string) throws PublishSRCTYPEConvertException {
-        if (string == null) return null;
+        if (string == null) return new Picture.ALBUM_TYPE[0];
         try {
             String[] arr = string.split(",");
             Picture.ALBUM_TYPE[] types = new Picture.ALBUM_TYPE[arr.length];

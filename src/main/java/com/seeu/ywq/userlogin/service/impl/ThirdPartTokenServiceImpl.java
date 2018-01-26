@@ -9,10 +9,14 @@ import com.seeu.ywq.userlogin.model.ThirdUserLogin;
 import com.seeu.ywq.userlogin.service.ThirdPartTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ThirdPartTokenServiceImpl implements ThirdPartTokenService {
@@ -61,7 +65,7 @@ public class ThirdPartTokenServiceImpl implements ThirdPartTokenService {
     private void weiboValidate(String token, Processor processor) {
         String url = "https://api.weibo.com/oauth2/get_token_info" +
                 "?access_token=" + token;
-        String voStr = restTemplate.getForObject(url, String.class);
+        String voStr = restTemplate.postForObject(url, null, String.class);
         if (voStr == null) return;
         try {
             JSONObject object = JSONObject.parseObject(voStr);
@@ -69,6 +73,7 @@ public class ThirdPartTokenServiceImpl implements ThirdPartTokenService {
                 processor.process(true, object.getString("uid"), null, null);
             else
                 processor.process(false, null, null, null);
+            return;
         } catch (JSONException e) {
         }
         // default
