@@ -72,7 +72,7 @@ public class SignInOutApi {
         // jwt 解析
         PhoneCodeToken phoneCodeToken = jwtUtil.parseToken(token);
         if (phoneCodeToken == null
-                || phoneCodeToken.getPhone() == null
+//                || phoneCodeToken.getPhone() == null
                 || phoneCodeToken.getCode() == null
                 ) {
             return ResponseEntity.status(403).body(R.code(403).message("TOKEN 验证失败！"));
