@@ -1,22 +1,15 @@
 package com.seeu.ywq.task.service.impl;
 
-import com.seeu.ywq.event_listener.publish_react.ShareEvent;
 import com.seeu.ywq.event_listener.task.SignInTodayEvent;
-import com.seeu.ywq.exception.ActionNotSupportException;
-import com.seeu.ywq.exception.NewHerePackageReceiveEmptyException;
 import com.seeu.ywq.exception.SignInTodayAlreadyFinishedException;
-import com.seeu.ywq.globalconfig.service.TaskConfigurerService;
 import com.seeu.ywq.task.model.DayFlushTask;
-import com.seeu.ywq.task.model.StaticTask;
 import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.repository.DayFlushTaskRepository;
 import com.seeu.ywq.task.service.DayFlushTaskService;
 import com.seeu.ywq.task.service.TaskCategoryService;
 import com.seeu.ywq.utils.DateFormatterService;
-import javafx.concurrent.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 

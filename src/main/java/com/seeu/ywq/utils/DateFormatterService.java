@@ -9,6 +9,7 @@ import java.util.Date;
 public class DateFormatterService {
 
     private SimpleDateFormat yyyyMMddHHmmssS;
+    private SimpleDateFormat yyyyMMddHHmmss;
     private SimpleDateFormat yyyyMMdd;
 
     public SimpleDateFormat getyyyyMMddHHmmssS() {
@@ -16,6 +17,14 @@ public class DateFormatterService {
             yyyyMMddHHmmssS = new SimpleDateFormat("yyyyMMddHHmmssS");
         return yyyyMMddHHmmssS;
     }
+
+
+    public SimpleDateFormat getyyyyMMddHHmmss() {
+        if (yyyyMMddHHmmss == null)
+            yyyyMMddHHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return yyyyMMddHHmmss;
+    }
+
 
     public SimpleDateFormat getyyyyMMdd() {
         if (yyyyMMdd == null)

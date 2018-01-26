@@ -10,7 +10,10 @@ import com.seeu.ywq.event_listener.publish_react.ClickLikeEvent;
 import com.seeu.ywq.event_listener.publish_react.PublishCommentEvent;
 import com.seeu.ywq.event_listener.publish_react.ShareEvent;
 import com.seeu.ywq.event_listener.task.SignInTodayEvent;
+import com.seeu.ywq.event_listener.yellowpicture.YellowEvent;
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.message.model.PersonalMessage;
+import com.seeu.ywq.message.service.PersonalMessageService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.service.BalanceService;
@@ -38,7 +41,8 @@ public class EventListenerController {
     private PushService pushService;
     @Autowired
     private DayFlushTaskService dayFlushTaskService;
-
+    @Autowired
+    private PersonalMessageService personalMessageService;
 
     @EventListener
     public void clickMe(ClickLikeEvent event) {
@@ -46,6 +50,22 @@ public class EventListenerController {
         dayFlushTaskService.update(event.getUid(), TaskCategory.CATEGORY.like);
         // 推送
         try {
+            // 持久化
+            JSONObject jo = new JSONObject();
+            jo.put("uid", event.getUid());
+            jo.put("herUid", event.getHerUid());
+            jo.put("nickname", event.getNickname());
+            jo.put("headIconUrl", event.getHeadIconUrl());
+            jo.put("publishId", event.getPublishId());
+            jo.put("imgUrl", event.getImgUrl());
+
+            PersonalMessage message = new PersonalMessage();
+            message.setCreateTime(new Date());
+            message.setType(PersonalMessage.TYPE.like);
+            message.setUid(event.getUid());
+            message.setExtraJson(jo.toJSONString()); // JSON.toJSONString(event);
+            personalMessageService.add(message);
+            // 推送
             pushService.likePublish(
                     event.getHerUid(),
                     event.getUid(),
@@ -67,6 +87,22 @@ public class EventListenerController {
         dayFlushTaskService.update(event.getUid(), TaskCategory.CATEGORY.comment);
         // 推送
         try {
+            // 持久化
+            JSONObject jo = new JSONObject();
+            jo.put("uid", event.getUid());
+            jo.put("herUid", event.getHerUid());
+            jo.put("nickname", event.getNickname());
+            jo.put("headIconUrl", event.getHeadIconUrl());
+            jo.put("publishId", event.getPublishId());
+            jo.put("imgUrl", event.getImgUrl());
+
+            PersonalMessage message = new PersonalMessage();
+            message.setCreateTime(new Date());
+            message.setType(PersonalMessage.TYPE.comment);
+            message.setUid(event.getUid());
+            message.setExtraJson(jo.toJSONString());
+            personalMessageService.add(message);
+            // 推送
             pushService.commentPublish(
                     event.getHerUid(),
                     event.getUid(),
@@ -103,6 +139,15 @@ public class EventListenerController {
                     .replace("%price%", "" + event.getTransactionalDiamonds());
             Map map = new HashMap();
             map.put("info", JSON.toJSON(event));
+
+            // 持久化
+            PersonalMessage message = new PersonalMessage();
+            message.setCreateTime(new Date());
+            message.setType(PersonalMessage.TYPE.reward);
+            message.setUid(event.getUid());
+            message.setExtraJson(JSON.toJSONString(event));
+            personalMessageService.add(message);
+            // 推送
             pushService.singlePush(event.getUid(), text, "", map);
         } catch (PushException e) {
             e.printStackTrace();
@@ -121,6 +166,15 @@ public class EventListenerController {
 //                    .replace("%price%", "" + event.getTransactionalDiamonds());
 //            Map map = new HashMap();
 //            map.put("info", JSON.toJSON(event));
+
+            // 持久化
+            PersonalMessage message = new PersonalMessage();
+            message.setCreateTime(new Date());
+            message.setType(PersonalMessage.TYPE.gift);
+            message.setUid(event.getUid());
+            message.setExtraJson(JSON.toJSONString(event));
+            personalMessageService.add(message);
+            // 推送
             pushService.singlePush(event.getUid(), null, "", null);
         } catch (PushException e) {
             e.printStackTrace();
@@ -128,6 +182,27 @@ public class EventListenerController {
         }
     }
 
+    @EventListener
+    public void yellowPicture(YellowEvent event){
+
+        try {
+            Map extraData = new HashMap();
+            extraData.put("message", "动态图片含有色情信息");
+            extraData.put("score", event.getScore());
+
+            // 持久化
+            PersonalMessage message = new PersonalMessage();
+            message.setCreateTime(new Date());
+            message.setType(PersonalMessage.TYPE.yellowPicture);
+            message.setUid(event.getUid());
+            message.setExtraJson(JSON.toJSONString(event));
+            personalMessageService.add(message);
+            // 推送
+            pushService.singlePush(event.getUid(), "您的图片含有色情信息，已被删除！", null, extraData);
+        } catch (PushException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Autowired
     private DateFormatterService dateFormatterService;

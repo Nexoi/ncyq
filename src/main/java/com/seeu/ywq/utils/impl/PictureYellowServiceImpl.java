@@ -2,7 +2,7 @@ package com.seeu.ywq.utils.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.seeu.third.push.PushService;
+import com.seeu.ywq.event_listener.yellowpicture.YellowEvent;
 import com.seeu.ywq.resource.model.Image;
 import com.seeu.ywq.trend.model.Picture;
 import com.seeu.ywq.trend.model.Publish;
@@ -11,6 +11,7 @@ import com.seeu.ywq.trend.service.PublishService;
 import com.seeu.ywq.utils.PictureYellowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,7 +37,7 @@ public class PictureYellowServiceImpl implements PictureYellowService {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
-    private PushService pushService;
+    private ApplicationContext applicationContext;
 
     @Value("${ywq.validate.picture}")
     private Boolean validate;
@@ -56,6 +57,7 @@ public class PictureYellowServiceImpl implements PictureYellowService {
 
             boolean flag = false; // 是否有黄图
             double score = 0.0;
+            Long yellowPictureId = 0L;
             for (Picture picture : pictures) {
                 if (picture == null) continue;
                 Image image = picture.getImageOpen();
@@ -70,6 +72,7 @@ public class PictureYellowServiceImpl implements PictureYellowService {
                         Integer label = result.getInteger("label");
                         if (0 == label) {
                             flag = true;
+                            yellowPictureId = picture.getId();
                             score = result.getDouble("score");
                         }
                     }
@@ -86,10 +89,7 @@ public class PictureYellowServiceImpl implements PictureYellowService {
 
             // 通知
             if (uid == null) return;
-            Map extraData = new HashMap();
-            extraData.put("message", "动态图片含有色情信息");
-            extraData.put("score", score);
-            pushService.singlePush(uid, "您的图片含有色情信息，已被删除！", null, extraData);
+            applicationContext.publishEvent(new YellowEvent(this, uid, publishId, yellowPictureId, score));
             publishPictureService.save(pictures);
             publishService.save(publish);
         } catch (Exception e) {

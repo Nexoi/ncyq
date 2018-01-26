@@ -1,5 +1,7 @@
 package com.seeu.ywq.message.model;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -8,12 +10,15 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "ywq_message_system")
+@Table(name = "ywq_message_system", indexes = {
+        @Index(name = "message_sys_index1", columnList = "create_time")
+})
 public class SysMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "create_time")
     private Date createTime;
     @Column(length = 400)
     private String text;
@@ -21,6 +26,10 @@ public class SysMessage {
     private String linkUrl;
     @Column(length = Integer.MAX_VALUE)
     private String extraJson;
+
+    @Transient
+    private JSONObject json;
+
 
     public Long getId() {
         return id;
@@ -60,5 +69,13 @@ public class SysMessage {
 
     public void setExtraJson(String extraJson) {
         this.extraJson = extraJson;
+    }
+
+    public JSONObject getJson() {
+        return json;
+    }
+
+    public void setJson(JSONObject json) {
+        this.json = json;
     }
 }
