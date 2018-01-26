@@ -20,6 +20,7 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
 
     @Override
     public boolean canVisitPublish(Long uid, Long publishId, Date currentTime) {
+        if (uid == null) return false;
         return userVIPService.isActive(uid) || // 会员全部放行
                 0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.publish, publishId, currentTime);
     }
@@ -49,8 +50,9 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
 
     @Override
     public boolean canVisitVideo(Long uid, Long videoId, Date currentTime) {
-        return userVIPService.isActive(uid) || // 会员全部放行
-                0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.video, videoId, currentTime);
+        if (uid == null) return false;
+        return userVIPService.isActive(uid) // 会员全部放行
+                || 0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.video, videoId, currentTime);
     }
 
     @Override

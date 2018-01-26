@@ -57,7 +57,7 @@ public class HomePageVideoDetialApi {
     ) {
         Long visitorUid = null;
         if (authUser != null) visitorUid = authUser.getUid();
-        HomePageVideo video = homePageVideoService.findOne(videoId); // 已经保护浏览次数 +1 操作
+        HomePageVideo video = homePageVideoService.findOne(visitorUid, videoId); // 已经保护浏览次数 +1 操作
         if (video == null || video.getDeleteFlag() != HomePageVideo.DELETE_FLAG.show)
             return ResponseEntity.status(404).body(R.code(404).message("找不到该视频").build());
         // 注入发布者用户信息
@@ -69,7 +69,7 @@ public class HomePageVideoDetialApi {
 //            userVO.setFollowed(fansService.hasFollowedHer(authUser.getUid(), uid));
 //        }
         // 查看发布者最近发布的视频信息（按时间最新排序）
-        Page page = homePageVideoService.findAllByUid(uid, new PageRequest(suggestPage, suggestSize, new Sort(Sort.Direction.DESC, "createTime")));
+        Page page = homePageVideoService.findAllByUid(visitorUid, uid, new PageRequest(suggestPage, suggestSize, new Sort(Sort.Direction.DESC, "createTime")));
         // 评论信息（按时间最新排序）
         Page comment_page = homePageVideoCommentService.findAllByVideoId(videoId, new PageRequest(commentPage, commentSize, new Sort(Sort.Direction.DESC, "commentDate")));
         Map map = new HashMap();
