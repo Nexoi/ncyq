@@ -24,6 +24,7 @@ public class ResourceAuth {
     private Long uid;
     @Id
     @Column(name = "type")
+    @Enumerated
     private TYPE type;
 
     private Date outTime; // 过期时间

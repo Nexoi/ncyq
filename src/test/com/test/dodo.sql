@@ -9,4 +9,11 @@
 --              group by iden.uid
 --              order by pfg.order_id
 
-SELECT * from ywq_publish WHERE id /2 =0;
+select v.id, v.category, v.title, v.uid, ul.nickname, ul.head_icon_url, v.view_num, v.create_time,
+ img.id as img_id, img.height, img.width, img.image_url, img.thumb_image100px_url, img.thumb_image200px_url, img.thumb_image300px_url, img.thumb_image500px_url,
+ vd.id as video_id, vd.cover_url, vd.src_url,  +
+ v.diamonds, v.received_diamonds
+ from ywq_page_video v join ywq_user_login ul on v.uid = ul.uid
+ left join ywq_image img on v.cover_image_id = img.id
+ left join ywq_video vd on v.video_id = vd.id
+ where v.category = 1
