@@ -55,7 +55,8 @@ public class MessageApi {
 
     @ApiOperation(value = "获取系统通知【分页】")
     @GetMapping("/system/list")
-    public Page<SysMessage> listAllSys(Integer page, Integer size) {
+    public Page<SysMessage> listAllSys(@RequestParam(defaultValue = "0") Integer page,
+                                       @RequestParam(defaultValue = "10")  Integer size) {
         return sysMessageService.findAll(new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
@@ -79,7 +80,8 @@ public class MessageApi {
     @PreAuthorize("hasRole('USER')")
     public Page<PersonalMessage> listAllPersonalByType(@AuthenticationPrincipal UserLogin authUser,
                                                        @PathVariable PersonalMessage.TYPE type,
-                                                       Integer page, Integer size) {
+                                                       @RequestParam(defaultValue = "0") Integer page,
+                                                       @RequestParam(defaultValue = "10")  Integer size) {
         return personalMessageService.findAll(authUser.getUid(), type, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
@@ -87,7 +89,8 @@ public class MessageApi {
     @GetMapping("/personal/list")
     @PreAuthorize("hasRole('USER')")
     public Page<PersonalMessage> listAllPersonal(@AuthenticationPrincipal UserLogin authUser,
-                                                 Integer page, Integer size) {
+                                                 @RequestParam(defaultValue = "0") Integer page,
+                                                 @RequestParam(defaultValue = "10")  Integer size) {
         return personalMessageService.findAll(authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 

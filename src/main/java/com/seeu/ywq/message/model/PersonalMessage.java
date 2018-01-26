@@ -1,6 +1,7 @@
 package com.seeu.ywq.message.model;
 
 import com.alibaba.fastjson.JSONObject;
+import io.swagger.annotations.ApiParam;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class PersonalMessage {
     private Long uid;
     @Enumerated
     private TYPE type;
+    @ApiParam(hidden = true)
     @Column(length = Integer.MAX_VALUE)
     private String extraJson;
 

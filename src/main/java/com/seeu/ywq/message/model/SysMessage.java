@@ -1,6 +1,7 @@
 package com.seeu.ywq.message.model;
 
 import com.alibaba.fastjson.JSONObject;
+import io.swagger.annotations.ApiParam;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -24,6 +25,7 @@ public class SysMessage {
     private String text;
     @Column(length = 400)
     private String linkUrl;
+    @ApiParam(hidden = true)
     @Column(length = Integer.MAX_VALUE)
     private String extraJson;
 
