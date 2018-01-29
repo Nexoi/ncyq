@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -144,13 +145,14 @@ public class UserBalanceApi {
     @PostMapping("/balance/recharge")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity recharge(@AuthenticationPrincipal UserLogin authUser,
+                                   HttpServletRequest request,
                                    @RequestParam(required = true) OrderRecharge.PAY_METHOD payMethod,
                                    @RequestParam(required = true) Double price) {
         try {
             if (null == rechargeTableService.findOne(BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_UP)))
                 return ResponseEntity.badRequest().body(R.code(400).message("无法充值该额度"));
             try {
-                return ResponseEntity.ok(orderService.createRecharge(payMethod, authUser.getUid(), BigDecimal.valueOf(price)));
+                return ResponseEntity.ok(orderService.createRecharge(payMethod, authUser.getUid(), BigDecimal.valueOf(price), request));
             } catch (ActionParameterException e) {
                 return ResponseEntity.badRequest().body(R.code(4002).message("操作不允许，请检查参数信息！"));
             }

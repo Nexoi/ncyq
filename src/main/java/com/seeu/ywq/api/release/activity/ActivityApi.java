@@ -2,12 +2,16 @@ package com.seeu.ywq.api.release.activity;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
+import com.seeu.ywq.pay.model.OrderRecharge;
+import com.seeu.ywq.pay.model.TradeModel;
+import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.ywqactivity.model.Activity;
 import com.seeu.ywq.ywqactivity.model.ActivityCheckIn;
 import com.seeu.ywq.ywqactivity.service.ActivityCheckInService;
 import com.seeu.ywq.ywqactivity.service.ActivityService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Api(tags = "活动页面", description = "活动列表")
@@ -28,6 +33,8 @@ public class ActivityApi {
     private ActivityService activityService;
     @Autowired
     private ActivityCheckInService activityCheckInService;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/list")
     public ResponseEntity list(@RequestParam(defaultValue = "0") Integer page,
@@ -65,18 +72,21 @@ public class ActivityApi {
         }
     }
 
-    @PostMapping("/pay/{activityId}")
+    @ApiOperation("下单支付")
+    @PostMapping("/pay/{checkInId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity pay(@AuthenticationPrincipal UserLogin authUser, @PathVariable Long activityId) {
-        ActivityCheckIn checkIn = activityCheckInService.findOneByActivityIdAndUid(activityId, authUser.getUid());
-        if (checkIn == null)
-            return ResponseEntity.status(404).body(R.code(404).message("找不到该活动信息"));
-        // 返回支付信息（AliPay, WeChatPay...）
-
-        // demo
-        checkIn.setHasPaid(true);
-        activityCheckInService.updateIfNotExisted(checkIn);
-        return ResponseEntity.ok(R.code(200).message("支付成功！"));
+    public ResponseEntity pay(@AuthenticationPrincipal UserLogin authUser,
+                              HttpServletRequest request,
+                              @RequestParam TradeModel.PAYMENT payment,
+                              @PathVariable Long checkInId) {
+        ActivityCheckIn checkInModel = activityCheckInService.findOne(checkInId);
+        if (checkInModel == null)
+            return ResponseEntity.status(400).body(R.code(400).message("您还未报名，不可进行支付"));
+//        ActivityCheckIn checkIn = activityCheckInService.findOneByActivityIdAndUid(, authUser.getUid());
+//        if (checkIn == null)
+//            return ResponseEntity.status(404).body(R.code(404).message("找不到该活动信息"));
+        // 返回支付信息进行支付（AliPay, WeChatPay...）
+        return ResponseEntity.ok(orderService.createActivity(authUser.getUid(), checkInModel.getActivityId(), payment, request));
     }
 
 }

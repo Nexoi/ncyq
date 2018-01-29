@@ -1,12 +1,21 @@
 package com.seeu.third.payment.wxpay;
 
+import com.alibaba.fastjson.JSON;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.pay.model.WxPayTradeModel;
 import com.seeu.ywq.pay.service.WxPayTradeService;
+import org.apache.commons.collections.map.FixedSizeSortedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.beans.XMLEncoder;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Created by suneo.
@@ -19,9 +28,36 @@ import java.math.BigDecimal;
 @Service
 public class WxPayService {
 
-    public String createOrder(String oid, BigDecimal price, String subject, String body) throws ActionParameterException {
+    @Value("${wxpay.appid}")
+    private String appid;
 
-        return null;
+    @Value("${wxpay.mchid}")
+    private String mch_id;
+
+    @Value("${wxpay.notify_url}")
+    private String notifyUrl;
+
+    @Autowired
+    private WxUtils wxUtils;
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public String createOrder(String oid, BigDecimal price, String body, String ipAddress, String deviceInfo) throws ActionParameterException {
+        String placeUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+        parameters.put("appid", appid);
+        parameters.put("mch_id", mch_id);
+        parameters.put("device_info", deviceInfo);
+        parameters.put("body", body);
+        parameters.put("nonce_str", wxUtils.gen32RandomString());
+        parameters.put("notify_url", notifyUrl);
+        parameters.put("out_trade_no", oid);
+        parameters.put("total_fee", price.multiply(BigDecimal.valueOf(100)).intValue());
+        parameters.put("spbill_create_ip", ipAddress);
+        parameters.put("trade_type", "APP");
+        parameters.put("sign", wxUtils.createSign(parameters)); // 必须在最后
+        String result = restTemplate.postForObject(placeUrl, parameters, String.class);
+        return result;
     }
 
     public String callBack(WxPayTradeModel model) {

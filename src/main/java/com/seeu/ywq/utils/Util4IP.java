@@ -1,4 +1,4 @@
-package com.seeu.core;
+package com.seeu.ywq.utils;
 
 import org.springframework.stereotype.Service;
 

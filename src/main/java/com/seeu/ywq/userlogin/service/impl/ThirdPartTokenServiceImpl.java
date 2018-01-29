@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,11 +93,13 @@ public class ThirdPartTokenServiceImpl implements ThirdPartTokenService {
         try {
             vo = JSON.parseObject(entity.getBody());
             if (null != vo.getString("openid"))
-                processor.process(true, vo.getString("openid"), vo.getString("nickname"), vo.getString("headimgurl"));
+                processor.process(true, vo.getString("openid"), new String(vo.getString("nickname").getBytes("ISO-8859-1"), "UTF-8"), vo.getString("headimgurl"));
             else
                 processor.process(false, null, null, null);
             return;
         } catch (JSONException e) {
+        } catch (UnsupportedEncodingException e) {
+            processor.process(true, vo.getString("openid"), vo.getString("nickname"), vo.getString("headimgurl"));
         }
         // default
         processor.process(false, null, null, null);

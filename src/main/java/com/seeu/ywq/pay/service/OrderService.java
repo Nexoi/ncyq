@@ -9,11 +9,14 @@ import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
+import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
+import org.apache.http.HttpRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 
@@ -32,20 +35,20 @@ public interface OrderService {
 
     // 充值
     @Transactional
-    String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price) throws ActionParameterException, ActionNotSupportException;
+    String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException;
 
     // 购买VIP卡
     @Transactional
-    String createVIPCardUseAliPay(Long uid, Long day) throws ResourceNotFoundException, ActionParameterException;
+    String createVIPCardUseAliPay(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
 
     // 购买VIP卡
     @Transactional
-    String createVIPCardUseWeChat(Long uid, Long day) throws ResourceNotFoundException, ActionParameterException;
+    String createVIPCardUseWeChat(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
 
 
     // 报名活动
     @Transactional
-    String createActivity(Long uid, Long activityId);
+    String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request);
 
     /**
      * 提現

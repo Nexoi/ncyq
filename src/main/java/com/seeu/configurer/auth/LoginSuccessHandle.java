@@ -1,6 +1,6 @@
 package com.seeu.configurer.auth;
 
-import com.seeu.core.Util4IP;
+import com.seeu.ywq.utils.Util4IP;
 import com.seeu.ywq.user.service.UserPositionService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserLoginLogService;

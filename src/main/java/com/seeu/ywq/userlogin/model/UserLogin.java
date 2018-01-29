@@ -42,7 +42,7 @@ public class UserLogin implements UserDetails {
     private String phone;
 
     @ApiParam(hidden = true)
-    @Column(length = 20)
+    @Column(length = 40)
     private String nickname;
 
     @ApiParam(hidden = true)
@@ -64,7 +64,7 @@ public class UserLogin implements UserDetails {
     @Column(name = "last_login_time")
     private Date lastLoginTime;
 
-//    @ApiParam(hidden = true)
+    //    @ApiParam(hidden = true)
 //    private Long likeNum;   // 点赞人数（@see User.class）
     // 最近登陆坐标
     @ApiParam(hidden = true)

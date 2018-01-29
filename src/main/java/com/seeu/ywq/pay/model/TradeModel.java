@@ -48,6 +48,8 @@ public class TradeModel {
 
     private String body;
 
+    private String ipAddress;
+
     @Enumerated
     private TRADE_STATUS status; // 交易状态
 
@@ -136,5 +138,13 @@ public class TradeModel {
 
     public void setType(TYPE type) {
         this.type = type;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

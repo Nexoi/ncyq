@@ -3,7 +3,9 @@ package com.seeu.ywq.api.release.pay;
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.pay.model.TradeModel;
+import com.seeu.ywq.pay.service.AliPayTradeService;
 import com.seeu.ywq.pay.service.TradeService;
+import com.seeu.ywq.pay.service.WxPayTradeService;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class PayTradeInfoController {
 
     @Autowired
     private TradeService tradeService;
+    @Autowired
+    private WxPayTradeService wxPayTradeService;
+    @Autowired
+    private AliPayTradeService aliPayTradeService;
 
     @GetMapping("/api/v1/pay/order/{orderId}")
     @PreAuthorize("hasRole('USER')")
@@ -38,6 +44,29 @@ public class PayTradeInfoController {
             if (trade.getUid().equals(authUser.getUid())) {
                 trade.setExtraData(null);
                 return ResponseEntity.ok(trade);
+            }
+            // 不是自己的
+            return ResponseEntity.status(404).body(R.code(404).message("无此订单"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("无此订单"));
+        }
+    }
+
+    @GetMapping("/api/v1/pay/order/{orderId}/detail")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity checkOrderDeatil(@AuthenticationPrincipal UserLogin authUser,
+                                           @PathVariable String orderId) {
+        try {
+            TradeModel trade = tradeService.findOne(orderId);
+            if (trade.getUid().equals(authUser.getUid())) {
+                trade.setExtraData(null);
+                String oid = trade.getOrderId();
+                if (trade.getPayment() == null)
+                    return ResponseEntity.ok(trade);
+                if (trade.getPayment() == TradeModel.PAYMENT.ALIPAY)
+                    return ResponseEntity.ok(aliPayTradeService.findOne(oid));
+                if (trade.getPayment() == TradeModel.PAYMENT.WECHAT)
+                    return ResponseEntity.ok(wxPayTradeService.findOne(oid));
             }
             // 不是自己的
             return ResponseEntity.status(404).body(R.code(404).message("无此订单"));
