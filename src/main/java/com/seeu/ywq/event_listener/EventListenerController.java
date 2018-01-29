@@ -62,7 +62,7 @@ public class EventListenerController {
             PersonalMessage message = new PersonalMessage();
             message.setCreateTime(new Date());
             message.setType(PersonalMessage.TYPE.like);
-            message.setUid(event.getUid());
+            message.setUid(event.getHerUid());
             message.setExtraJson(jo.toJSONString()); // JSON.toJSONString(event);
             personalMessageService.add(message);
             // 推送
@@ -99,7 +99,7 @@ public class EventListenerController {
             PersonalMessage message = new PersonalMessage();
             message.setCreateTime(new Date());
             message.setType(PersonalMessage.TYPE.comment);
-            message.setUid(event.getUid());
+            message.setUid(event.getHerUid());
             message.setExtraJson(jo.toJSONString());
             personalMessageService.add(message);
             // 推送
