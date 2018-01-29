@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -47,4 +48,9 @@ public interface PersonalMessageRepository extends JpaRepository<PersonalMessage
     Integer countAllByUidAndTypeNotAndCreateTimeAfter(@Param("uid") Long uid,
                                                       @Param("type") PersonalMessage.TYPE type,
                                                       @Param("createTime") Date createTime);
+
+    // update 2018-01-29
+    List<PersonalMessage> findAllByUidAndTypeInAndCreateTimeAfterOrderByCreateTimeDesc(@Param("uid") Long uid,
+                                                                  @Param("types") Collection<PersonalMessage.TYPE> types,
+                                                                  @Param("createTime") Date createTime);
 }

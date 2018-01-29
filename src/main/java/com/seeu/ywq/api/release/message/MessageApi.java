@@ -19,9 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by suneo.
@@ -62,29 +60,29 @@ public class MessageApi {
     }
 
     @ApiOperation(value = "获取个人通知【按时间】", notes = "date format: yyyy-MM-dd HH:mm:ss")
-    @GetMapping("/personal/{type}/by-date")
+    @GetMapping("/personal/by-date")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity listPersonal(@AuthenticationPrincipal UserLogin authUser,
-                                       @PathVariable PersonalMessage.TYPE type,
+                                       @RequestParam PersonalMessage.TYPE[] types,
                                        @RequestParam(required = true) String date) {
         try {
             Date date1 = dateFormatterService.getyyyyMMddHHmmss().parse(date);
-            return ResponseEntity.ok(personalMessageService.findMine(authUser.getUid(), type, date1));
+            return ResponseEntity.ok(personalMessageService.findAll(authUser.getUid(), Arrays.asList(types), date1));
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("时间参数解析错误"));
         }
     }
 
-
-    @ApiOperation(value = "获取个人通知【分页/按类别】")
-    @GetMapping("/personal/{type}/list")
-    @PreAuthorize("hasRole('USER')")
-    public Page<PersonalMessage> listAllPersonalByType(@AuthenticationPrincipal UserLogin authUser,
-                                                       @PathVariable PersonalMessage.TYPE type,
-                                                       @RequestParam(defaultValue = "0") Integer page,
-                                                       @RequestParam(defaultValue = "10") Integer size) {
-        return personalMessageService.findAll(authUser.getUid(), type, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
-    }
+//
+//    @ApiOperation(value = "获取个人通知【分页/按类别】")
+//    @GetMapping("/personal/list")
+//    @PreAuthorize("hasRole('USER')")
+//    public List<PersonalMessage> listAllPersonalByType(@AuthenticationPrincipal UserLogin authUser,
+//                                                       @RequestParam PersonalMessage.TYPE[] types,
+//                                                       @RequestParam(defaultValue = "0") Integer page,
+//                                                       @RequestParam(defaultValue = "10") Integer size) {
+//        return personalMessageService.findAll(authUser.getUid(), Arrays.asList(types), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
+//    }
 
     @ApiOperation(value = "获取个人通知【分页】")
     @GetMapping("/personal/list")
@@ -107,10 +105,6 @@ public class MessageApi {
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("时间格式错误"));
         }
-        Map map = new HashMap();
-        map.put("like_comment", personalMessageService.countLikeComment(authUser.getUid(), date1));
-        map.put("others", personalMessageService.countOthers(authUser.getUid(), date1));
-        map.put("system", sysMessageService.countMessages(authUser.getUid(), date1));
-        return ResponseEntity.ok(map);
+        return ResponseEntity.ok(personalMessageService.countAll(authUser.getUid(), date1));
     }
 }

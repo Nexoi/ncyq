@@ -9,8 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by suneo.
@@ -37,46 +36,82 @@ public class PersonalMessageServiceImpl implements PersonalMessageService {
         return page;
     }
 
+//    @Override
+//    public Page<PersonalMessage> findAll(Long uid, PersonalMessage.TYPE type, Pageable pageable) {
+//        Page page = null;
+//        if (type == PersonalMessage.TYPE.others)
+//            page = repository.findAllByUidAndTypeNot(uid, PersonalMessage.TYPE.like, pageable);
+//        else
+//            page = repository.findAllByUidAndType(uid, type, pageable);
+//        List<PersonalMessage> list = page.getContent();
+//        for (PersonalMessage message : list) {
+//            if (message == null) continue;
+//            message.setJson(JSON.parseObject(message.getExtraJson()));
+//            message.setExtraJson(null); // 清理掉不必要的数据
+//        }
+//        return page;
+//    }
+//
+//    @Override
+//    public List<PersonalMessage> findMine(Long uid, PersonalMessage.TYPE type, Date date) {
+//        List<PersonalMessage> list = null;
+//        if (type == PersonalMessage.TYPE.others)
+//            list = repository.findAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like, date);
+//        else
+//            list = repository.findAllByUidAndTypeAndCreateTimeAfter(uid, type, date);
+//        for (PersonalMessage message : list) {
+//            if (message == null) continue;
+//            message.setJson(JSON.parseObject(message.getExtraJson()));
+//            message.setExtraJson(null); // 清理掉不必要的数据
+//        }
+//        return list;
+//    }
+
+    /**
+     * 综合方法，按类组合查询所有消息
+     *
+     * @param uid
+     * @param types
+     * @param date
+     * @return
+     */
     @Override
-    public Page<PersonalMessage> findAll(Long uid, PersonalMessage.TYPE type, Pageable pageable) {
-        Page page = null;
-        if (type == PersonalMessage.TYPE.others)
-            page = repository.findAllByUidAndTypeNot(uid, PersonalMessage.TYPE.like_comment, pageable);
-        else
-            page = repository.findAllByUidAndType(uid, type, pageable);
-        List<PersonalMessage> list = page.getContent();
-        for (PersonalMessage message : list) {
-            if (message == null) continue;
-            message.setJson(JSON.parseObject(message.getExtraJson()));
-            message.setExtraJson(null); // 清理掉不必要的数据
+    public List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date) {
+        return repository.findAllByUidAndTypeInAndCreateTimeAfterOrderByCreateTimeDesc(uid, types, date);
+    }
+
+    @Override
+    public Map<PersonalMessage.TYPE, Integer> countAll(Long uid, Date date) {
+        List<PersonalMessage.TYPE> types = new ArrayList<>();
+        types.add(PersonalMessage.TYPE.like);
+        types.add(PersonalMessage.TYPE.comment);
+        types.add(PersonalMessage.TYPE.gift);
+        types.add(PersonalMessage.TYPE.reward);
+        types.add(PersonalMessage.TYPE.yellowPicture);
+        Map<PersonalMessage.TYPE, Integer> map = new HashMap<>();
+        map.put(PersonalMessage.TYPE.like, 0);
+        map.put(PersonalMessage.TYPE.comment, 0);
+        map.put(PersonalMessage.TYPE.gift, 0);
+        map.put(PersonalMessage.TYPE.reward, 0);
+        map.put(PersonalMessage.TYPE.yellowPicture, 0);
+        List<PersonalMessage> messages = findAll(uid, types, date);
+        for (PersonalMessage message : messages) {
+            if (message == null || message.getType() == null) continue;
+            int sum = map.get(message.getType()).intValue() + 1;
+            map.put(message.getType(), sum);
         }
-        return page;
+        return map;
     }
 
-    @Override
-    public List<PersonalMessage> findMine(Long uid, PersonalMessage.TYPE type, Date date) {
-        List<PersonalMessage> list = null;
-        if (type == PersonalMessage.TYPE.others)
-            list = repository.findAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
-        else
-            list = repository.findAllByUidAndTypeAndCreateTimeAfter(uid, type, date);
-        for (PersonalMessage message : list) {
-            if (message == null) continue;
-            message.setJson(JSON.parseObject(message.getExtraJson()));
-            message.setExtraJson(null); // 清理掉不必要的数据
-        }
-        return list;
-    }
-
-    @Override
-    public Integer countLikeComment(Long uid, Date date) {
-        return repository.countAllByUidAndTypeAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
-    }
-
-    @Override
-    public Integer countOthers(Long uid, Date date) {
-        return repository.countAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
-    }
+//    @Override
+//    public Integer countLikeComment(Long uid, Date date) {
+//        return repository.countAllByUidAndTypeAndCreateTimeAfter(uid, PersonalMessage.TYPE.like, date);
+//    }
+//
+//    @Override
+//    public Integer countOthers(Long uid, Date date) {
+//        return repository.countAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like, date);
+//    }
 
     @Override
     public PersonalMessage add(PersonalMessage message) {

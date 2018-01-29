@@ -16,11 +16,11 @@ import java.util.Date;
 })
 public class PersonalMessage {
     public enum TYPE {
-        like_comment,
+        like,
+        comment,
         reward,   // 收到打赏
         gift,     // 收到送礼
         yellowPicture, // 发送了黄图
-        others,
     }//...
 
     @Id

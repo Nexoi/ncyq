@@ -17,7 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "ywq_user_login", indexes = {
         @Index(name = "USERLOGIN_INDEX1", unique = true, columnList = "uid"),
-        @Index(name = "USERLOGIN_INDEX2", unique = true, columnList = "phone"),
+//        @Index(name = "USERLOGIN_INDEX2", unique = true, columnList = "phone"), // 因为虚拟用户的机制，不再设定为唯一
+        @Index(name = "USERLOGIN_INDEX2", unique = false, columnList = "phone"),
         @Index(name = "USERLOGIN_INDEX3", unique = false, columnList = "nickname"),
         @Index(name = "USERLOGIN_INDEX4", unique = false, columnList = "longitude"),
         @Index(name = "USERLOGIN_INDEX5", unique = false, columnList = "latitude"),
