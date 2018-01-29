@@ -1,5 +1,6 @@
 package com.seeu.ywq.pay.dto;
 
+import com.seeu.ywq.pay.model.TradeModel;
 import org.hibernate.validator.constraints.Length;
 
 import java.math.BigDecimal;
@@ -10,12 +11,7 @@ import java.util.Date;
  */
 public class AliPayNotifyDTO {
 
-    public enum TRADE_STATUS{   // 交易状态（四个可选值）
-        WAIT_BUYER_PAY,     // 交易创建，等待买家付款
-        TRADE_CLOSED,       // 未付款交易超时关闭，或支付完成后全额退款
-        TRADE_SUCCESS,      // 交易支付成功
-        TRADE_FINISHED      // 交易结束，不可退款
-    }
+
 
     private Date notify_time;   // 通知的发送时间。格式为yyyy-MM-dd HH:mm:ss
     @Length(max = 64)
@@ -46,7 +42,7 @@ public class AliPayNotifyDTO {
     @Length(max = 30)
     private String seller_email;    // 卖家支付宝账号，zhuzhanghu@alitest.com
 //    @Length(max = 32)
-    private TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
+    private TradeModel.TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
     // (9,2)
     private BigDecimal total_amount;    // 订单金额，本次交易支付的订单金额，单位为人民币（元）
     private BigDecimal receipt_amount;  // 实收金额，商家在交易中实际收到的款项，单位为元
@@ -185,11 +181,11 @@ public class AliPayNotifyDTO {
         this.seller_email = seller_email;
     }
 
-    public TRADE_STATUS getTrade_status() {
+    public TradeModel.TRADE_STATUS getTrade_status() {
         return trade_status;
     }
 
-    public void setTrade_status(TRADE_STATUS trade_status) {
+    public void setTrade_status(TradeModel.TRADE_STATUS trade_status) {
         this.trade_status = trade_status;
     }
 

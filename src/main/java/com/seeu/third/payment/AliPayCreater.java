@@ -1,4 +1,4 @@
-package com.seeu.third.payment.impl;
+package com.seeu.third.payment;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -7,10 +7,16 @@ import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.pay.dto.AliPayNotifyDTO;
+import com.seeu.ywq.pay.model.TradeModel;
+import com.seeu.ywq.pay.service.TradeService;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class AliPayCreater {
@@ -26,6 +32,9 @@ public class AliPayCreater {
     @Value("${alipay.notifyUrl}")
     private String NOTIFY_URL;
 
+    @Autowired
+    private TradeService aliTradeService;
+
     /**
      * 返回支付宝订单ID
      *
@@ -35,7 +44,8 @@ public class AliPayCreater {
      * @param subject
      * @return
      */
-    private String createOrder(String oid, String price, String body, String subject) {
+    public String createOrder(String oid, BigDecimal price, String subject, String body) throws ActionParameterException {
+
         //实例化客户端
         AlipayClient alipayClient = new DefaultAlipayClient(
                 "https://openapi.alipay.com/gateway.do",
@@ -53,10 +63,11 @@ public class AliPayCreater {
         model.setSubject(subject);
         model.setOutTradeNo(oid);
         model.setTimeoutExpress(TIMEOUT_EXPRESS);
-        model.setTotalAmount(price);
+        model.setTotalAmount("" + price.doubleValue());
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
         request.setNotifyUrl(NOTIFY_URL);
+
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
@@ -68,7 +79,7 @@ public class AliPayCreater {
         return null;
     }
 
-    private String callBack(AliPayNotifyDTO aliPayNotifyDTO) throws AlipayApiException {
+    public String callBack(AliPayNotifyDTO aliPayNotifyDTO) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
         JSONObject json = JSONObject.fromObject(aliPayNotifyDTO);
         boolean signVerified = AlipaySignature.rsaCheckV1(json, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");          //调用SDK验证签名
@@ -76,7 +87,7 @@ public class AliPayCreater {
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayNotifyDTO.getOut_trade_no();
             // 查询该订单是否已经完成交易，若否，则继续
-            AliPayNotifyDTO.TRADE_STATUS trade_status = aliPayNotifyDTO.getTrade_status();
+            TradeModel.TRADE_STATUS trade_status = aliPayNotifyDTO.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {

@@ -1,6 +1,7 @@
 package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
+import com.seeu.third.payment.AliPayCreater;
 import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.event_listener.order_event.ReceiveGiftEvent;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
@@ -18,10 +19,12 @@ import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.page_video.model.HomePageVideo;
 import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
+import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.repository.OrderLogRepository;
+import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.pay.service.ExchangeTableService;
 import com.seeu.ywq.pay.service.OrderService;
@@ -97,9 +100,57 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserVIPService userVIPService;
 
+    // Pay
+    @Autowired
+    private AliPayCreater aliPayCreater;
+    @Autowired
+    private TradeService tradeService;
+
     @Override
-    public OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds) {
-        return null;
+    public String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price) throws ActionParameterException, ActionNotSupportException {
+        if (payMethod == null) throw new ActionParameterException("payMethod");
+        // 查询价格
+
+        ExchangeTable table = queryExchange(null, ExchangeTable.TYPE.RMB2DIAMOND, price);
+        if (table == null || table.getTo() == null) throw new ActionNotSupportException("无此配置表可选择充值");
+        Long diamonds = table.getTo().longValue();
+        String orderId = genOrderID();
+        String subject = "尤物圈钻石充值【 " + diamonds + " 个】";
+        String body = "尤物圈钻石充值【 " + diamonds + " 个】";
+        // 持久化
+        TradeModel trade = new TradeModel();
+        trade.setOrderId(orderId);
+        trade.setStatus(TradeModel.TRADE_STATUS.WAIT_BUYER_PAY);
+        trade.setBody(body);
+        trade.setSubject(subject);
+        trade.setCreateTime(new Date());
+        trade.setUid(uid);
+        trade.setPrice(price);
+        trade.setDiamonds(diamonds);
+        tradeService.save(trade);
+        if (payMethod == OrderRecharge.PAY_METHOD.ALIPAY) {
+            // 返回支付宝创建的订单 String 到客户端即可
+            return aliPayCreater.createOrder(orderId, price, subject, body);
+        }
+        if (payMethod == OrderRecharge.PAY_METHOD.WECHAT) {
+        }
+        throw new ActionParameterException("payMethod");
+    }
+
+    @Override
+    public void finishRecharge(String orderId) throws ResourceNotFoundException {
+        try {
+            TradeModel trade = tradeService.findOne(orderId);
+            if (trade == null) return;
+            tradeService.updateStatus(orderId, TradeModel.TRADE_STATUS.TRADE_FINISHED); // 完成，一律不允许退货
+            balanceService.update(orderId, trade.getUid(), OrderLog.EVENT.RECHARGE, trade.getDiamonds());
+        } catch (BalanceNotEnoughException e) {
+            e.printStackTrace();
+        } catch (ActionNotSupportException e) {
+            e.printStackTrace();
+        } catch (ActionParameterException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -24,6 +24,7 @@ public class PersonalMessage {
     }//...
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "create_time")
     private Date createTime;

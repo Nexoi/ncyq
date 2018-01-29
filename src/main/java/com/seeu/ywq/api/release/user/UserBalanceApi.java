@@ -2,6 +2,7 @@ package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
 import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.*;
 import com.seeu.ywq.pay.service.BalanceService;
@@ -143,17 +144,18 @@ public class UserBalanceApi {
     @PostMapping("/balance/recharge")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity recharge(@AuthenticationPrincipal UserLogin authUser,
+                                   @RequestParam(required = true) OrderRecharge.PAY_METHOD payMethod,
                                    @RequestParam(required = true) Double price) {
         try {
             if (null == rechargeTableService.findOne(BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_UP)))
                 return ResponseEntity.badRequest().body(R.code(400).message("无法充值该额度"));
-            // 当然不能如下这样操作：
-            balanceService.update(dateFormatterService.getyyyyMMddHHmmssS().format(new Date()), authUser.getUid(), OrderLog.EVENT.RECHARGE, 1000L);
-            return ResponseEntity.ok(R.code(200).message("充值成功！"));
-        } catch (BalanceNotEnoughException e) {
-            return null; // 不可能发生的事情
+            try {
+                return ResponseEntity.ok(orderService.createRecharge(payMethod, authUser.getUid(), BigDecimal.valueOf(price)));
+            } catch (ActionParameterException e) {
+                return ResponseEntity.badRequest().body(R.code(4002).message("操作不允许，请检查参数信息！"));
+            }
         } catch (ActionNotSupportException e) {
-            return ResponseEntity.badRequest().body(R.code(4001).message("充值额度不能为负数！"));
+            return ResponseEntity.badRequest().body(R.code(4001).message("操作不允许，请检查参数信息！"));
         }
     }
 

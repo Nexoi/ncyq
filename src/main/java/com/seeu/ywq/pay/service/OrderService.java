@@ -22,7 +22,9 @@ import java.math.BigDecimal;
 public interface OrderService {
 
     // 充值
-    OrderLog createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, Long diamonds);
+    String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price) throws ActionParameterException, ActionNotSupportException;
+
+    void finishRecharge(String orderId) throws ResourceNotFoundException;
 
     // 购买VIP卡
     void createVIPCardUseAliPay(Long uid, Long day);
