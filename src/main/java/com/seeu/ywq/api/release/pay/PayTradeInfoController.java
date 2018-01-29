@@ -36,7 +36,7 @@ public class PayTradeInfoController {
         try {
             TradeModel trade = tradeService.findOne(orderId);
             if (trade.getUid().equals(authUser.getUid())) {
-                trade.setDiamonds(null);
+                trade.setExtraData(null);
                 return ResponseEntity.ok(trade);
             }
             // 不是自己的
