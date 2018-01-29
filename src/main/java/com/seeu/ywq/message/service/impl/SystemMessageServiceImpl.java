@@ -49,6 +49,11 @@ public class SystemMessageServiceImpl implements SysMessageService {
     }
 
     @Override
+    public Integer countMessages(Long uid, Date date) {
+        return repository.countAllByCreateTimeAfter(date);
+    }
+
+    @Override
     public SysMessage add(SysMessage message) {
         if (message == null) return null;
         return repository.save(message);

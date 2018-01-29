@@ -29,11 +29,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="ywq_app@118.126.102.173" uuid="ecd3de1e-e1d5-4852-aa8d-45059907e46c">
+    <data-source source="LOCAL" name="@118.126.102.173" uuid="ecd3de1e-e1d5-4852-aa8d-45059907e46c">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://118.126.102.173:3306/ywq_app</jdbc-url>
+      <jdbc-url>jdbc:mysql://118.126.102.173:3306/</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />

@@ -1,4 +1,4 @@
-package com.seeu.third.payment;
+package com.seeu.third.payment.alipay;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -8,9 +8,10 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.seeu.ywq.exception.ActionParameterException;
-import com.seeu.ywq.pay.dto.AliPayNotifyDTO;
+import com.seeu.ywq.pay.model.AliPayTradeModel;
 import com.seeu.ywq.pay.model.TradeModel;
-import com.seeu.ywq.pay.service.TradeService;
+import com.seeu.ywq.pay.service.AliPayTradeService;
+import com.seeu.ywq.pay.service.OrderService;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class AliPayCreater {
+public class AliPayService {
 
     @Value("${alipay.appId}")
     private String APP_ID;
@@ -33,7 +34,9 @@ public class AliPayCreater {
     private String NOTIFY_URL;
 
     @Autowired
-    private TradeService aliTradeService;
+    private OrderService orderService;
+    @Autowired
+    private AliPayTradeService aliPayTradeService;
 
     /**
      * 返回支付宝订单ID
@@ -79,22 +82,32 @@ public class AliPayCreater {
         return null;
     }
 
-    public String callBack(AliPayNotifyDTO aliPayNotifyDTO) throws AlipayApiException {
+
+    public String callBack(AliPayTradeModel aliPayTradeModel) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
-        JSONObject json = JSONObject.fromObject(aliPayNotifyDTO);
+        JSONObject json = JSONObject.fromObject(aliPayTradeModel);
         boolean signVerified = AlipaySignature.rsaCheckV1(json, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");          //调用SDK验证签名
         if (signVerified) {
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
-            String out_trade_no = aliPayNotifyDTO.getOut_trade_no();
+            String out_trade_no = aliPayTradeModel.getOut_trade_no();
             // 查询该订单是否已经完成交易，若否，则继续
-            TradeModel.TRADE_STATUS trade_status = aliPayNotifyDTO.getTrade_status();
+            TradeModel.TRADE_STATUS trade_status = aliPayTradeModel.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {
                 case WAIT_BUYER_PAY:// 交易创建，等待买家付款（该通知不可能拿到，支付宝默认不开启该通知）
-                case TRADE_SUCCESS:// 交易支付成功
-                case TRADE_FINISHED:// 交易结束，不可退款
+                    aliPayTradeService.save(aliPayTradeModel);
+                    break;
                 case TRADE_CLOSED:// 未付款交易超时关闭，或支付完成后全额退款
+                    aliPayTradeService.save(aliPayTradeModel);
+                    orderService.failOrder(out_trade_no);
+                    break;
+                case TRADE_SUCCESS: // 交易支付成功
+                case TRADE_FINISHED:// 交易结束，不可退款
+                    // 成功！
+                    aliPayTradeService.save(aliPayTradeModel);
+                    orderService.finishOrder(out_trade_no);
+                    break;
             }
             return "success";
         } else {

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by suneo.
@@ -55,7 +57,7 @@ public class MessageApi {
     @ApiOperation(value = "获取系统通知【分页】")
     @GetMapping("/system/list")
     public Page<SysMessage> listAllSys(@RequestParam(defaultValue = "0") Integer page,
-                                       @RequestParam(defaultValue = "10")  Integer size) {
+                                       @RequestParam(defaultValue = "10") Integer size) {
         return sysMessageService.findAll(new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
@@ -80,7 +82,7 @@ public class MessageApi {
     public Page<PersonalMessage> listAllPersonalByType(@AuthenticationPrincipal UserLogin authUser,
                                                        @PathVariable PersonalMessage.TYPE type,
                                                        @RequestParam(defaultValue = "0") Integer page,
-                                                       @RequestParam(defaultValue = "10")  Integer size) {
+                                                       @RequestParam(defaultValue = "10") Integer size) {
         return personalMessageService.findAll(authUser.getUid(), type, new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
@@ -89,8 +91,26 @@ public class MessageApi {
     @PreAuthorize("hasRole('USER')")
     public Page<PersonalMessage> listAllPersonal(@AuthenticationPrincipal UserLogin authUser,
                                                  @RequestParam(defaultValue = "0") Integer page,
-                                                 @RequestParam(defaultValue = "10")  Integer size) {
+                                                 @RequestParam(defaultValue = "10") Integer size) {
         return personalMessageService.findAll(authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
+    @ApiOperation("获取未读消息条数")
+    @GetMapping("/counts")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity listAllCounts(@AuthenticationPrincipal UserLogin authUser,
+                                        @RequestParam(required = true) String date) {
+
+        Date date1 = null;
+        try {
+            date1 = dateFormatterService.getyyyyMMddHHmmss().parse(date);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("时间格式错误"));
+        }
+        Map map = new HashMap();
+        map.put("like_comment", personalMessageService.countLikeComment(authUser.getUid(), date1));
+        map.put("others", personalMessageService.countOthers(authUser.getUid(), date1));
+        map.put("system", sysMessageService.countMessages(authUser.getUid(), date1));
+        return ResponseEntity.ok(map);
+    }
 }

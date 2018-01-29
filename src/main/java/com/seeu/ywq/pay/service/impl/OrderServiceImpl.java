@@ -1,7 +1,8 @@
 package com.seeu.ywq.pay.service.impl;
 
 import com.seeu.third.exception.SMSSendFailureException;
-import com.seeu.third.payment.AliPayCreater;
+import com.seeu.third.payment.alipay.AliPayService;
+import com.seeu.third.payment.wxpay.WxPayService;
 import com.seeu.third.sms.SMSService;
 import com.seeu.ywq.event_listener.order_event.ReceiveGiftEvent;
 import com.seeu.ywq.event_listener.order_event.ReceiveRewardEvent;
@@ -19,15 +20,15 @@ import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.page_video.model.HomePageVideo;
 import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
-import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.model.ExchangeTable;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.model.OrderRecharge;
+import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.repository.OrderLogRepository;
-import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.pay.service.BalanceService;
 import com.seeu.ywq.pay.service.ExchangeTableService;
 import com.seeu.ywq.pay.service.OrderService;
+import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.service.PublishService;
@@ -102,56 +103,49 @@ public class OrderServiceImpl implements OrderService {
 
     // Pay
     @Autowired
-    private AliPayCreater aliPayCreater;
+    private AliPayService aliPayService;
+    @Autowired
+    private WxPayService wxPayService;
     @Autowired
     private TradeService tradeService;
+
+    @Override
+    public void finishOrder(String orderId) {
+
+    }
+
+    @Override
+    public void failOrder(String orderId) {
+
+    }
 
     @Override
     public String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price) throws ActionParameterException, ActionNotSupportException {
         if (payMethod == null) throw new ActionParameterException("payMethod");
         // 查询价格
-
         ExchangeTable table = queryExchange(null, ExchangeTable.TYPE.RMB2DIAMOND, price);
         if (table == null || table.getTo() == null) throw new ActionNotSupportException("无此配置表可选择充值");
         Long diamonds = table.getTo().longValue();
-        String orderId = genOrderID();
         String subject = "尤物圈钻石充值【 " + diamonds + " 个】";
-        String body = "尤物圈钻石充值【 " + diamonds + " 个】";
-        // 持久化
-        TradeModel trade = new TradeModel();
-        trade.setOrderId(orderId);
-        trade.setStatus(TradeModel.TRADE_STATUS.WAIT_BUYER_PAY);
-        trade.setBody(body);
-        trade.setSubject(subject);
-        trade.setCreateTime(new Date());
-        trade.setUid(uid);
-        trade.setPrice(price);
-        trade.setDiamonds(diamonds);
-        tradeService.save(trade);
-        if (payMethod == OrderRecharge.PAY_METHOD.ALIPAY) {
-            // 返回支付宝创建的订单 String 到客户端即可
-            return aliPayCreater.createOrder(orderId, price, subject, body);
-        }
-        if (payMethod == OrderRecharge.PAY_METHOD.WECHAT) {
-        }
-        throw new ActionParameterException("payMethod");
+        String body = subject;
+        return placeOrder(genOrderID(), TradeModel.TYPE.RECHARGE, payMethod, uid, price, subject, body, "" + diamonds);
     }
 
-    @Override
-    public void finishRecharge(String orderId) throws ResourceNotFoundException {
-        try {
-            TradeModel trade = tradeService.findOne(orderId);
-            if (trade == null) return;
-            tradeService.updateStatus(orderId, TradeModel.TRADE_STATUS.TRADE_FINISHED); // 完成，一律不允许退货
-            balanceService.update(orderId, trade.getUid(), OrderLog.EVENT.RECHARGE, trade.getDiamonds());
-        } catch (BalanceNotEnoughException e) {
-            e.printStackTrace();
-        } catch (ActionNotSupportException e) {
-            e.printStackTrace();
-        } catch (ActionParameterException e) {
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void finishRecharge(String orderId) throws ResourceNotFoundException {
+//        try {
+//            TradeModel trade = tradeService.findOne(orderId);
+//            if (trade == null) return;
+//            tradeService.updateStatus(orderId, TradeModel.TRADE_STATUS.TRADE_FINISHED); // 完成，一律不允许退货
+//            balanceService.update(orderId, trade.getUid(), OrderLog.EVENT.RECHARGE, trade.getDiamonds());
+//        } catch (BalanceNotEnoughException e) {
+//            e.printStackTrace();
+//        } catch (ActionNotSupportException e) {
+//            e.printStackTrace();
+//        } catch (ActionParameterException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public OrderLog createWithdraw(Long uid, Long diamonds, OrderRecharge.PAY_METHOD payMethod, String payId, String payName) {
@@ -162,8 +156,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderLog createVIPCardUseDiamond(Long uid, Long day) throws ResourceNotFoundException, BalanceNotEnoughException {
         // 查找资源
         VIPTable vipTable = vipTableService.findByDay(day);
-        if (vipTable == null)
-            throw new ResourceNotFoundException("Can not found Resource [VIP: " + day + " day ]");
+//        if (vipTable == null)
+//            throw new ResourceNotFoundException("Can not found Resource [VIP: " + day + " day ]");
         // 本地支付
         Long diamonds = vipTable.getDiamonds();
         try {
@@ -191,13 +185,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void createVIPCardUseAliPay(Long uid, Long day) {
+    public String createVIPCardUseAliPay(Long uid, Long day) throws ResourceNotFoundException, ActionParameterException {
+        VIPTable vipTable = vipTableService.findByDay(day);
+        BigDecimal price = vipTable.getPrice();
+        //
+        String subject = "尤物圈VIP充值【 " + day + " 天】";
+        String body = subject;
+        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, OrderRecharge.PAY_METHOD.ALIPAY, uid, price, subject, body, "" + day);
+    }
+
+    @Override
+    public String createVIPCardUseWeChat(Long uid, Long day) throws ResourceNotFoundException, ActionParameterException {
+        VIPTable vipTable = vipTableService.findByDay(day);
+        BigDecimal price = vipTable.getPrice();
+        //
+        String subject = "尤物圈VIP充值【 " + day + " 天】";
+        String body = subject;
+        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, OrderRecharge.PAY_METHOD.WECHAT, uid, price, subject, body, "" + day);
 
     }
 
     @Override
-    public void createVIPCardUseWeChat(Long uid, Long day) {
-
+    public String createActivity(Long uid, Long activityId) {
+        return null;
     }
 
     // 钻石换金币
@@ -474,6 +484,43 @@ public class OrderServiceImpl implements OrderService {
         return queryExchange(uid, type, BigDecimal.valueOf(fromPrice));
     }
 
+
+    /**
+     * @param orderId
+     * @param payMethod
+     * @param uid
+     * @param price
+     * @param subject
+     * @param body
+     * @param extraData if need
+     * @return
+     * @throws ActionParameterException
+     */
+    private String placeOrder(String orderId, TradeModel.TYPE type, OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, String subject, String body, String extraData) throws ActionParameterException {
+        // 持久化
+        TradeModel trade = new TradeModel();
+        trade.setOrderId(orderId);
+        trade.setStatus(TradeModel.TRADE_STATUS.WAIT_BUYER_PAY);
+        trade.setBody(body);
+        trade.setSubject(subject);
+        trade.setCreateTime(new Date());
+        trade.setUid(uid);
+        trade.setPrice(price);
+        trade.setExtraData(extraData);
+        trade.setType(type); // 交易类型
+        if (payMethod == OrderRecharge.PAY_METHOD.ALIPAY) {
+            // 返回支付宝创建的订单 String 到客户端即可
+            trade.setPayment(TradeModel.PAYMENT.ALIPAY);
+            tradeService.save(trade);
+            return aliPayService.createOrder(orderId, price, subject, body);
+        }
+        if (payMethod == OrderRecharge.PAY_METHOD.WECHAT) {
+            trade.setPayment(TradeModel.PAYMENT.WECHAT);
+            tradeService.save(trade);
+            return wxPayService.createOrder(orderId, price, subject, body);
+        }
+        return null;
+    }
 
     private String genOrderID() {
         SimpleDateFormat format = dateFormatterService.getyyyyMMddHHmmssS();

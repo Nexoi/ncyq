@@ -22,6 +22,7 @@ public interface SysMessageService {
 
     List<SysMessage> findByDate(Date date);
 
+    Integer countMessages(Long uid, Date date);
 
     SysMessage add(SysMessage message);
 }

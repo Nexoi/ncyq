@@ -1,17 +1,27 @@
-package com.seeu.ywq.pay.dto;
+package com.seeu.ywq.pay.model;
 
 import com.seeu.ywq.pay.model.TradeModel;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * 支付宝回调参数
  */
-public class AliPayNotifyDTO {
+@Entity
+@Table(name = "ywq_pay_trade_ali")
+public class AliPayTradeModel {
 
 
+    @Id
+    @Length(max = 64)
+    @Column(length = 20)
+    private String out_trade_no;    // 商户订单号
 
     private Date notify_time;   // 通知的发送时间。格式为yyyy-MM-dd HH:mm:ss
     @Length(max = 64)
@@ -32,8 +42,6 @@ public class AliPayNotifyDTO {
     private String trade_no;      // 支付宝交易号（支付宝交易凭证号，2013112011001004330000121536）
 
     @Length(max = 64)
-    private String out_trade_no;    // 商户订单号
-    @Length(max = 64)
     private String out_biz_no;      // 商户业务号，商户业务ID，主要是退款通知中返回退款申请的流水号，HZRF001
     @Length(max = 16)
     private String buyer_id;        // 买家支付宝用户号，买家支付宝账号对应的支付宝唯一用户号。以2088开头的纯16位数字，2088102122524333
@@ -41,7 +49,7 @@ public class AliPayNotifyDTO {
     private String buyer_logon_id;  // 买家支付宝账号，15901825620
     @Length(max = 30)
     private String seller_email;    // 卖家支付宝账号，zhuzhanghu@alitest.com
-//    @Length(max = 32)
+    //    @Length(max = 32)
     private TradeModel.TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
     // (9,2)
     private BigDecimal total_amount;    // 订单金额，本次交易支付的订单金额，单位为人民币（元）
@@ -63,7 +71,7 @@ public class AliPayNotifyDTO {
     private String fund_bill_list;     // 支付金额信息，支付成功的各个渠道金额信息。[{“amount”:“15.00”,“fundChannel”:“ALIPAYACCOUNT”}]
     @Length(max = 512)
     private String passback_params;    // 回传参数，公共回传参数，如果请求时传递了该参数，则返回给商户时会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝。merchantBizType%3d3C%26merchantBizNo%3d2016010101111
-//    @Length(max = )
+    //    @Length(max = )
     private String voucher_detail_list;// 优惠券信息，本交易支付时所使用的所有优惠券信息。[{“amount”:“0.20”,“merchantContribute”:“0.00”,“name”:“一键创建券模板的券名称”,“otherContribute”:“0.20”,“type”:“ALIPAY_DISCOUNT_VOUCHER”,“memo”:“学生卡8折优惠”]
 
     //////////////// GETer / SETer //////////////////

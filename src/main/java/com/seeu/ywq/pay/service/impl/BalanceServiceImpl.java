@@ -167,6 +167,7 @@ public class BalanceServiceImpl implements BalanceService {
                 if (diamonds == null) diamonds = 0L;
                 balance.setWechatExpense(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() - diamondsDelta); // 支出
+                break;
             case RECEIVE_WECHAT:
                 diamonds = balance.getWechatReceive();
                 if (diamonds == null) diamonds = 0L;
@@ -178,6 +179,7 @@ public class BalanceServiceImpl implements BalanceService {
                 if (diamonds == null) diamonds = 0L;
                 balance.setSharedExpense(diamonds + diamondsDelta);
 //                balance.setBalance(balance.getBalance() - diamondsDelta);  // 支出，不用再支出，系统已经提前自动计账，余额不变
+                break;
             case BIND_SHARED_RECEIVE:
                 diamonds = balance.getSharedReceive();
                 if (diamonds == null) diamonds = 0L;
@@ -206,28 +208,33 @@ public class BalanceServiceImpl implements BalanceService {
                 if (diamonds == null) diamonds = 0L;
                 balance.setVipBuyExpenseDiamonds(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() - diamondsDelta); // 购买VIP支出
+                break;
             case SEND_GIFT:
                 checkBalance(balance.getBalance(), diamondsDelta);  // check
                 diamonds = balance.getSendGift();
                 if (diamonds == null) diamonds = 0L;
                 balance.setSendGift(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() - diamondsDelta); // Send Gift
+                break;
             case UNLOCK_VIDEO:
                 checkBalance(balance.getBalance(), diamondsDelta);  // check
                 diamonds = balance.getVideoExpense();
                 if (diamonds == null) diamonds = 0L;
                 balance.setVideoExpense(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() - diamondsDelta); // 視頻支出
+                break;
             case RECEIVE_VIDEO:
                 diamonds = balance.getVideoReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setVideoReceive(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() + diamondsDelta); // 視頻收获
+                break;
             case DAY_SIGN_IN:
                 diamonds = balance.getSignInReceive();
                 if (diamonds == null) diamonds = 0L;
                 balance.setSignInReceive(diamonds + diamondsDelta);
                 balance.setBalance(balance.getBalance() + diamondsDelta); // 每日签到收获
+                break;
             default:
                 break;
         }

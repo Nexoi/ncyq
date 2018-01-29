@@ -39,7 +39,11 @@ public class PersonalMessageServiceImpl implements PersonalMessageService {
 
     @Override
     public Page<PersonalMessage> findAll(Long uid, PersonalMessage.TYPE type, Pageable pageable) {
-        Page page = repository.findAllByUidAndType(uid, type, pageable);
+        Page page = null;
+        if (type == PersonalMessage.TYPE.others)
+            page = repository.findAllByUidAndTypeNot(uid, PersonalMessage.TYPE.like_comment, pageable);
+        else
+            page = repository.findAllByUidAndType(uid, type, pageable);
         List<PersonalMessage> list = page.getContent();
         for (PersonalMessage message : list) {
             if (message == null) continue;
@@ -51,13 +55,27 @@ public class PersonalMessageServiceImpl implements PersonalMessageService {
 
     @Override
     public List<PersonalMessage> findMine(Long uid, PersonalMessage.TYPE type, Date date) {
-        List<PersonalMessage> list = repository.findAllByUidAndTypeAndCreateTimeAfter(uid, type, date);
+        List<PersonalMessage> list = null;
+        if (type == PersonalMessage.TYPE.others)
+            list = repository.findAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
+        else
+            list = repository.findAllByUidAndTypeAndCreateTimeAfter(uid, type, date);
         for (PersonalMessage message : list) {
             if (message == null) continue;
             message.setJson(JSON.parseObject(message.getExtraJson()));
             message.setExtraJson(null); // 清理掉不必要的数据
         }
         return list;
+    }
+
+    @Override
+    public Integer countLikeComment(Long uid, Date date) {
+        return repository.countAllByUidAndTypeAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
+    }
+
+    @Override
+    public Integer countOthers(Long uid, Date date) {
+        return repository.countAllByUidAndTypeNotAndCreateTimeAfter(uid, PersonalMessage.TYPE.like_comment, date);
     }
 
     @Override

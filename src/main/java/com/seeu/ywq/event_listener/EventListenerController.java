@@ -61,7 +61,7 @@ public class EventListenerController {
 
             PersonalMessage message = new PersonalMessage();
             message.setCreateTime(new Date());
-            message.setType(PersonalMessage.TYPE.like);
+            message.setType(PersonalMessage.TYPE.like_comment);
             message.setUid(event.getUid());
             message.setExtraJson(jo.toJSONString()); // JSON.toJSONString(event);
             personalMessageService.add(message);
@@ -98,7 +98,7 @@ public class EventListenerController {
 
             PersonalMessage message = new PersonalMessage();
             message.setCreateTime(new Date());
-            message.setType(PersonalMessage.TYPE.comment);
+            message.setType(PersonalMessage.TYPE.like_comment);
             message.setUid(event.getUid());
             message.setExtraJson(jo.toJSONString());
             personalMessageService.add(message);

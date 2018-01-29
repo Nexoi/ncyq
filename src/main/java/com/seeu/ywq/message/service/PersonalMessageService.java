@@ -24,6 +24,9 @@ public interface PersonalMessageService {
 
     List<PersonalMessage> findMine(Long uid, PersonalMessage.TYPE type, Date date);
 
+    Integer countLikeComment(Long uid, Date date);
+
+    Integer countOthers(Long uid, Date date);
 
     PersonalMessage add(PersonalMessage message);
 }

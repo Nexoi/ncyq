@@ -1,7 +1,5 @@
 package com.seeu.ywq.pay.model;
 
-import com.seeu.ywq.pay.dto.AliPayNotifyDTO;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -28,11 +26,21 @@ public class TradeModel {
         WECHAT
     }
 
+    public enum TYPE {       // 交易类型
+        RECHARGE,
+        ACTIVITY,
+        BUYVIP
+    }
+
     @Id
     @Column(name = "order_id", length = 20)
     private String orderId;
 
+    @Enumerated
     private PAYMENT payment;
+
+    @Enumerated
+    private TYPE type;
 
     private Long uid;
 
@@ -46,7 +54,7 @@ public class TradeModel {
     @Column(precision = 20, scale = 2)
     private BigDecimal price;
 
-    private Long diamonds; // 特别字段，表示充值了多少钻石，部分功能可能使用
+    private String extraData; // 特别字段，表示充值了多少钻石，部分功能可能使用
 
     private Date createTime;
 
@@ -74,12 +82,12 @@ public class TradeModel {
         this.price = price;
     }
 
-    public Long getDiamonds() {
-        return diamonds;
+    public String getExtraData() {
+        return extraData;
     }
 
-    public void setDiamonds(Long diamonds) {
-        this.diamonds = diamonds;
+    public void setExtraData(String extraData) {
+        this.extraData = extraData;
     }
 
     public Date getCreateTime() {
@@ -120,5 +128,13 @@ public class TradeModel {
 
     public void setPayment(PAYMENT payment) {
         this.payment = payment;
+    }
+
+    public TYPE getType() {
+        return type;
+    }
+
+    public void setType(TYPE type) {
+        this.type = type;
     }
 }

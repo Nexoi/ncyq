@@ -18,4 +18,7 @@ import java.util.List;
 public interface SysMessageRepository extends JpaRepository<SysMessage, Long> {
 
     List<SysMessage> findAllByCreateTimeAfter(@Param("createTime") Date createTime);
+
+
+    Integer countAllByCreateTimeAfter(@Param("createTime") Date createTime);
 }
