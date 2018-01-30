@@ -40,7 +40,7 @@ public class ShareApi {
     public ResponseEntity getMine(@AuthenticationPrincipal UserLogin authUser) {
         Long uid = authUser.getUid();
         Map map = new HashMap();
-        map.put("url", shareUrlHost + "/signin?author=" + uid);
+        map.put("url", shareUrlHost + "/register?invite=" + uid);
         return ResponseEntity.ok(map);
     }
 

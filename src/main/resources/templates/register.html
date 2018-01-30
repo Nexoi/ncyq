@@ -1,0 +1,35 @@
+﻿<!DOCTYPE>
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+		<title>尤物圈</title>
+		<link rel="stylesheet" href="/css/invite.css" />
+	</head>
+
+	<body>
+		<div>
+			<img src="/img/invite/logo.png" alt="" />
+		</div>
+		<div class="invite">
+			<div class="img">
+				<input id="user_no" type="text" name="userTel" placeholder="请输入手机号码" />
+				<button name="code" id="button_code" onclick="sendMessage()"><span id="spn">获取验证码</span></button>
+			</div>
+			<div class="img">
+				<input id="vc_num" type="text" name="userCode" placeholder="请输入验证码" />
+			</div>
+			<div class="img">
+				<input id="user_psw" type="password" name="userPass" placeholder="请设置密码" />
+			</div>
+			<input type="hidden",id="invitedUid" th:value="${invitedUid}" />
+			<p>注册表示您已同意尤物圈
+				<a href="#">《用户服务协议》</a>
+			</p>
+			<button name="submit" onclick="javascript:userRegister();">注册</button>
+		</div>
+		<script type="text/javascript" src="/js/invite/jquery-1.7.min.js"></script>
+		<script src="/js/invite/layer.js"></script>
+		<script src="/js/invite/invite.js"></script>
+	</body>
+</html>

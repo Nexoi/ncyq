@@ -1,0 +1,118 @@
+/* 部分重置 */
+body, input, button {
+    /* 外边距，内边距 */
+    margin:0;
+    padding:0;
+}
+body {
+    word-wrap: break-word;
+    font: 13px/1.5 Helvetica, Arial;
+    /* 这里是设置字体，Helvetica字体在移动端各系统都支持（都不支持微软雅黑） */
+    color: #333;
+    -webkit-text-size-adjust: none; 
+    /* 设置文本不会放大，普通网页在移动端打开文本是会跟随网页结构缩放的 */
+    width:375px;
+    margin:0 auto;
+}
+body *{
+    -webkit-tap-highlight-color: transparent;
+    /* 在一些手机上，如iphone，点击按钮等元素会出现点击态的背景色，设置为透明就看不出来了 */
+    -webkit-user-select:auto;
+    /* 设置元素内的文字及其子元素将不会被选中 */
+}
+img{
+    /* 宽，高，外边距 */
+    width:25%;
+    height:auto;
+    margin:78.5px 37.5% 38px;
+}
+.invite{
+    /* 宽，外边距，内边距，边框阴影，边框圆角 */
+    width:92%;
+    margin:0 4%;
+    padding:25px 0 63px;
+    box-shadow:0 1.5px 7.5px 0 #e6e6e6;
+    border-radius:5px;
+}
+.invite .img{
+    /* 宽，高，行高，外边距，内边距，下边框 */
+    width:69.02%;
+    height:25px;
+    line-height:25px;
+    margin:0 9.42% 25px;
+    padding:0 0 10px 12.14%;
+    border-bottom:1px solid #E6E6E6;
+}
+.invite .img:nth-child(1){
+    /* 背景图片+大小 */
+    background:url(../img/invite/phone.png) no-repeat;
+    background-size:6.1% 71.5%;
+}
+.invite .img:nth-child(2){
+    /* 背景图片+大小 */
+    background:url(../img/invite/code.png) no-repeat;
+    background-size:6.1% 71.5%;
+}
+.invite .img:nth-child(3){
+    /* 背景图片+大小 */
+    background:url(../img/invite/lock.png) no-repeat;
+    background-size:6.1% 71.5%;
+}
+.invite div input{
+    /* 边框 */
+    border:0;
+}
+.invite div input:focus,
+.invite button:focus{
+    /* 轮廓 */
+    outline:0;
+}
+.invite div input[name=userTel]{
+    /* 宽 */
+    width:66.2%;
+}
+.invite div button[name=code]{
+    /* 宽，高，盒子模型，边框，边框圆角，字体颜色，背景颜色 */
+    width:32.2%;
+    height:25px;
+    box-sizing:border-box;
+    border:1px solid #f80378;
+    border-radius:12.5px;
+    color:#f80378;
+    background-color:#fff;
+}
+.invite p{
+    /* 宽，外边距 */
+    width:81.16%;
+    margin:71px 9.42% 30px;
+}
+.invite a{
+    /* 字体颜色，去下划线 */
+    color:#F80378;
+    text-decoration:none;
+}
+.invite button[name=submit]{
+    /* 宽，高，外边距，去边框，边框圆角，字体颜色，背景颜色 */
+    width:91.3%;
+    height:44px;
+    margin:0 4.35%;
+    border:0;
+    border-radius:22px;
+    color:#fff;
+    background-color:#F72F5E
+}
+.invite h3{
+    /* 外边距，字体居中，字体变细，字体颜色 */
+    margin:10px auto;
+    text-align:center;
+    font-weight:normal;
+    color:#f72f5e;
+}
+.invite h3:nth-child(1){
+    /* 外边距 */
+    margin:60px auto;
+}
+#qrcode img{
+    /* 外边距 */
+    margin:0 auto;
+}
