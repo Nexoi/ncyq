@@ -54,7 +54,7 @@ public interface PersonalMessageRepository extends JpaRepository<PersonalMessage
                                                                                        @Param("types") Collection<PersonalMessage.TYPE> types,
                                                                                        @Param("createTime") Date createTime);
 
-    Page<PersonalMessage> findAllByUidAndTypeInAndCreateTimeAfter(@Param("uid") Long uid,
+    Page<PersonalMessage> findAllByUidAndTypeInAndCreateTimeBefore(@Param("uid") Long uid,
                                                                                        @Param("types") Collection<PersonalMessage.TYPE> types,
                                                                                        @Param("createTime") Date createTime,
                                                                                        Pageable pageable);

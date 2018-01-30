@@ -85,7 +85,7 @@ public class PersonalMessageServiceImpl implements PersonalMessageService {
     @Override
     public List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date, Integer number) {
         PageRequest request = new PageRequest(0, number, new Sort(Sort.Direction.DESC, "createTime"));
-        Page page = repository.findAllByUidAndTypeInAndCreateTimeAfter(uid, types, date, request);
+        Page page = repository.findAllByUidAndTypeInAndCreateTimeBefore(uid, types, date, request);
         return page.getContent();
     }
 
