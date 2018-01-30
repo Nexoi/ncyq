@@ -71,14 +71,14 @@ public class UserIdentificationApi {
 
 
     @ApiOperation("列出所有")
-    @GetMapping("/list")
+    @GetMapping("/apply/list")
     public Page<IdentificationApply> listAllApply(@RequestParam(defaultValue = "0") Integer page,
                                                   @RequestParam(defaultValue = "10") Integer size) {
         return identificationService.findAllApply(new PageRequest(page, size));
     }
 
     @ApiOperation("按状态列出")
-    @GetMapping("/list/by-status")
+    @GetMapping("/apply/list/by-status")
     public Page<IdentificationApply> listAllApplyByStatuses(@RequestParam(defaultValue = "0") Integer page,
                                                             @RequestParam(defaultValue = "10") Integer size,
                                                             @RequestParam IdentificationApply.STATUS[] statuses) {
@@ -86,7 +86,7 @@ public class UserIdentificationApi {
     }
 
     @ApiOperation("按用户列出")
-    @GetMapping("/list/{uid}")
+    @GetMapping("/apply/list/{uid}")
     public Page<IdentificationApply> listAllApplyByUid(@RequestParam(defaultValue = "0") Integer page,
                                                        @RequestParam(defaultValue = "10") Integer size,
                                                        @PathVariable Long uid) {
@@ -94,7 +94,7 @@ public class UserIdentificationApi {
     }
 
     @ApiOperation("申请通过")
-    @DeleteMapping("/pass")
+    @DeleteMapping("/apply/pass")
     public ResponseEntity pass(@PathVariable Long uid, Long identificationId) {
         try {
             identificationService.pass(uid, identificationId);
@@ -105,7 +105,7 @@ public class UserIdentificationApi {
     }
 
     @ApiOperation("否定申请")
-    @DeleteMapping("/fail")
+    @DeleteMapping("/apply/fail")
     public ResponseEntity fail(@PathVariable Long uid, Long identificationId) {
         try {
             identificationService.fail(uid, identificationId);
