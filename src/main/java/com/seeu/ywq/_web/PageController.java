@@ -1,6 +1,7 @@
 package com.seeu.ywq._web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,16 +24,16 @@ public class PageController {
         String protocol = request.getProtocol();
         String host = request.getHeader("host");
 
-        return "/page/trend";
+        return "page/trend";
     }
 
 
     @GetMapping("/register")
-    public String register(@RequestParam(required = false) Long invite, ModelAndView model) {
+    public String register(@RequestParam(required = false) Long invite, Model model) {
         if (invite == null)
-            model.addObject("invitedUid", 0);
+            model.addAttribute("invitedUid", 0);
         else
-            model.addObject("invitedUid", invite);
-        return "/register";
+            model.addAttribute("invitedUid", invite);
+        return "register";
     }
 }
