@@ -59,7 +59,7 @@ public class MessageApi {
         return sysMessageService.findAll(new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
-    @ApiOperation(value = "获取个人通知【按时间】", notes = "date format: yyyy-MM-dd HH:mm:ss")
+    @ApiOperation(value = "获取个人通知【此时间后的通知】", notes = "date format: yyyy-MM-dd HH:mm:ss")
     @GetMapping("/personal/by-date")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity listPersonal(@AuthenticationPrincipal UserLogin authUser,
@@ -68,6 +68,21 @@ public class MessageApi {
         try {
             Date date1 = dateFormatterService.getyyyyMMddHHmmss().parse(date);
             return ResponseEntity.ok(personalMessageService.findAll(authUser.getUid(), Arrays.asList(types), date1));
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(R.code(400).message("时间参数解析错误"));
+        }
+    }
+
+    @ApiOperation(value = "获取个人通知【此时间前的通知】+ 给定条数", notes = "date format: yyyy-MM-dd HH:mm:ss")
+    @GetMapping("/personal/by-date/reverse")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity listPersonalMany(@AuthenticationPrincipal UserLogin authUser,
+                                           @RequestParam PersonalMessage.TYPE[] types,
+                                           @RequestParam(required = true) String date,
+                                           @RequestParam(defaultValue = "10") Integer number) {
+        try {
+            Date date1 = dateFormatterService.getyyyyMMddHHmmss().parse(date);
+            return ResponseEntity.ok(personalMessageService.findAll(authUser.getUid(), Arrays.asList(types), date1, number));
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("时间参数解析错误"));
         }
@@ -84,14 +99,15 @@ public class MessageApi {
 //        return personalMessageService.findAll(authUser.getUid(), Arrays.asList(types), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
 //    }
 
-    @ApiOperation(value = "获取个人通知【分页】")
-    @GetMapping("/personal/list")
-    @PreAuthorize("hasRole('USER')")
-    public Page<PersonalMessage> listAllPersonal(@AuthenticationPrincipal UserLogin authUser,
-                                                 @RequestParam(defaultValue = "0") Integer page,
-                                                 @RequestParam(defaultValue = "10") Integer size) {
-        return personalMessageService.findAll(authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
-    }
+
+//    @ApiOperation(value = "获取个人通知【分页】")
+//    @GetMapping("/personal/list")
+//    @PreAuthorize("hasRole('USER')")
+//    public Page<PersonalMessage> listAllPersonal(@AuthenticationPrincipal UserLogin authUser,
+//                                                 @RequestParam(defaultValue = "0") Integer page,
+//                                                 @RequestParam(defaultValue = "10") Integer size) {
+//        return personalMessageService.findAll(authUser.getUid(), new PageRequest(page, size, new Sort(Sort.Direction.DESC, "createTime")));
+//    }
 
     @ApiOperation("获取未读消息条数")
     @GetMapping("/counts")

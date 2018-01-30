@@ -5,7 +5,9 @@ import com.seeu.ywq.message.model.PersonalMessage;
 import com.seeu.ywq.message.repository.PersonalMessageRepository;
 import com.seeu.ywq.message.service.PersonalMessageService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -78,6 +80,13 @@ public class PersonalMessageServiceImpl implements PersonalMessageService {
     @Override
     public List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date) {
         return repository.findAllByUidAndTypeInAndCreateTimeAfterOrderByCreateTimeDesc(uid, types, date);
+    }
+
+    @Override
+    public List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date, Integer number) {
+        PageRequest request = new PageRequest(0, number, new Sort(Sort.Direction.DESC, "createTime"));
+        Page page = repository.findAllByUidAndTypeInAndCreateTimeAfter(uid, types, date, request);
+        return page.getContent();
     }
 
     @Override

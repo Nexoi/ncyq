@@ -28,6 +28,8 @@ public interface PersonalMessageService {
 
     List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date);
 
+    List<PersonalMessage> findAll(Long uid, Collection<PersonalMessage.TYPE> types, Date date, Integer number);
+
     Map<PersonalMessage.TYPE, Integer> countAll(Long uid, Date date);
 
 //    Integer countLikeComment(Long uid, Date date);
