@@ -11,7 +11,7 @@ import java.util.List;
 public interface User$IdentificationRepository extends JpaRepository<UserIdentification, UserIdentificationPKeys> {
     List<UserIdentification> findAllByUid(@Param("uid") Long uid);
 
-    UserIdentification findAllByUidAAndIdentificationId(@Param("uid") Long uid, @Param("identificationId") Long identificationId);
+    UserIdentification findAllByUidAndIdentificationId(@Param("uid") Long uid, @Param("identificationId") Long identificationId);
 
 
     List<UserIdentification> findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") IdentificationApply.STATUS status);

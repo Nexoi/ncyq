@@ -153,7 +153,7 @@ public class IdentificationServiceImpl implements IdentificationService {
         if (identificationApply == null) throw new ResourceNotFoundException("未申请");
         identificationApply.setStatus(IdentificationApply.STATUS.active);
         // 同步用户信息
-        UserIdentification ui = user$IdentificationRepository.findAllByUidAAndIdentificationId(uid, identificationId);
+        UserIdentification ui = user$IdentificationRepository.findAllByUidAndIdentificationId(uid, identificationId);
         if (ui == null) {
             ui = new UserIdentification();
             ui.setCreateTime(new Date());
@@ -171,7 +171,7 @@ public class IdentificationServiceImpl implements IdentificationService {
         if (identificationApply == null) throw new ResourceNotFoundException("未申请");
         identificationApply.setStatus(IdentificationApply.STATUS.failure);
         // 同步用户信息
-        UserIdentification ui = user$IdentificationRepository.findAllByUidAAndIdentificationId(uid, identificationId);
+        UserIdentification ui = user$IdentificationRepository.findAllByUidAndIdentificationId(uid, identificationId);
         if (ui == null) {
             ui = new UserIdentification();
             ui.setCreateTime(new Date());
