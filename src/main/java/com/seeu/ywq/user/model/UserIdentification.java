@@ -14,12 +14,6 @@ import java.util.Date;
         @Index(name = "identification_index3", unique = false, columnList = "status")
 })
 public class UserIdentification {
-    public enum STATUS {
-        active,   // 通过
-        inactive, // 未申请审核
-        waitFor, // 待审核
-        failure  // 审核失败
-    }
 
     @Id
     @Column(name = "identification_id", unique = false)
@@ -28,7 +22,8 @@ public class UserIdentification {
     @Column(name = "uid", unique = false)
     private Long uid;
 
-    private STATUS status; // 认证状态
+    @Enumerated
+    private IdentificationApply.STATUS status; // 认证状态
 
     private Date createTime;
 
@@ -48,11 +43,11 @@ public class UserIdentification {
         this.uid = uid;
     }
 
-    public STATUS getStatus() {
+    public IdentificationApply.STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(STATUS status) {
+    public void setStatus(IdentificationApply.STATUS status) {
         this.status = status;
     }
 

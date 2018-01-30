@@ -13,16 +13,26 @@ import java.util.Date;
         @Index(name = "identification_apply_index1", columnList = "uid,identification_id")
 })
 public class IdentificationApply {
+    public enum STATUS {
+        active,   // 通过
+        inactive, // 未申请审核
+        waitFor, // 待审核
+        failure  // 审核失败
+    }
 
     @ApiParam(hidden = true)
     @Id
-    @Column(name = "uid",unique = false)
+    @Column(name = "uid", unique = false)
     private Long uid;
 
     @Id
     @NotNull
-    @Column(name = "identification_id",unique = false)
+    @Column(name = "identification_id", unique = false)
     private Long identificationId;
+
+    @ApiParam(hidden = true)
+    @Enumerated
+    private STATUS status;
     @NotNull
     private String name;
     @NotNull
@@ -152,5 +162,13 @@ public class IdentificationApply {
 
     public void setTransferVoucherSerialNumber(String transferVoucherSerialNumber) {
         this.transferVoucherSerialNumber = transferVoucherSerialNumber;
+    }
+
+    public STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(STATUS status) {
+        this.status = status;
     }
 }

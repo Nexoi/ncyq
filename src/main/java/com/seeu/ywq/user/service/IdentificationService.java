@@ -6,9 +6,12 @@ import com.seeu.ywq.user.dvo.UserIdentificationWithFullListVO;
 import com.seeu.ywq.user.model.Identification;
 import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.user.model.UserIdentification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 public interface IdentificationService {
@@ -27,4 +30,21 @@ public interface IdentificationService {
     IdentificationApply findMyRecentInfo(Long uid); // 查看自己最近一次上传的信息（去掉流水号、转账信息等）
 
     void deleteApply(Long uid, Long identificationId) throws ResourceNotFoundException;
+
+    // admin //
+
+    Identification save(Identification identification);
+
+    void delete(Long identificationId);
+
+    // 默认按照时间排序
+    Page<IdentificationApply> findAllApply(Pageable pageable);
+
+    Page<IdentificationApply> findAllApply(Long uid, Pageable pageable);
+
+    Page<IdentificationApply> findAllApply(Collection<IdentificationApply.STATUS> status, Pageable pageable);
+
+    IdentificationApply pass(Long uid, Long identificationId) throws ResourceNotFoundException; // 通过
+
+    IdentificationApply fail(Long uid, Long identificationId) throws ResourceNotFoundException; // 失败
 }

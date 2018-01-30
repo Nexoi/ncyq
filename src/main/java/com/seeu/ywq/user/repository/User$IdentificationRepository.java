@@ -1,5 +1,6 @@
 package com.seeu.ywq.user.repository;
 
+import com.seeu.ywq.user.model.IdentificationApply;
 import com.seeu.ywq.user.model.UserIdentification;
 import com.seeu.ywq.user.model.UserIdentificationPKeys;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +11,10 @@ import java.util.List;
 public interface User$IdentificationRepository extends JpaRepository<UserIdentification, UserIdentificationPKeys> {
     List<UserIdentification> findAllByUid(@Param("uid") Long uid);
 
-    List<UserIdentification> findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") UserIdentification.STATUS status);
+    UserIdentification findAllByUidAAndIdentificationId(@Param("uid") Long uid, @Param("identificationId") Long identificationId);
 
-    List<UserIdentification> findAllByUidAndStatusNot(@Param("uid") Long uid, @Param("status") UserIdentification.STATUS status);
+
+    List<UserIdentification> findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") IdentificationApply.STATUS status);
+
+    List<UserIdentification> findAllByUidAndStatusNot(@Param("uid") Long uid, @Param("status") IdentificationApply.STATUS status);
 }

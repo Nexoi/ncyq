@@ -1,6 +1,6 @@
 package com.seeu.ywq.user.dvo;
 
-import com.seeu.ywq.user.model.UserIdentification;
+import com.seeu.ywq.user.model.IdentificationApply;
 
 import javax.persistence.Column;
 import java.util.Date;
@@ -11,7 +11,7 @@ public class UserIdentificationWithFullListVO {
     private String identificationName;
     private String iconUrl;
     private String iconActiveUrl;
-    private UserIdentification.STATUS status; // 认证状态
+    private IdentificationApply.STATUS status; // 认证状态
     private Date createTime;
 
     public Long getIdentificationId() {
@@ -46,11 +46,11 @@ public class UserIdentificationWithFullListVO {
         this.iconActiveUrl = iconActiveUrl;
     }
 
-    public UserIdentification.STATUS getStatus() {
+    public IdentificationApply.STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(UserIdentification.STATUS status) {
+    public void setStatus(IdentificationApply.STATUS status) {
         this.status = status;
     }
 

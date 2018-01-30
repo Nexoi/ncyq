@@ -145,4 +145,14 @@ public class TagServiceImpl implements TagService {
         }
         return vos;
     }
+
+    @Override
+    public List<Tag> findAllTags() {
+        return tagRepository.findAll();
+    }
+
+    @Override
+    public void delete(Long tagId) {
+        tagRepository.delete(tagId);
+    }
 }

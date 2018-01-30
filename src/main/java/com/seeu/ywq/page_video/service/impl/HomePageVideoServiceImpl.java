@@ -88,9 +88,10 @@ public class HomePageVideoServiceImpl implements HomePageVideoService {
     public Page findAllByCategory(Long visitorUid, HomePageVideo.CATEGORY category, Pageable pageable) {
         Page page = repository.findAllByCategory(category, pageable);
         List<HomePageVideo> list = page.getContent();
-        for (HomePageVideo video : list) {
-            authFliter(visitorUid, video);
-        }
+//        管理员，关闭验权
+//        for (HomePageVideo video : list) {
+//            authFliter(visitorUid, video);
+//        }
         return page;
     }
 

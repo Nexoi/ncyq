@@ -17,7 +17,6 @@ import com.seeu.ywq.message.service.PersonalMessageService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.model.OrderLog;
 import com.seeu.ywq.pay.service.BalanceService;
-import com.seeu.ywq.task.model.DayFlushTask;
 import com.seeu.ywq.task.model.TaskCategory;
 import com.seeu.ywq.task.service.DayFlushTaskService;
 import com.seeu.ywq.user.service.AddressService;

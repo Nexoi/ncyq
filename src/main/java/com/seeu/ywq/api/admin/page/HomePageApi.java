@@ -11,10 +11,14 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Api(tags = "配置-视频配置／广告配置", description = "视频／广告")
 @RestController("adminAppPageConfigApi")
@@ -95,6 +99,13 @@ public class HomePageApi {
 //        }
 //    }
 
+    @GetMapping("/videos/{category}")
+    public Page<HomePageVideo> listAllVideos(@PathVariable HomePageVideo.CATEGORY category,
+                                             @RequestParam(defaultValue = "0") Integer page,
+                                             @RequestParam(defaultValue = "10") Integer size) {
+        return homePageVideoService.findAllByCategory(category, new PageRequest(page, size));
+    }
+
     @ApiOperation(value = "视频信息增添")
     @PostMapping("/video")
     public ResponseEntity addVideo(@AuthenticationPrincipal UserLogin authUser,
@@ -113,6 +124,12 @@ public class HomePageApi {
         } catch (ResourceAddException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("添加失败【" + e.getMessage() + "】").build());
         }
+    }
+
+    @ApiOperation("首页广告列表")
+    @GetMapping("/advertisements")
+    public List<Advertisement> listAll() {
+        return advertisementService.getAdvertisements(Advertisement.CATEGORY.HomePage);
     }
 
     @ApiOperation(value = "广告添加")
