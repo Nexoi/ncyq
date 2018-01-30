@@ -33,6 +33,6 @@ public class PageController {
             model.addObject("invitedUid", 0);
         else
             model.addObject("invitedUid", invite);
-        return "register";
+        return "/register";
     }
 }
