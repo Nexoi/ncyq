@@ -31,7 +31,7 @@ public class PageController {
     @GetMapping("/register")
     public String register(@RequestParam(required = false) Long invite, Model model) {
         if (invite == null)
-            model.addAttribute("invitedUid", 0);
+            model.addAttribute("invitedUid", 0L);
         else
             model.addAttribute("invitedUid", invite);
         return "register";

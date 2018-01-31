@@ -56,4 +56,9 @@ public interface PublishLiteRepository extends JpaRepository<PublishLite, Long> 
     // find my/her trends
     Page findAllByUidAndStatus(@Param("uid") Long uid, @Param("status") Publish.STATUS status, Pageable pageable);
 
+    Page findAllByTextLikeOrLabelsLikeAndStatusOrderByLikeNumDesc(@Param("text") String textLike,
+                                                                  @Param("labels") String labelsLike,
+                                                                  @Param("status") Publish.STATUS status,
+                                                                  Pageable pageable);
+
 }

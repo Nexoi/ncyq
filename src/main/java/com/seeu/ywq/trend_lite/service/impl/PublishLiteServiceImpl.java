@@ -84,6 +84,15 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         return new PageImpl<>(transferList, pageable, page.getTotalElements());
     }
 
+    @Override
+    public Page<PublishLiteVO> search(Long visitorUid, String word, Pageable pageable) {
+        if (word == null) return new PageImpl<>(new ArrayList<>());
+        word = "%" + word + "%";
+        Page page = publishLiteRepository.findAllByTextLikeOrLabelsLikeAndStatusOrderByLikeNumDesc(word, word, Publish.STATUS.normal, pageable);
+        List transferList = transferToVO(page.getContent(), visitorUid);
+        return new PageImpl<>(transferList, pageable, page.getTotalElements());
+    }
+
     // 将图片、个人信息加载进 vo
     private void completePicturesAndSimpleUsers(Long visitorUid, List<PublishLite> vos) {
         if (vos == null || vos.size() == 0) return;

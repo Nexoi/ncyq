@@ -66,6 +66,10 @@ public interface UserReactService {
         contradiction // 矛盾
     }
 
+    // search //
+
+    Page<SimpleUserVO> search(Long visitorUid, String word, Pageable pageable);
+
     // admin //
 
     Page<UserLogin> findAll(Pageable pageable);

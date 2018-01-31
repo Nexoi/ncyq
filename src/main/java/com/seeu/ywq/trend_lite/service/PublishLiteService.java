@@ -35,4 +35,7 @@ public interface PublishLiteService {
      */
     Page<PublishLiteVO> findAllByUid(Long visitorUid, Long uid, Pageable pageable);
 
+
+    Page<PublishLiteVO> search(Long visitorUid, String word, Pageable pageable);
+
 }

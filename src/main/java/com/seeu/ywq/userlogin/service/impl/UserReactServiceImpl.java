@@ -18,6 +18,7 @@ import com.seeu.ywq.userlogin.service.UserReactService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -169,6 +170,14 @@ public class UserReactServiceImpl implements UserReactService {
         return vos;
     }
 
+    private List<SimpleUserVO> transferToVO(List<Object[]> objects) {
+        List<SimpleUserVO> vos = new ArrayList<>();
+        for (Object[] object : objects) {
+            vos.add(transferToVO(object));
+        }
+        return vos;
+    }
+
     private SimpleUserVO transferToVO(Object[] objects) {
         if (objects == null || objects.length != 9) return null;// 长度必须是 9 个
         SimpleUserVO vo = new SimpleUserVO();
@@ -214,6 +223,19 @@ public class UserReactServiceImpl implements UserReactService {
             return userLoginRepository.save(ul);
         }
         return null;
+    }
+
+    @Override
+    public Page<SimpleUserVO> search(Long visitorUid, String word, Pageable pageable) {
+        List<Object[]> list = null;
+        Integer pageStart = pageable.getPageNumber() * pageable.getPageSize();
+        Integer size = pageable.getPageSize();
+        if (visitorUid == null || visitorUid == 0)
+            list = userLoginRepository.searchIts("%" + word + "%", pageStart, size);
+        else
+            list = userLoginRepository.searchItsByUid(visitorUid, "%" + word + "%", pageStart, size);
+        Integer count = userLoginRepository.countAllByUidNotNull();
+        return new PageImpl<>(transferToVO(list), pageable, count);
     }
 
     @Override
