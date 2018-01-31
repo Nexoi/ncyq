@@ -30,7 +30,6 @@ public class AppVersion {
 
     @NotNull
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer version;
     @ApiParam(hidden = true)
     @Id

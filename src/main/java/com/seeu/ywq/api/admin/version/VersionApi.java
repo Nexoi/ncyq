@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -36,7 +37,8 @@ public class VersionApi {
 
     @ApiOperation("添加／更新一个版本")
     @PostMapping("/{client}")
-    public AppVersion update(@PathVariable AppVersion.CLIENT client, AppVersion appVersion) {
+    public AppVersion update(@PathVariable AppVersion.CLIENT client,
+                             @Validated AppVersion appVersion) {
         appVersion.setClient(client);
         return appVersionService.save(appVersion);
     }
