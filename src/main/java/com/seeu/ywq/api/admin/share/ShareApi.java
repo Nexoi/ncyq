@@ -37,11 +37,11 @@ public class ShareApi {
 
     @ApiOperation("添加图片")
     @PostMapping("/picture")
-    public SharePicture add(String imgUrl) {
+    public ResponseEntity add(String imgUrl) {
         SharePicture picture = new SharePicture();
         picture.setImgUrl(imgUrl);
         picture.setCreateTime(new Date());
-        return sharePicturesService.save(picture);
+        return ResponseEntity.ok(sharePicturesService.save(picture));
     }
 
     @DeleteMapping("/picture/{id}")
