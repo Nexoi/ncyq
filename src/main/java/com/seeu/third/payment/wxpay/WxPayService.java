@@ -52,7 +52,8 @@ public class WxPayService {
         parameters.put("nonce_str", wxUtils.gen32RandomString());
         parameters.put("notify_url", notifyUrl);
         parameters.put("out_trade_no", oid);
-        parameters.put("total_fee", price.multiply(BigDecimal.valueOf(100)).intValue());
+//        parameters.put("total_fee", price.multiply(BigDecimal.valueOf(100)).intValue());
+        parameters.put("total_fee", 1);
         parameters.put("spbill_create_ip", ipAddress);
         parameters.put("trade_type", "APP");
         parameters.put("sign", wxUtils.createSign(parameters)); // 必须在最后

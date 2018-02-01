@@ -89,6 +89,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
         if (word == null) return new PageImpl<>(new ArrayList<>());
         word = "%" + word + "%";
         Page page = publishLiteRepository.findAllByTextLikeOrLabelsLikeAndStatusOrderByLikeNumDesc(word, word, Publish.STATUS.normal, pageable);
+        completePicturesAndSimpleUsers(visitorUid, page.getContent());
         List transferList = transferToVO(page.getContent(), visitorUid);
         return new PageImpl<>(transferList, pageable, page.getTotalElements());
     }

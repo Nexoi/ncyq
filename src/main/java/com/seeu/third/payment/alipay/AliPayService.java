@@ -66,7 +66,8 @@ public class AliPayService {
         model.setSubject(subject);
         model.setOutTradeNo(oid);
         model.setTimeoutExpress(TIMEOUT_EXPRESS);
-        model.setTotalAmount("" + price.doubleValue());
+//        model.setTotalAmount("" + price.doubleValue());
+        model.setTotalAmount("0.01");
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
         request.setNotifyUrl(NOTIFY_URL);
