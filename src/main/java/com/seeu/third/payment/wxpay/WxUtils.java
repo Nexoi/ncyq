@@ -22,7 +22,7 @@ public class WxUtils {
     private String Key = "";
 
 
-    public String createSign(SortedMap<Object, Object> parameters) {
+    public String createSign(SortedMap<String, Object> parameters) {
         StringBuffer sb = new StringBuffer();
         Set es = parameters.entrySet();//所有参与传参的参数按照accsii排序（升序）
         Iterator it = es.iterator();

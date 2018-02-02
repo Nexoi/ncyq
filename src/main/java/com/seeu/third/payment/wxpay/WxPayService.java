@@ -44,7 +44,7 @@ public class WxPayService {
 
     public String createOrder(String oid, BigDecimal price, String body, String ipAddress, String deviceInfo) throws ActionParameterException {
         String placeUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+        SortedMap<String, Object> parameters = new TreeMap<String, Object>();
         parameters.put("appid", appid);
         parameters.put("mch_id", mch_id);
         parameters.put("device_info", deviceInfo);
@@ -57,7 +57,7 @@ public class WxPayService {
         parameters.put("spbill_create_ip", ipAddress);
         parameters.put("trade_type", "APP");
         parameters.put("sign", wxUtils.createSign(parameters)); // 必须在最后
-        String result = restTemplate.postForObject(placeUrl, parameters, String.class);
+        String result = restTemplate.postForObject(placeUrl, transferToXml(parameters), String.class);
         return result;
     }
 
@@ -65,4 +65,14 @@ public class WxPayService {
         return "success";
     }
 
+    private String transferToXml(SortedMap<String, Object> map) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<xml>");
+        for (String key : map.keySet()) {
+            sb.append("<").append(key).append(">")
+                    .append(map.get(key))
+                    .append("</").append(key).append(">");
+        }
+        return sb.append("</xml>").toString();
+    }
 }

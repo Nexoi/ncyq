@@ -195,7 +195,9 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (null != ul)
             throw new PhoneNumberHasUsedException(phone);
         UserLogin userLogin = new UserLogin();
-        userLogin.setNickname(name.substring(0, 20));
+        int length = name.length();
+        if (length > 20) length = 20;
+        userLogin.setNickname(name.substring(0, length));
         userLogin.setPhone(phone);
         userLogin.setPassword(md5Service.encode(credential));
         userLogin.setHeadIconUrl(headIconUrl);
