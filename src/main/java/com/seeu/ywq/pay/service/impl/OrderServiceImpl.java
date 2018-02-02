@@ -41,6 +41,10 @@ import com.seeu.ywq.uservip.model.VIPTable;
 import com.seeu.ywq.uservip.service.UserVIPService;
 import com.seeu.ywq.uservip.service.VIPTableService;
 import com.seeu.ywq.utils.DateFormatterService;
+import com.seeu.ywq.ywqactivity.model.Activity;
+import com.seeu.ywq.ywqactivity.model.ActivityCheckIn;
+import com.seeu.ywq.ywqactivity.service.ActivityCheckInService;
+import com.seeu.ywq.ywqactivity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -51,6 +55,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -113,6 +118,11 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private Util4IP util4IP;
 
+    @Autowired
+    private ActivityService activityService;
+    @Autowired
+    private ActivityCheckInService activityCheckInService;
+
     @Override
     public void finishOrder(String orderId) {
 
@@ -134,7 +144,11 @@ public class OrderServiceImpl implements OrderService {
         String body = subject;
         String ip = util4IP.getIpAddress(request);
         String deviceInfo = request.getHeader("User-Agent");
-        return placeOrder(genOrderID(), TradeModel.TYPE.RECHARGE, payMethod, uid, price, subject, body, ip, deviceInfo, "" + diamonds);
+        if (payMethod == OrderRecharge.PAY_METHOD.ALIPAY)
+            return placeOrder(genOrderID(), TradeModel.TYPE.RECHARGE, TradeModel.PAYMENT.ALIPAY, uid, price, subject, body, ip, deviceInfo, "" + diamonds);
+        else
+            return placeOrder(genOrderID(), TradeModel.TYPE.RECHARGE, TradeModel.PAYMENT.WECHAT, uid, price, subject, body, ip, deviceInfo, "" + diamonds);
+
     }
 
 //    @Override
@@ -199,7 +213,7 @@ public class OrderServiceImpl implements OrderService {
         String body = subject;
         String ip = util4IP.getIpAddress(request);
         String deviceInfo = request.getHeader("User-Agent");
-        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, OrderRecharge.PAY_METHOD.ALIPAY, uid, price, subject, body, ip, deviceInfo, "" + day);
+        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, TradeModel.PAYMENT.ALIPAY, uid, price, subject, body, ip, deviceInfo, "" + day);
     }
 
     @Override
@@ -211,12 +225,20 @@ public class OrderServiceImpl implements OrderService {
         String body = subject;
         String ip = util4IP.getIpAddress(request);
         String deviceInfo = request.getHeader("User-Agent");
-        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, OrderRecharge.PAY_METHOD.WECHAT, uid, price, subject, body, ip, deviceInfo, "" + day);
+        return placeOrder(genOrderID(), TradeModel.TYPE.BUYVIP, TradeModel.PAYMENT.WECHAT, uid, price, subject, body, ip, deviceInfo, "" + day);
     }
 
     @Override
-    public String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) {
-        return null;
+    public String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException {
+        Activity activity = activityService.findOne(activityId);
+        if (activity == null) throw new ResourceNotFoundException("无此活动可以报名支付");
+        BigDecimal price = activity.getPrice();
+        if (price == null || price.doubleValue() == 0.0) throw new ActionNotSupportException("不可以支付 0 元的账单");
+        String subject = "【尤物圈活动报名】" + activity.getTitle();
+        String body = subject;
+        String ip = util4IP.getIpAddress(request);
+        String deviceInfo = request.getHeader("User-Agent");
+        return placeOrder(genOrderID(), TradeModel.TYPE.ACTIVITY, payment, uid, price, subject, body, ip, deviceInfo, "");
     }
 
     // 钻石换金币
@@ -505,7 +527,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      * @throws ActionParameterException
      */
-    private String placeOrder(String orderId, TradeModel.TYPE type, OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, String subject, String body, String ipAddress, String deviceInfo, String extraData) throws ActionParameterException {
+    private String placeOrder(String orderId, TradeModel.TYPE type, TradeModel.PAYMENT payMethod, Long uid, BigDecimal price, String subject, String body, String ipAddress, String deviceInfo, String extraData) throws ActionParameterException {
         // 持久化
         TradeModel trade = new TradeModel();
         trade.setOrderId(orderId);
@@ -518,16 +540,20 @@ public class OrderServiceImpl implements OrderService {
         trade.setExtraData(extraData);
         trade.setIpAddress(ipAddress);
         trade.setType(type); // 交易类型
-        if (payMethod == OrderRecharge.PAY_METHOD.ALIPAY) {
+        if (payMethod == TradeModel.PAYMENT.ALIPAY) {
             // 返回支付宝创建的订单 String 到客户端即可
             trade.setPayment(TradeModel.PAYMENT.ALIPAY);
             tradeService.save(trade);
             return aliPayService.createOrder(orderId, price, subject, body);
         }
-        if (payMethod == OrderRecharge.PAY_METHOD.WECHAT) {
+        if (payMethod == TradeModel.PAYMENT.WECHAT) {
             trade.setPayment(TradeModel.PAYMENT.WECHAT);
             tradeService.save(trade);
-            return wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo);
+            try {
+                return wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo);
+            } catch (IOException e) {
+                return "创建失败！服务器异常";
+            }
         }
         return null;
     }

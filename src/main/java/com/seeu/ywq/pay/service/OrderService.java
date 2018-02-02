@@ -48,7 +48,7 @@ public interface OrderService {
 
     // 报名活动
     @Transactional
-    String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request);
+    String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
 
     /**
      * 提現

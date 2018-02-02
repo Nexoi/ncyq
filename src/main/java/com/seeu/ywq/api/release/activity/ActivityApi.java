@@ -1,7 +1,10 @@
 package com.seeu.ywq.api.release.activity;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionNotSupportException;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.exception.ResourceAlreadyExistedException;
+import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.pay.model.OrderRecharge;
 import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.service.OrderService;
@@ -86,7 +89,15 @@ public class ActivityApi {
 //        if (checkIn == null)
 //            return ResponseEntity.status(404).body(R.code(404).message("找不到该活动信息"));
         // 返回支付信息进行支付（AliPay, WeChatPay...）
-        return ResponseEntity.ok(orderService.createActivity(authUser.getUid(), checkInModel.getActivityId(), payment, request));
+        try {
+            return ResponseEntity.ok(orderService.createActivity(authUser.getUid(), checkInModel.getActivityId(), payment, request));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message(e.getMessage()));
+        } catch (ActionNotSupportException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message(e.getMessage()));
+        } catch (ActionParameterException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message(e.getMessage()));
+        }
     }
 
 }

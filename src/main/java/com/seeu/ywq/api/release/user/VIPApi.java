@@ -1,6 +1,7 @@
 package com.seeu.ywq.api.release.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.exception.ResourceNotFoundException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
 import com.seeu.ywq.pay.service.OrderService;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Api(tags = "用户VIP", description = "个人VIP信息查看/成为VIP/查看VIP种类")
@@ -82,15 +84,29 @@ public class VIPApi {
     @PostMapping("/buy-alipay")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity buyAliPay(@AuthenticationPrincipal UserLogin authUser,
-                                    Long day) {
-        return null;
+                                    Long day,
+                                    HttpServletRequest request) {
+        try {
+            return ResponseEntity.ok(orderService.createVIPCardUseAliPay(authUser.getUid(), day, request));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message("无此VIP卡可以购买"));
+        } catch (ActionParameterException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("参数错误，请确认后再尝试"));
+        }
     }
 
     @ApiOperation(value = "购买VIP卡（微信）")
     @PostMapping("/buy-wechat")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity buyWeChat(@AuthenticationPrincipal UserLogin authUser,
-                                    Long day) {
-        return null;
+                                    Long day,
+                                    HttpServletRequest request) {
+        try {
+            return ResponseEntity.ok(orderService.createVIPCardUseWeChat(authUser.getUid(), day, request));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message("无此VIP卡可以购买"));
+        } catch (ActionParameterException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("参数错误，请确认后再尝试"));
+        }
     }
 }
