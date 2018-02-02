@@ -3,6 +3,7 @@ package com.seeu.ywq.api.admin.picture;
 import com.seeu.core.R;
 import com.seeu.third.filestore.FileUploadService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class UploadApi {
     @Autowired
     private FileUploadService fileUploadService;
 
+    @ApiOperation("图片上传")
     @PostMapping("/picture/upload")
     public ResponseEntity uploadPicture(MultipartFile image) {
         try {
@@ -40,11 +42,24 @@ public class UploadApi {
         }
     }
 
+    @ApiOperation("视频上传")
     @PostMapping("/video/upload")
-    public ResponseEntity uploadVideo(MultipartFile image) {
+    public ResponseEntity uploadVideo(MultipartFile video) {
         try {
             Map map = new HashMap();
-            map.put("url", fileUploadService.upload(image));
+            map.put("url", fileUploadService.upload(video));
+            return ResponseEntity.ok(map);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(R.code(500).message("上传失败！"));
+        }
+    }
+
+    @ApiOperation("文件上传")
+    @PostMapping("/file/upload")
+    public ResponseEntity uploadFile(MultipartFile file) {
+        try {
+            Map map = new HashMap();
+            map.put("url", fileUploadService.upload(file));
             return ResponseEntity.ok(map);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(R.code(500).message("上传失败！"));
