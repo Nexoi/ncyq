@@ -2,10 +2,7 @@ package com.seeu.ywq.pay.model;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -20,6 +17,9 @@ import java.util.Date;
 @Entity
 @Table(name = "ywq_pay_trade_wx")
 public class WxPayTradeModel {
+
+    @Transient
+    private String return_code;
     @Id
     @Column(length = 20)
     private String out_trade_no;    // 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。
@@ -239,5 +239,13 @@ public class WxPayTradeModel {
 
     public void setTime_end(Date time_end) {
         this.time_end = time_end;
+    }
+
+    public String getReturn_code() {
+        return return_code;
+    }
+
+    public void setReturn_code(String return_code) {
+        this.return_code = return_code;
     }
 }
