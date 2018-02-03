@@ -203,7 +203,7 @@ public class PublishServiceImpl implements PublishService {
         Publish publish = publishRepository.findByIdAndStatus(publishId, Publish.STATUS.normal);
         if (publish == null || publish.getUid() == null) return null;
         publishRepository.viewItOnce(publishId);
-        boolean canVisit = publish.getUid() == uid || resourceAuthService.canVisitPublish(uid, publishId);
+        boolean canVisit = publish.getUid().equals(uid) || resourceAuthService.canVisitPublish(uid, publishId);
         return transferToVO(publish, canVisit);
     }
 

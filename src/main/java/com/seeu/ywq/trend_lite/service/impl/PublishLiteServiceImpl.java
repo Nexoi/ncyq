@@ -172,7 +172,7 @@ public class PublishLiteServiceImpl implements PublishLiteService {
                     || publish.getUnlockPrice().longValue() <= 0
                     || publish.getType() == Publish.PUBLISH_TYPE.word
                     || publish.getType() == Publish.PUBLISH_TYPE.audio
-                    || visitorUid == publish.getUid()
+                    || visitorUid.equals(publish.getUid())
                     || resourceAuthService.canVisitPublish(visitorUid, publish.getId());
             publish.setStatus(null); // 消除不必要的数据
             vos.add(transferToVO(publish, canVisit));
