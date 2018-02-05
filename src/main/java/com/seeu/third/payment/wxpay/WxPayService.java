@@ -19,6 +19,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -98,6 +99,7 @@ public class WxPayService {
     @Autowired
     private TestXService testXService;
 
+    @Transactional
     public String callBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取参数
         testXService.info("微信方法callback start");
@@ -118,7 +120,7 @@ public class WxPayService {
         map = doXMLParse(sb.toString());
 
         // 过滤空  设置TreeMap
-        SortedMap<String, String> sortMap = new TreeMap<String, String>();
+        SortedMap<String, Object> sortMap = new TreeMap<String, Object>();
         Iterator it = map.keySet().iterator();
         while (it.hasNext()) {
             String paramK = (String) it.next();
@@ -133,7 +135,7 @@ public class WxPayService {
         }
         testXService.info("微信方法callback sign check start");
         // 判断签名是否正确
-        boolean isSignSuccess = isTenpaySign("UTF-8", sortMap);
+        boolean isSignSuccess = isTenpaySign(sortMap);
         response.setHeader("Content-type", "application/xml");
         if (isSignSuccess) {
             //
@@ -229,35 +231,12 @@ public class WxPayService {
      * @return boolean
      * @throws Exception
      */
-    private boolean isTenpaySign(String characterEncoding, SortedMap<String, String> packageParams) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        Set<Map.Entry<String, String>> es = packageParams.entrySet();
-        Iterator<Map.Entry<String, String>> it = es.iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
-            String k = (String) entry.getKey();
-            String v = (String) entry.getValue();
-            if (
-                    null != k
-                            && !"sign".equals(k)
-                            && !"key".equals(k)
-                            && null != v
-                            && !"".equals(v)
-                    ) {
-                sb.append(k + "=" + v + "&");
-            }
-        }
-        sb.append("key=" + key);
-
-        // 算出摘要
-        String mysign = HMACSHA256(sb.toString(), key.toUpperCase());
-        String tenpaySign = ((String) packageParams.get("sign"));
-        System.out.println("==============");
-        System.out.println("mysign" + mysign);
-        System.out.println("tenpaySign" + tenpaySign);
-        System.out.println("==============");
-        // System.out.println("tenpaySign:[" + tenpaySign + "] mysign:[" + mysign + "]");
-        return tenpaySign.equals(mysign);
+    private boolean isTenpaySign(SortedMap<String, Object> packageParams) throws Exception {
+        String signWx = packageParams.get("sign").toString();
+        if (signWx == null) return false;
+        packageParams.remove("sign");
+        String signMe = wxUtils.createSign(packageParams);
+        return signWx.equals(signMe);
     }
 
     /**
@@ -281,7 +260,7 @@ public class WxPayService {
     }
 
 
-    private WxPayTradeModel transferToDO(SortedMap<String, String> map) {
+    private WxPayTradeModel transferToDO(SortedMap<String, Object> map) {
 //        WxPayTradeModel model = new WxPayTradeModel();
 //        model.setAppid(map.get("appid"));
 //        model.setAttach(map.get("attach"));
