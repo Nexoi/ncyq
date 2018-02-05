@@ -1,12 +1,8 @@
 package com.seeu.ywq.api.release.pay;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.seeu.third.payment.alipay.AliPayService;
 import com.seeu.third.payment.wxpay.WxPayService;
-import com.seeu.ywq.pay.model.AliPayTradeModel;
-import com.seeu.ywq.test.TestXService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +34,6 @@ public class PayCallBackController {
     @Autowired
     private AliPayService aliPayService;
 
-    @Autowired
-    private TestXService testXService;
-
     @RequestMapping(value = "/wxpay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String wx(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -57,7 +50,6 @@ public class PayCallBackController {
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(HttpServletRequest request) {
         try {
-            testXService.info("支付宝 alipay start");
             Enumeration<String> parameters = request.getParameterNames();
             Map map = new HashMap();
             while (parameters.hasMoreElements()) {
@@ -65,10 +57,8 @@ public class PayCallBackController {
                 String value = request.getParameter(key);
                 map.put(key, value);
             }
-            testXService.info("支付宝 alipay start 1");
             return aliPayService.callBack(map);
         } catch (AlipayApiException e) {
-            testXService.info("alipay exception " + e.getMessage());
             return "failure";
         }
     }

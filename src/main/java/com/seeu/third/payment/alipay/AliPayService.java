@@ -93,7 +93,7 @@ public class AliPayService {
     public String callBack(Map map) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
         testXService.info("支付宝 获取数据 Map 成功，准备验证签名");
-        boolean signVerified = AlipaySignature.rsaCheckV1(map, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");          //调用SDK验证签名
+        boolean signVerified = AlipaySignature.rsaCheckV2(map, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
         testXService.info("支付宝 验证签名结束");
         if (signVerified) {
             testXService.info("支付宝 验证签名成功！");
