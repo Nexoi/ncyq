@@ -95,14 +95,14 @@ public class WxPayService {
         app.put("sign", wxUtils.createSign(new TreeMap<>(app)));
         return app;
     }
-
-    @Autowired
-    private TestXService testXService;
+//
+//    @Autowired
+//    private TestXService testXService;
 
     @Transactional
     public String callBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取参数
-        testXService.info("微信方法callback start");
+//        testXService.info("微信方法callback start");
         InputStream inputStream;
         StringBuffer sb = new StringBuffer();
         inputStream = request.getInputStream();
@@ -114,7 +114,7 @@ public class WxPayService {
         in.close();
         inputStream.close();
 
-        testXService.info("微信方法callback xml->map");
+//        testXService.info("微信方法callback xml->map");
         // 解析Xml为map
         Map<String, String> map = new HashMap<String, String>();
         map = doXMLParse(sb.toString());
@@ -133,24 +133,24 @@ public class WxPayService {
 
             sortMap.put(paramK, value);
         }
-        testXService.info("微信方法callback sign check start");
+//        testXService.info("微信方法callback sign check start");
         // 判断签名是否正确
         boolean isSignSuccess = isTenpaySign(sortMap);
         response.setHeader("Content-type", "application/xml");
         if (isSignSuccess) {
             //
-            testXService.info("微信签名校验成功！");
+//            testXService.info("微信签名校验成功！");
             WxPayTradeModel model = transferToDO(sortMap);
             wxPayTradeService.save(model);
             if (model.getReturn_code().equals("SUCCESS")) {
                 if (model.getResult_code().equals("SUCCESS")) {
                     wxPayTradeService.save(model);
                     orderService.finishOrder(model.getOut_trade_no());
-                    testXService.info("微信  " + model.getOut_trade_no() + "  SUCCESS");
+//                    testXService.info("微信  " + model.getOut_trade_no() + "  SUCCESS");
                 } else {
                     wxPayTradeService.save(model);
                     orderService.failOrder(model.getOut_trade_no());
-                    testXService.info("微信  " + model.getOut_trade_no() + "  FAIL");
+//                    testXService.info("微信  " + model.getOut_trade_no() + "  FAIL");
                 }
             }
             return "<xml>\n" +
@@ -158,7 +158,7 @@ public class WxPayService {
                     "  <return_msg><![CDATA[OK]]></return_msg>\n" +
                     "</xml>";
         } else {
-            testXService.info("微信签名校验失败！");
+//            testXService.info("微信签名校验失败！");
             return "<xml>\n" +
                     "  <return_code><![CDATA[FAIL]]></return_code>\n" +
                     "  <return_msg><![CDATA[]]></return_msg>\n" +
