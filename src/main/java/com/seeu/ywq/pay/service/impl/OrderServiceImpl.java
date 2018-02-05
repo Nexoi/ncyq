@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException {
+    public Map createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException {
         if (payMethod == null) throw new ActionParameterException("payMethod");
         // 查询价格
         ExchangeTable table = queryExchange(null, ExchangeTable.TYPE.RMB2DIAMOND, price);
@@ -208,7 +208,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String createVIPCardUseAliPay(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException {
+    public Map createVIPCardUseAliPay(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException {
         VIPTable vipTable = vipTableService.findByDay(day);
         BigDecimal price = vipTable.getPrice();
         //
@@ -220,7 +220,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String createVIPCardUseWeChat(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException {
+    public Map createVIPCardUseWeChat(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException {
         VIPTable vipTable = vipTableService.findByDay(day);
         BigDecimal price = vipTable.getPrice();
         //
@@ -232,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException {
+    public Map createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException {
         Activity activity = activityService.findOne(activityId);
         if (activity == null) throw new ResourceNotFoundException("无此活动可以报名支付");
         BigDecimal price = activity.getPrice();
@@ -530,7 +530,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      * @throws ActionParameterException
      */
-    private String placeOrder(String orderId, TradeModel.TYPE type, TradeModel.PAYMENT payMethod, Long uid, BigDecimal price, String subject, String body, String ipAddress, String deviceInfo, String extraData) throws ActionParameterException {
+    private Map placeOrder(String orderId, TradeModel.TYPE type, TradeModel.PAYMENT payMethod, Long uid, BigDecimal price, String subject, String body, String ipAddress, String deviceInfo, String extraData) throws ActionParameterException {
         // 持久化
         TradeModel trade = new TradeModel();
         trade.setOrderId(orderId);
@@ -549,23 +549,23 @@ public class OrderServiceImpl implements OrderService {
             // 返回支付宝创建的订单 String 到客户端即可
             trade.setPayment(TradeModel.PAYMENT.ALIPAY);
             tradeService.save(trade);
-            map.put("status","SUCCESS");
+            map.put("status", "SUCCESS");
             map.put("data", aliPayService.createOrder(orderId, price, subject, body));
-            return JSON.toJSONString(map);
+            return map;
         }
         if (payMethod == TradeModel.PAYMENT.WECHAT) {
             trade.setPayment(TradeModel.PAYMENT.WECHAT);
             tradeService.save(trade);
             try {
-                map.put("status","SUCCESS");
+                map.put("status", "SUCCESS");
                 map.put("data", wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo));
-                return JSON.toJSONString(map);
+                return map;
             } catch (IOException e) {
-                map.put("status","FAILURE");
-                return JSON.toJSONString(map);
+                map.put("status", "FAILURE");
+                return map;
             }
         }
-        return JSON.toJSONString(map);
+        return map;
     }
 
     private String genOrderID() {

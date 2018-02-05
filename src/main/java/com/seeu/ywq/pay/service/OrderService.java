@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 各种订单的创建/查询，创建之后会自动进行后续处理（链接支付宝等）
@@ -35,20 +36,20 @@ public interface OrderService {
 
     // 充值
     @Transactional
-    String createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException;
+    Map createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException;
 
     // 购买VIP卡
     @Transactional
-    String createVIPCardUseAliPay(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
+    Map createVIPCardUseAliPay(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
 
     // 购买VIP卡
     @Transactional
-    String createVIPCardUseWeChat(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
+    Map createVIPCardUseWeChat(Long uid, Long day, HttpServletRequest request) throws ResourceNotFoundException, ActionParameterException;
 
 
     // 报名活动
     @Transactional
-    String createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
+    Map createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
 
     /**
      * 提現
