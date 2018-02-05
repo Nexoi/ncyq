@@ -12,6 +12,7 @@ import com.seeu.ywq.pay.model.AliPayTradeModel;
 import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.service.AliPayTradeService;
 import com.seeu.ywq.pay.service.OrderService;
+import com.seeu.ywq.test.TestXService;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,16 +85,23 @@ public class AliPayService {
     }
 
 
+    @Autowired
+    private TestXService testXService;
+
     public String callBack(AliPayTradeModel aliPayTradeModel) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
         JSONObject json = JSONObject.fromObject(aliPayTradeModel);
+        testXService.info("获取数据：" + json.toString());
         boolean signVerified = AlipaySignature.rsaCheckV1(json, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");          //调用SDK验证签名
         if (signVerified) {
+            testXService.info("验证签名成功！");
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayTradeModel.getOut_trade_no();
             // 查询该订单是否已经完成交易，若否，则继续
             TradeModel.TRADE_STATUS trade_status = aliPayTradeModel.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
+
+            testXService.info("订单状态：" + trade_status.name());
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {
                 case WAIT_BUYER_PAY:// 交易创建，等待买家付款（该通知不可能拿到，支付宝默认不开启该通知）
@@ -112,6 +120,7 @@ public class AliPayService {
             }
             return "success";
         } else {
+            testXService.info("验证签名失败！");
             //验签失败则记录异常日志，并在response中返回failure.
             return "failure";
         }
