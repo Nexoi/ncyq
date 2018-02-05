@@ -1,9 +1,12 @@
 package com.seeu.third.payment.wxpay;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.pay.model.WxPayTradeModel;
 import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.pay.service.WxPayTradeService;
+import com.seeu.ywq.test.TestXService;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -72,43 +75,46 @@ public class WxPayService {
         return wxUtils.executePost(placeUrl, parameters);
     }
 
-    public String callBack(WxPayTradeModel model) {
-        String sign = model.getSign();
-        // 验证签名
-        boolean signSucess = false;
-        if (signSucess) {
-            if (model.getReturn_code().equals("SUCCESS")) {
-                if (model.getResult_code().equals("SUCCESS")) {
-                    wxPayTradeService.save(model);
-                    orderService.finishOrder(model.getOut_trade_no());
-                } else {
-                    wxPayTradeService.save(model);
-                    orderService.failOrder(model.getOut_trade_no());
-                }
-            }
-            return "<xml>\n" +
-                    "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
-                    "  <return_msg><![CDATA[OK]]></return_msg>\n" +
-                    "</xml>";
-        }
-        return "<xml>\n" +
-                "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-                "  <return_msg><![CDATA[]]></return_msg>\n" +
-                "</xml>";
-    }
+//    public String callBack(WxPayTradeModel model) {
+//        String sign = model.getSign();
+//        // 验证签名
+//        boolean signSucess = false;
+//        if (signSucess) {
+//            if (model.getReturn_code().equals("SUCCESS")) {
+//                if (model.getResult_code().equals("SUCCESS")) {
+//                    wxPayTradeService.save(model);
+//                    orderService.finishOrder(model.getOut_trade_no());
+//                } else {
+//                    wxPayTradeService.save(model);
+//                    orderService.failOrder(model.getOut_trade_no());
+//                }
+//            }
+//            return "<xml>\n" +
+//                    "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+//                    "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+//                    "</xml>";
+//        }
+//        return "<xml>\n" +
+//                "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+//                "  <return_msg><![CDATA[]]></return_msg>\n" +
+//                "</xml>";
+//    }
+
+
+    @Autowired
+    private TestXService testXService;
 
     public String callBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 读取参数
+        testXService.info("微信方法callback start");
         InputStream inputStream;
         StringBuffer sb = new StringBuffer();
         inputStream = request.getInputStream();
-
         String str;
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
         while ((str = in.readLine()) != null) {
             sb.append(str);
         }
-
         in.close();
         inputStream.close();
 
@@ -117,7 +123,7 @@ public class WxPayService {
         map = doXMLParse(sb.toString());
 
         // 过滤空  设置TreeMap
-        SortedMap<Object, Object> sortMap = new TreeMap<Object, Object>();
+        SortedMap<String, String> sortMap = new TreeMap<String, String>();
         Iterator it = map.keySet().iterator();
         while (it.hasNext()) {
             String paramK = (String) it.next();
@@ -134,11 +140,27 @@ public class WxPayService {
         boolean isSignSuccess = isTenpaySign("UTF-8", sortMap);
         response.setHeader("Content-type", "application/xml");
         if (isSignSuccess) {
+            //
+            testXService.info("微信签名校验成功！");
+            WxPayTradeModel model = transferToDO(sortMap);
+            wxPayTradeService.save(model);
+            if (model.getReturn_code().equals("SUCCESS")) {
+                if (model.getResult_code().equals("SUCCESS")) {
+                    wxPayTradeService.save(model);
+                    orderService.finishOrder(model.getOut_trade_no());
+                    testXService.info("微信  " + model.getOut_trade_no() + "  SUCCESS");
+                } else {
+                    wxPayTradeService.save(model);
+                    orderService.failOrder(model.getOut_trade_no());
+                    testXService.info("微信  " + model.getOut_trade_no() + "  FAIL");
+                }
+            }
             return "<xml>\n" +
                     "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
                     "  <return_msg><![CDATA[OK]]></return_msg>\n" +
                     "</xml>";
         } else {
+            testXService.info("微信签名校验失败！");
             return "<xml>\n" +
                     "  <return_code><![CDATA[FAIL]]></return_code>\n" +
                     "  <return_msg><![CDATA[]]></return_msg>\n" +
@@ -211,12 +233,12 @@ public class WxPayService {
      * @return boolean
      * @throws Exception
      */
-    private boolean isTenpaySign(String characterEncoding, SortedMap<Object, Object> packageParams) throws Exception {
+    private boolean isTenpaySign(String characterEncoding, SortedMap<String, String> packageParams) throws Exception {
         StringBuffer sb = new StringBuffer();
-        Set<Map.Entry<Object, Object>> es = packageParams.entrySet();
-        Iterator<Map.Entry<Object, Object>> it = es.iterator();
+        Set<Map.Entry<String, String>> es = packageParams.entrySet();
+        Iterator<Map.Entry<String, String>> it = es.iterator();
         while (it.hasNext()) {
-            Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) it.next();
+            Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
             String k = (String) entry.getKey();
             String v = (String) entry.getValue();
             if (
@@ -260,6 +282,18 @@ public class WxPayService {
             sb.append(Integer.toHexString((item & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString().toUpperCase();
+    }
+
+
+    private WxPayTradeModel transferToDO(SortedMap<String, String> map) {
+//        WxPayTradeModel model = new WxPayTradeModel();
+//        model.setAppid(map.get("appid"));
+//        model.setAttach(map.get("attach"));
+//        model.setBank_type(map.get("bank_type"));
+//        model.setCash_fee(Integer.parseInt(map.get("cash_fee")));
+//        model.setCash_fee_type(map.get("cash_fee_type"));
+        String object = JSONObject.toJSONString(map);
+        return JSON.toJavaObject(JSONObject.parseObject(object), WxPayTradeModel.class);
     }
 
 }

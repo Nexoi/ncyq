@@ -1,5 +1,6 @@
 package com.seeu.ywq.pay.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.seeu.ywq.utils.Util4IP;
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.payment.alipay.AliPayService;
@@ -59,6 +60,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -540,22 +543,29 @@ public class OrderServiceImpl implements OrderService {
         trade.setExtraData(extraData);
         trade.setIpAddress(ipAddress);
         trade.setType(type); // 交易类型
+        Map map = new HashMap();
+        map.put("timestamp", new Date());
         if (payMethod == TradeModel.PAYMENT.ALIPAY) {
             // 返回支付宝创建的订单 String 到客户端即可
             trade.setPayment(TradeModel.PAYMENT.ALIPAY);
             tradeService.save(trade);
-            return aliPayService.createOrder(orderId, price, subject, body);
+            map.put("status","SUCCESS");
+            map.put("data", aliPayService.createOrder(orderId, price, subject, body));
+            return JSON.toJSONString(map);
         }
         if (payMethod == TradeModel.PAYMENT.WECHAT) {
             trade.setPayment(TradeModel.PAYMENT.WECHAT);
             tradeService.save(trade);
             try {
-                return wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo);
+                map.put("status","SUCCESS");
+                map.put("data", wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo));
+                return JSON.toJSONString(map);
             } catch (IOException e) {
-                return "创建失败！服务器异常";
+                map.put("status","FAILURE");
+                return JSON.toJSONString(map);
             }
         }
-        return null;
+        return JSON.toJSONString(map);
     }
 
     private String genOrderID() {
