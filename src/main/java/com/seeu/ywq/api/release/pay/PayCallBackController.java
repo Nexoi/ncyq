@@ -46,7 +46,6 @@ public class PayCallBackController {
         try {
             return wxPayService.callBack(request, response);
         } catch (Exception e) {
-            testXService.info("微信异常" + e.getMessage());
             response.setHeader("Content-type", "application/xml");
             return "<xml>\n" +
                     "  <return_code><![CDATA[FAIL]]></return_code>\n" +
@@ -58,7 +57,7 @@ public class PayCallBackController {
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(HttpServletRequest request) {
         try {
-            testXService.info("alipay start");
+            testXService.info("支付宝 alipay start");
             Enumeration<String> parameters = request.getParameterNames();
             Map map = new HashMap();
             while (parameters.hasMoreElements()) {
@@ -66,8 +65,8 @@ public class PayCallBackController {
                 String value = request.getParameter(key);
                 map.put(key, value);
             }
-            testXService.info("alipay start 1");
-            return aliPayService.callBack(JSON.toJavaObject(JSONObject.parseObject(JSON.toJSONString(map)), AliPayTradeModel.class));
+            testXService.info("支付宝 alipay start 1");
+            return aliPayService.callBack(map);
         } catch (AlipayApiException e) {
             testXService.info("alipay exception " + e.getMessage());
             return "failure";
