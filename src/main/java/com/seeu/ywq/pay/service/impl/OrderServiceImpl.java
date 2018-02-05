@@ -557,8 +557,14 @@ public class OrderServiceImpl implements OrderService {
             trade.setPayment(TradeModel.PAYMENT.WECHAT);
             tradeService.save(trade);
             try {
-                map.put("status", "SUCCESS");
-                map.put("data", wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo));
+                Map result = wxPayService.createOrder(orderId, price, body, ipAddress, deviceInfo);
+                if (result == null) {
+                    map.put("status", "FAILURE");
+                    map.put("data", null);
+                } else {
+                    map.put("status", "SUCCESS");
+                    map.put("data", result);
+                }
                 return map;
             } catch (IOException e) {
                 map.put("status", "FAILURE");

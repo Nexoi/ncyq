@@ -56,7 +56,7 @@ public class WxPayService {
     private OrderService orderService;
 
 
-    public String createOrder(String oid, BigDecimal price, String body, String ipAddress, String deviceInfo) throws ActionParameterException, IOException {
+    public Map createOrder(String oid, BigDecimal price, String body, String ipAddress, String deviceInfo) throws ActionParameterException, IOException {
         String placeUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         SortedMap<String, Object> parameters = new TreeMap<String, Object>();
         parameters.put("appid", appid);
@@ -72,33 +72,16 @@ public class WxPayService {
         parameters.put("trade_type", "APP");
         parameters.put("sign", wxUtils.createSign(parameters)); // 必须在最后
 //        String result = restTemplate.postForObject(placeUrl, transferToXml(parameters), String.class);
-        return wxUtils.executePost(placeUrl, parameters);
+        String result = wxUtils.executePost(placeUrl, parameters);
+        try {
+            SortedMap<String, Object> map = (SortedMap<String, Object>) doXMLParse(result);
+            map.remove("sign");
+            map.put("sign", wxUtils.createSign(map));
+            return map;
+        } catch (JDOMException e) {
+            return null;
+        }
     }
-
-//    public String callBack(WxPayTradeModel model) {
-//        String sign = model.getSign();
-//        // 验证签名
-//        boolean signSucess = false;
-//        if (signSucess) {
-//            if (model.getReturn_code().equals("SUCCESS")) {
-//                if (model.getResult_code().equals("SUCCESS")) {
-//                    wxPayTradeService.save(model);
-//                    orderService.finishOrder(model.getOut_trade_no());
-//                } else {
-//                    wxPayTradeService.save(model);
-//                    orderService.failOrder(model.getOut_trade_no());
-//                }
-//            }
-//            return "<xml>\n" +
-//                    "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
-//                    "  <return_msg><![CDATA[OK]]></return_msg>\n" +
-//                    "</xml>";
-//        }
-//        return "<xml>\n" +
-//                "  <return_code><![CDATA[FAIL]]></return_code>\n" +
-//                "  <return_msg><![CDATA[]]></return_msg>\n" +
-//                "</xml>";
-//    }
 
 
     @Autowired
