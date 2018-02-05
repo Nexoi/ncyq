@@ -41,7 +41,7 @@ public class OrderLog {
         }
 
         public boolean isExpense() {
-            return true;
+            return expense;
         }
 
         public boolean canShareBind() {
