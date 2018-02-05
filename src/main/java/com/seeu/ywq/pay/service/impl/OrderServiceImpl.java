@@ -1,5 +1,7 @@
 package com.seeu.ywq.pay.service.impl;
 
+import com.seeu.ywq.pay.model.*;
+import com.seeu.ywq.pay.service.*;
 import com.seeu.ywq.utils.Util4IP;
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.payment.alipay.AliPayService;
@@ -21,15 +23,7 @@ import com.seeu.ywq.globalconfig.service.GlobalConfigurerService;
 import com.seeu.ywq.page_video.model.HomePageVideo;
 import com.seeu.ywq.page_video.service.HomePageVideoService;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
-import com.seeu.ywq.pay.model.ExchangeTable;
-import com.seeu.ywq.pay.model.OrderLog;
-import com.seeu.ywq.pay.model.OrderRecharge;
-import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.repository.OrderLogRepository;
-import com.seeu.ywq.pay.service.BalanceService;
-import com.seeu.ywq.pay.service.ExchangeTableService;
-import com.seeu.ywq.pay.service.OrderService;
-import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.resource.service.ResourceAuthService;
 import com.seeu.ywq.trend.model.Publish;
 import com.seeu.ywq.trend.service.PublishService;
@@ -84,6 +78,8 @@ public class OrderServiceImpl implements OrderService {
     private GlobalConfigurerService globalConfigurerService;
     @Autowired
     private ExchangeTableService exchangeTableService;
+    @Autowired
+    private RechargeTableService rechargeTableService;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -531,6 +527,35 @@ public class OrderServiceImpl implements OrderService {
         return orderLogRepository.findAllByUid(uid, pageable);
     }
 
+    /**
+     * 充值，用现金充值钻石
+     *
+     * @param uid
+     * @param fromPrice
+     * @return
+     * @throws ActionNotSupportException
+     */
+    @Override
+    public RechargeTable queryRecharge(Long uid, BigDecimal fromPrice) throws ActionNotSupportException {
+        RechargeTable table = rechargeTableService.findOne(fromPrice);
+        if (table == null) {
+            table = new RechargeTable();
+            table.setPrice(fromPrice);
+            table.setTitle("比例兑换");
+            table.setDiamonds((long) fromPrice.doubleValue() * globalConfigurerService.getDiamondsRatioToRMB(fromPrice));
+        }
+        return table;
+    }
+
+    /**
+     * 金币对钻石
+     *
+     * @param uid
+     * @param type
+     * @param fromPrice
+     * @return
+     * @throws ActionNotSupportException
+     */
     @Override
     public ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException {
         if (type == null || fromPrice == null) return null;

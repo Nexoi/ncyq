@@ -114,7 +114,7 @@ public class UserBalanceApi {
     public ResponseEntity getRecharge(@AuthenticationPrincipal UserLogin authUser,
                                       BigDecimal price) {
         try {
-            return ResponseEntity.ok(orderService.queryExchange(authUser.getUid(), ExchangeTable.TYPE.RMB2DIAMOND, price));
+            return ResponseEntity.ok(orderService.queryRecharge(authUser.getUid(), price));
         } catch (ActionNotSupportException e) {
             return ResponseEntity.badRequest().body(R.code(400).message("传入参数必须为整数"));
         }

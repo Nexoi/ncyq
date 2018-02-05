@@ -6,10 +6,7 @@ import com.seeu.ywq.gift.model.GiftOrder;
 import com.seeu.ywq.gift.model.RewardOrder;
 import com.seeu.ywq.globalconfig.exception.GlobalConfigSettingException;
 import com.seeu.ywq.pay.exception.BalanceNotEnoughException;
-import com.seeu.ywq.pay.model.ExchangeTable;
-import com.seeu.ywq.pay.model.OrderLog;
-import com.seeu.ywq.pay.model.OrderRecharge;
-import com.seeu.ywq.pay.model.TradeModel;
+import com.seeu.ywq.pay.model.*;
 import com.seeu.ywq.userlogin.exception.PhoneNumberNetSetException;
 import com.seeu.ywq.userlogin.exception.WeChatNotSetException;
 import org.apache.http.HttpRequest;
@@ -55,9 +52,9 @@ public interface OrderService {
     // 支付完成后调用的三个方法，完成业务闭环
     void updateRecharge(String orderId, Long uid, BigDecimal price, Long diamonds);
 
-    void updateVIPCard(String orderId,Long uid, Long day);
+    void updateVIPCard(String orderId, Long uid, Long day);
 
-    void updateActivityCheckIn(String orderId,Long uid, Long activityId);
+    void updateActivityCheckIn(String orderId, Long uid, Long activityId);
 
     /**
      * 提現
@@ -111,6 +108,10 @@ public interface OrderService {
 
     Page<OrderLog> queryAll(Long uid, Pageable pageable);
 
+    // 充值 1 个接口
+    RechargeTable queryRecharge(Long uid, BigDecimal fromPrice) throws ActionNotSupportException;
+
+    // 兑换 3 个接口
     ExchangeTable queryExchange(Long uid, ExchangeTable.TYPE type, BigDecimal fromPrice) throws ActionNotSupportException;
 
     ExchangeTable queryExchangeReverse(Long uid, Long diamonds) throws ActionNotSupportException;
