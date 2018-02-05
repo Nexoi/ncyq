@@ -50,14 +50,14 @@ public class PayCallBackController {
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(HttpServletRequest request) {
         try {
-            Enumeration<String> parameters = request.getParameterNames();
-            Map map = new HashMap();
-            while (parameters.hasMoreElements()) {
-                String key = parameters.nextElement().toString();
-                String value = request.getParameter(key);
-                map.put(key, value);
-            }
-            return aliPayService.callBack(map);
+//            Enumeration<String> parameters = request.getParameterNames();
+//            Map map = new HashMap();
+//            while (parameters.hasMoreElements()) {
+//                String key = parameters.nextElement().toString();
+//                String value = request.getParameter(key);
+//                map.put(key, value);
+//            }
+            return aliPayService.callBack(request);
         } catch (AlipayApiException e) {
             return "failure";
         }

@@ -19,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @Service
@@ -90,14 +93,29 @@ public class AliPayService {
     @Autowired
     private TestXService testXService;
 
-    public String callBack(Map map) throws AlipayApiException {
+    public String callBack(HttpServletRequest request) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
         testXService.info("支付宝 获取数据 Map 成功，准备验证签名");
-        boolean signVerified = AlipaySignature.rsaCheckV2(map, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
+        Map<String, String> params = new HashMap<String, String>();
+        Map requestParams = request.getParameterMap();
+        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
+            String name = (String) iter.next();
+            String[] values = (String[]) requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
+            }
+            //乱码解决，这段代码在出现乱码时使用。
+            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+            params.put(name, valueStr);
+            testXService.info("支付宝 [" + name + "   :   " + valueStr + "]");
+        }
+        boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
         testXService.info("支付宝 验证签名结束");
         if (signVerified) {
             testXService.info("支付宝 验证签名成功！");
-            AliPayTradeModel aliPayTradeModel = JSON.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(JSON.toJSONString(map)), AliPayTradeModel.class);
+            AliPayTradeModel aliPayTradeModel = JSON.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(JSON.toJSONString(params)), AliPayTradeModel.class);
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayTradeModel.getOut_trade_no();
             // 查询该订单是否已经完成交易，若否，则继续
