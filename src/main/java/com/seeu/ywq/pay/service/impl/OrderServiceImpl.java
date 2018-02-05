@@ -613,6 +613,7 @@ public class OrderServiceImpl implements OrderService {
         trade.setType(type); // 交易类型
         Map map = new HashMap();
         map.put("timestamp", new Date());
+        map.put("order_id", orderId);
         if (payMethod == TradeModel.PAYMENT.ALIPAY) {
             // 返回支付宝创建的订单 String 到客户端即可
             trade.setPayment(TradeModel.PAYMENT.ALIPAY);
