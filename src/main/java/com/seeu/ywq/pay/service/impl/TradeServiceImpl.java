@@ -36,6 +36,23 @@ public class TradeServiceImpl implements TradeService {
         return repository.save(trade);
     }
 
+    /**
+     * 该订单是否处理完毕
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public boolean hasProcessed(String orderId) {
+        TradeModel model = repository.findOne(orderId);
+        if (model == null) return false;
+        if (model.getStatus() == TradeModel.TRADE_STATUS.WAIT_BUYER_PAY) return false;
+        if (model.getStatus() == TradeModel.TRADE_STATUS.TRADE_SUCCESS) return true;
+        if (model.getStatus() == TradeModel.TRADE_STATUS.TRADE_FINISHED) return true;
+        if (model.getStatus() == TradeModel.TRADE_STATUS.TRADE_CLOSED) return true;
+        return false;
+    }
+
     @Override
     public TradeModel updateStatus(String orderId, TradeModel.TRADE_STATUS status) throws ActionParameterException, ResourceNotFoundException {
         TradeModel model = findOne(orderId);

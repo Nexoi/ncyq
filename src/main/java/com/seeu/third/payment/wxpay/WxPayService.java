@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.pay.model.WxPayTradeModel;
 import com.seeu.ywq.pay.service.OrderService;
+import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.pay.service.WxPayTradeService;
 import com.seeu.ywq.test.TestXService;
 import org.jdom.Document;
@@ -55,6 +56,8 @@ public class WxPayService {
     private WxPayTradeService wxPayTradeService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private TradeService tradeService;
 
 
     public Map createOrder(String oid, BigDecimal price, String body, String ipAddress, String deviceInfo) throws ActionParameterException, IOException {
@@ -141,6 +144,11 @@ public class WxPayService {
             //
 //            testXService.info("微信签名校验成功！");
             WxPayTradeModel model = transferToDO(sortMap);
+            if (tradeService.hasProcessed(model.getOut_trade_no()))
+                return "<xml>\n" +
+                        "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                        "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                        "</xml>";
             wxPayTradeService.save(model);
             if (model.getReturn_code().equals("SUCCESS")) {
                 if (model.getResult_code().equals("SUCCESS")) {

@@ -13,6 +13,7 @@ import com.seeu.ywq.pay.model.AliPayTradeModel;
 import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.service.AliPayTradeService;
 import com.seeu.ywq.pay.service.OrderService;
+import com.seeu.ywq.pay.service.TradeService;
 import com.seeu.ywq.test.TestXService;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ public class AliPayService {
     private OrderService orderService;
     @Autowired
     private AliPayTradeService aliPayTradeService;
+    @Autowired
+    private TradeService tradeService;
 
     /**
      * 返回支付宝订单ID
@@ -93,6 +96,7 @@ public class AliPayService {
     @Autowired
     private TestXService testXService;
 
+
     public String callBack(HttpServletRequest request) throws AlipayApiException {
         //将异步通知中收到的所有参数都存放到map中
         Map<String, String> params = new HashMap<String, String>();
@@ -118,6 +122,8 @@ public class AliPayService {
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayTradeModel.getOut_trade_no();
             // 查询该订单是否已经完成交易，若否，则继续
+            if (tradeService.hasProcessed(out_trade_no)) return "success";
+            // 继续
             TradeModel.TRADE_STATUS trade_status = aliPayTradeModel.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
 

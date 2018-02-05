@@ -18,5 +18,7 @@ public interface TradeService {
 
     TradeModel save(TradeModel trade) throws ActionParameterException;
 
+    boolean hasProcessed(String orderId);
+
     TradeModel updateStatus(String orderId, TradeModel.TRADE_STATUS status) throws ActionParameterException, ResourceNotFoundException;
 }
