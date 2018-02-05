@@ -5,6 +5,8 @@ import com.seeu.third.payment.alipay.AliPayService;
 import com.seeu.third.payment.wxpay.WxPayService;
 import com.seeu.ywq.pay.model.AliPayTradeModel;
 import com.seeu.ywq.pay.model.WxPayTradeModel;
+import com.seeu.ywq.test.TestX;
+import com.seeu.ywq.test.TestXService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +35,15 @@ public class PayCallBackController {
     @Autowired
     private AliPayService aliPayService;
 
+    @Autowired
+    private TestXService testXService;
+
     @RequestMapping(value = "/wxpay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String wx(HttpServletRequest request, HttpServletResponse response) {
         try {
             return wxPayService.callBack(request, response);
         } catch (Exception e) {
+            testXService.info("微信异常" + e.getMessage());
             response.setHeader("Content-type", "application/xml");
             return "<xml>\n" +
                     "  <return_code><![CDATA[FAIL]]></return_code>\n" +

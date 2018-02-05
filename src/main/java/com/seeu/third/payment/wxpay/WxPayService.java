@@ -118,6 +118,7 @@ public class WxPayService {
         in.close();
         inputStream.close();
 
+        testXService.info("微信方法callback xml->map");
         // 解析Xml为map
         Map<String, String> map = new HashMap<String, String>();
         map = doXMLParse(sb.toString());
@@ -136,6 +137,7 @@ public class WxPayService {
 
             sortMap.put(paramK, value);
         }
+        testXService.info("微信方法callback sign check start");
         // 判断签名是否正确
         boolean isSignSuccess = isTenpaySign("UTF-8", sortMap);
         response.setHeader("Content-type", "application/xml");
