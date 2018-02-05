@@ -139,10 +139,16 @@ public class OrderServiceImpl implements OrderService {
                     break;
                 case ACTIVITY:
                     Long activityId = 0L;
-                    String data2 = trade.getExtraData();
-                    if (data2 == null) activityId = 0L;
-                    else activityId = Long.parseLong(data2);
-                    updateActivityCheckIn(trade.getOrderId(), trade.getUid(), activityId);
+                    Integer quantity = 0;
+                    String[] data2 = trade.getExtraData().split(",");
+                    if (data2 == null || data2.length != 2) {
+                        activityId = 0L;
+                        quantity = 0;
+                    } else {
+                        activityId = Long.parseLong(data2[0]);
+                        quantity = Integer.parseInt(data2[1]);
+                    }
+                    updateActivityCheckIn(trade.getOrderId(), trade.getUid(), activityId, quantity);
                     break;
                 case BUYVIP:
                     Long day = 0L;
@@ -180,9 +186,9 @@ public class OrderServiceImpl implements OrderService {
     public Map createRecharge(OrderRecharge.PAY_METHOD payMethod, Long uid, BigDecimal price, HttpServletRequest request) throws ActionParameterException, ActionNotSupportException {
         if (payMethod == null) throw new ActionParameterException("payMethod");
         // 查询价格
-        ExchangeTable table = queryExchange(null, ExchangeTable.TYPE.RMB2DIAMOND, price);
-        if (table == null || table.getTo() == null) throw new ActionNotSupportException("无此配置表可选择充值");
-        Long diamonds = table.getTo().longValue();
+        RechargeTable table = queryRecharge(null, price);
+        if (table == null || table.getDiamonds() == null) throw new ActionNotSupportException("无此配置表可选择充值");
+        Long diamonds = table.getDiamonds();
         String subject = "尤物圈钻石充值【 " + diamonds + " 个】";
         String body = subject;
         String ip = util4IP.getIpAddress(request);
@@ -272,16 +278,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException {
+    public Map createActivity(Long uid, Long activityId, Integer quantity, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException {
         Activity activity = activityService.findOne(activityId);
         if (activity == null) throw new ResourceNotFoundException("无此活动可以报名支付");
-        BigDecimal price = activity.getPrice();
+        BigDecimal price = activity.getPrice().multiply(BigDecimal.valueOf(quantity)).setScale(2, BigDecimal.ROUND_UP);
         if (price == null || price.doubleValue() == 0.0) throw new ActionNotSupportException("不可以支付 0 元的账单");
         String subject = "【尤物圈活动报名】" + activity.getTitle();
         String body = subject;
         String ip = util4IP.getIpAddress(request);
         String deviceInfo = request.getHeader("User-Agent");
-        return placeOrder(genOrderID(), TradeModel.TYPE.ACTIVITY, payment, uid, price, subject, body, ip, deviceInfo, "" + activityId);
+
+        String extraData = activityId + "," + quantity; // 逗号分隔开，如：4323,8
+        return placeOrder(genOrderID(), TradeModel.TYPE.ACTIVITY, payment, uid, price, subject, body, ip, deviceInfo, extraData);
     }
 
     @Override
@@ -301,11 +309,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateActivityCheckIn(String orderId, Long uid, Long activityId) {
+    public void updateActivityCheckIn(String orderId, Long uid, Long activityId, Integer quantity) {
         ActivityCheckIn checkIn = activityCheckInService.findOneByActivityIdAndUid(activityId, uid);
-        if (checkIn == null) return;
-        checkIn.setHasPaid(true);
-        activityCheckInService.updateIfExisted(checkIn);
+        if (checkIn == null) {
+            checkIn = new ActivityCheckIn();
+            checkIn.setHasPaid(true);
+            checkIn.setActivityId(activityId);
+            checkIn.setUid(uid);
+            checkIn.setQuantity(quantity);
+            checkIn.setUpdateTime(new Date());
+        } else {
+            Integer q = checkIn.getQuantity();
+            if (q == null || q < 0) q = 0;
+            checkIn.setQuantity(q + quantity);
+            checkIn.setUpdateTime(new Date());
+        }
+        activityCheckInService.saveForce(checkIn);
     }
 
     // 钻石换金币

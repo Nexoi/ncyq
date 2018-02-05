@@ -19,6 +19,8 @@ public class ActivityCheckIn {
     private Long uid;
     @NotNull
     private Boolean hasPaid; // 是否付款
+
+    private Integer quantity;
     private Date updateTime;
 
     public Long getId() {
@@ -59,5 +61,13 @@ public class ActivityCheckIn {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

@@ -46,7 +46,7 @@ public interface OrderService {
 
     // 报名活动
     @Transactional
-    Map createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
+    Map createActivity(Long uid, Long activityId, Integer quantity, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
 
 
     // 支付完成后调用的三个方法，完成业务闭环
@@ -54,7 +54,7 @@ public interface OrderService {
 
     void updateVIPCard(String orderId, Long uid, Long day);
 
-    void updateActivityCheckIn(String orderId, Long uid, Long activityId);
+    void updateActivityCheckIn(String orderId, Long uid, Long activityId, Integer quantity);
 
     /**
      * 提現
