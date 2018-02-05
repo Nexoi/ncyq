@@ -74,15 +74,26 @@ public class WxPayService {
 //        String result = restTemplate.postForObject(placeUrl, transferToXml(parameters), String.class);
         String result = wxUtils.executePost(placeUrl, parameters);
         try {
-            SortedMap<String, Object> map = new TreeMap<>(doXMLParse(result));
-            map.remove("sign");
-            map.put("sign", wxUtils.createSign(map));
-            return map;
+            return createSignMapForApp(result);
         } catch (JDOMException e) {
             return null;
         }
     }
 
+    private Map createSignMapForApp(String result) throws JDOMException, IOException {
+        SortedMap<String, Object> map = new TreeMap<>(doXMLParse(result));
+//        map.remove("sign");
+//        map.put("sign", wxUtils.createSign(map));
+        Map app = new HashMap();
+        app.put("appid", map.get("appid"));
+        app.put("partnerid", map.get("mch_id"));
+        app.put("prepayid", map.get("prepay_id"));
+        app.put("package", "Sign=WXPay");
+        app.put("noncestr", map.get("nonce_str"));
+        app.put("timestamp", new Date().getTime() / 1000);
+        app.put("sign", wxUtils.createSign(new TreeMap<>(app)));
+        return app;
+    }
 
     @Autowired
     private TestXService testXService;
