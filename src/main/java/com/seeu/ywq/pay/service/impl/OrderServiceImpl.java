@@ -1,6 +1,5 @@
 package com.seeu.ywq.pay.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.seeu.ywq.utils.Util4IP;
 import com.seeu.third.exception.SMSSendFailureException;
 import com.seeu.third.payment.alipay.AliPayService;
@@ -128,12 +127,57 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void finishOrder(String orderId) {
-
+        try {
+            TradeModel trade = tradeService.findOne(orderId);
+            trade.setStatus(TradeModel.TRADE_STATUS.TRADE_SUCCESS);
+            tradeService.save(trade);
+            TradeModel.TYPE type = trade.getType();
+            // 更新业务
+            switch (type) {
+                case RECHARGE:
+                    Long diamonds = 0L;
+                    String data = trade.getExtraData();
+                    if (data == null) diamonds = 0L;
+                    else diamonds = Long.parseLong(data);
+                    updateRecharge(trade.getOrderId(), trade.getUid(), trade.getPrice(), diamonds);
+                    break;
+                case ACTIVITY:
+                    Long activityId = 0L;
+                    String data2 = trade.getExtraData();
+                    if (data2 == null) activityId = 0L;
+                    else activityId = Long.parseLong(data2);
+                    updateActivityCheckIn(trade.getOrderId(), trade.getUid(), activityId);
+                    break;
+                case BUYVIP:
+                    Long day = 0L;
+                    String data3 = trade.getExtraData();
+                    if (data3 == null) day = 0L;
+                    else day = Long.parseLong(data3);
+                    updateVIPCard(trade.getOrderId(), trade.getUid(), day);
+                    break;
+            }
+        } catch (ResourceNotFoundException e) {
+            // do nothing
+            e.printStackTrace();
+        } catch (ActionParameterException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void failOrder(String orderId) {
-
+        try {
+            TradeModel trade = tradeService.findOne(orderId);
+            trade.setStatus(TradeModel.TRADE_STATUS.TRADE_CLOSED); // 失败！交易关闭
+            tradeService.save(trade);
+            TradeModel.TYPE type = trade.getType();
+            // 不更新业务
+        } catch (ResourceNotFoundException e) {
+            // do nothing
+            e.printStackTrace();
+        } catch (ActionParameterException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -185,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
         Long diamonds = vipTable.getDiamonds();
         try {
             OrderLog log = balanceService.update(genOrderID(), uid, OrderLog.EVENT.BUY_VIP, diamonds);
-            // 激活会员
+            // 激活会员 (更新：建议使用 userVIPService.active(uid,day) 方法进行激活)
             Date date = new Date();
             UserVIP vip = userVIPService.findOne(uid);
             if (vip == null) {
@@ -241,7 +285,31 @@ public class OrderServiceImpl implements OrderService {
         String body = subject;
         String ip = util4IP.getIpAddress(request);
         String deviceInfo = request.getHeader("User-Agent");
-        return placeOrder(genOrderID(), TradeModel.TYPE.ACTIVITY, payment, uid, price, subject, body, ip, deviceInfo, "");
+        return placeOrder(genOrderID(), TradeModel.TYPE.ACTIVITY, payment, uid, price, subject, body, ip, deviceInfo, "" + activityId);
+    }
+
+    @Override
+    public void updateRecharge(String orderId, Long uid, BigDecimal price, Long diamonds) {
+        try {
+            balanceService.update(orderId, uid, OrderLog.EVENT.RECHARGE, diamonds);
+        } catch (BalanceNotEnoughException e) {
+            e.printStackTrace();
+        } catch (ActionNotSupportException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateVIPCard(String orderId, Long uid, Long day) {
+        userVIPService.active(uid, day);
+    }
+
+    @Override
+    public void updateActivityCheckIn(String orderId, Long uid, Long activityId) {
+        ActivityCheckIn checkIn = activityCheckInService.findOneByActivityIdAndUid(activityId, uid);
+        if (checkIn == null) return;
+        checkIn.setHasPaid(true);
+        activityCheckInService.updateIfExisted(checkIn);
     }
 
     // 钻石换金币
@@ -549,8 +617,12 @@ public class OrderServiceImpl implements OrderService {
             // 返回支付宝创建的订单 String 到客户端即可
             trade.setPayment(TradeModel.PAYMENT.ALIPAY);
             tradeService.save(trade);
+            // inner json
+            Map ali = new HashMap();
+            ali.put("ali", aliPayService.createOrder(orderId, price, subject, body));
+            // pack it
             map.put("status", "SUCCESS");
-            map.put("data", aliPayService.createOrder(orderId, price, subject, body));
+            map.put("data", ali);
             return map;
         }
         if (payMethod == TradeModel.PAYMENT.WECHAT) {

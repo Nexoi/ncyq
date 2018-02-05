@@ -57,7 +57,7 @@ public class ActivityCheckInServiceImpl implements ActivityCheckInService {
     }
 
     @Override
-    public ActivityCheckIn updateIfNotExisted(ActivityCheckIn activityCheckIn) {
+    public ActivityCheckIn updateIfExisted(ActivityCheckIn activityCheckIn) {
         return repository.save(activityCheckIn);
     }
 }

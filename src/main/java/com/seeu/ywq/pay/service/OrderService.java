@@ -51,6 +51,14 @@ public interface OrderService {
     @Transactional
     Map createActivity(Long uid, Long activityId, TradeModel.PAYMENT payment, HttpServletRequest request) throws ResourceNotFoundException, ActionNotSupportException, ActionParameterException;
 
+
+    // 支付完成后调用的三个方法，完成业务闭环
+    void updateRecharge(String orderId, Long uid, BigDecimal price, Long diamonds);
+
+    void updateVIPCard(String orderId,Long uid, Long day);
+
+    void updateActivityCheckIn(String orderId,Long uid, Long activityId);
+
     /**
      * 提現
      *

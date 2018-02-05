@@ -20,5 +20,5 @@ public interface ActivityCheckInService {
 
     ActivityCheckIn save(ActivityCheckIn activityCheckIn) throws ResourceAlreadyExistedException;
 
-    ActivityCheckIn updateIfNotExisted(ActivityCheckIn activityCheckIn);
+    ActivityCheckIn updateIfExisted(ActivityCheckIn activityCheckIn);
 }
