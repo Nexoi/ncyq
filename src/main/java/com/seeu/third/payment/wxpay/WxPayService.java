@@ -74,7 +74,7 @@ public class WxPayService {
 //        String result = restTemplate.postForObject(placeUrl, transferToXml(parameters), String.class);
         String result = wxUtils.executePost(placeUrl, parameters);
         try {
-            SortedMap<String, Object> map = (SortedMap<String, Object>) doXMLParse(result);
+            SortedMap<String, Object> map = new TreeMap<>(doXMLParse(result));
             map.remove("sign");
             map.put("sign", wxUtils.createSign(map));
             return map;
