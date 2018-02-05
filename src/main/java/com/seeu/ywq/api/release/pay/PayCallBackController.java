@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created by suneo.
  * User: neo
@@ -31,10 +34,17 @@ public class PayCallBackController {
     private AliPayService aliPayService;
 
     @RequestMapping(value = "/wxpay/callback", method = {RequestMethod.POST, RequestMethod.GET})
-    public String wx(WxPayTradeModel wxPayTradeModel) {
-        return wxPayService.callBack(wxPayTradeModel);
+    public String wx(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            return wxPayService.callBack(request, response);
+        } catch (Exception e) {
+            response.setHeader("Content-type", "application/xml");
+            return "<xml>\n" +
+                    "  <return_code><![CDATA[FAIL]]></return_code>\n" +
+                    "  <return_msg><![CDATA[]]></return_msg>\n" +
+                    "</xml>";
+        }
     }
-
 
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(AliPayTradeModel aliPayTradeModel) {
