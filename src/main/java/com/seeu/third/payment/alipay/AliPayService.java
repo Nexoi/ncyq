@@ -133,17 +133,23 @@ public class AliPayService {
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {
                 case WAIT_BUYER_PAY:// 交易创建，等待买家付款（该通知不可能拿到，支付宝默认不开启该通知）
+                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
+                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     break;
                 case TRADE_CLOSED:// 未付款交易超时关闭，或支付完成后全额退款
+                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
                     orderService.failOrder(out_trade_no);
+                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     break;
                 case TRADE_SUCCESS: // 交易支付成功
                 case TRADE_FINISHED:// 交易结束，不可退款
                     // 成功！
+                    testXService.info("支付宝 订单状态3：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
                     orderService.finishOrder(out_trade_no);
+                    testXService.info("支付宝 订单状态3：" + trade_status.name());
                     break;
             }
             return "success";
