@@ -112,7 +112,7 @@ public class AliPayService {
             //乱码解决，这段代码在出现乱码时使用。
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
-            testXService.info(name + " :: " + valueStr);
+//            testXService.info(name + " :: " + valueStr);
         }
 //        boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
         boolean signVerified = true;

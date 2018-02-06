@@ -4,10 +4,7 @@ import com.seeu.ywq.pay.model.TradeModel;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -38,7 +35,7 @@ public class AliPayTradeModel {
     private String version;      // 调用的接口版本，固定为：1.0
     @Length(max = 10)
     private String sign_type;    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2
-    @Length(max = 256)
+    @Length(max = 266)
     private String sign;          // 签名，请参考异步返回结果的验签
     @Length(max = 64)
     private String trade_no;      // 支付宝交易号（支付宝交易凭证号，2013112011001004330000121536）
@@ -52,6 +49,7 @@ public class AliPayTradeModel {
     @Length(max = 30)
     private String seller_email;    // 卖家支付宝账号，zhuzhanghu@alitest.com
     //    @Length(max = 32)
+    @Enumerated
     private TradeModel.TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
     // (9,2)
     private BigDecimal total_amount;    // 订单金额，本次交易支付的订单金额，单位为人民币（元）
@@ -82,6 +80,7 @@ public class AliPayTradeModel {
     @Length(max = 512)
     private String passback_params;    // 回传参数，公共回传参数，如果请求时传递了该参数，则返回给商户时会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝。merchantBizType%3d3C%26merchantBizNo%3d2016010101111
     //    @Length(max = )
+    @Column(length = 1024)
     private String voucher_detail_list;// 优惠券信息，本交易支付时所使用的所有优惠券信息。[{“amount”:“0.20”,“merchantContribute”:“0.00”,“name”:“一键创建券模板的券名称”,“otherContribute”:“0.20”,“type”:“ALIPAY_DISCOUNT_VOUCHER”,“memo”:“学生卡8折优惠”]
 
     //////////////// GETer / SETer //////////////////
