@@ -2,6 +2,7 @@ package com.seeu.ywq.pay.model;
 
 import com.seeu.ywq.pay.model.TradeModel;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,7 @@ public class AliPayTradeModel {
     @Column(length = 20)
     private String out_trade_no;    // 商户订单号
 
+    @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date notify_time;   // 通知的发送时间。格式为yyyy-MM-dd HH:mm:ss
     @Length(max = 64)
     private String notify_type; // 通知的类型
@@ -63,10 +65,18 @@ public class AliPayTradeModel {
     @Length(max = 400)
     private String body;                // 商品描述，该订单的备注、描述、明细等。对应请求时的body参数，原样通知回来
 
+    @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date gmt_create;           // 交易创建时间，该笔交易创建的时间。格式为yyyy-MM-dd HH:mm:ss | 2015-04-27 15:45:57
+
+    @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date gmt_payment;          // 交易付款时间，该笔交易的买家付款时间。格式为yyyy-MM-dd HH:mm:ss | 2015-04-27 15:45:57
+
+    @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date gmt_refund;           // 交易退款时间，该笔交易的退款时间。格式为yyyy-MM-dd HH:mm:ss.S | 2015-04-28 15:45:57.320
+
+    @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date gmt_close;            // 交易结束时间，该笔交易结束时间。格式为yyyy-MM-dd HH:mm:ss | 2015-04-29 15:45:57
+
     @Length(max = 512)
     private String fund_bill_list;     // 支付金额信息，支付成功的各个渠道金额信息。[{“amount”:“15.00”,“fundChannel”:“ALIPAYACCOUNT”}]
     @Length(max = 512)
