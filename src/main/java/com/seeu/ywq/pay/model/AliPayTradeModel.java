@@ -15,11 +15,17 @@ import java.util.Date;
 @Table(name = "ywq_pay_trade_ali")
 public class AliPayTradeModel {
 
+    //    @Length(max = 32)
+    @Transient
+    private TradeModel.TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
 
     @Id
 //    @Length(max = 64)
     @Column(length = 20)
     private String out_trade_no;    // 商户订单号
+
+    @Column(length = 20)
+    private String t_status;        // 交易状态，持久化使用
 
     @DateTimeFormat(style = "yyyy-MM-dd HH:mm:ss")
     private Date notify_time;   // 通知的发送时间。格式为yyyy-MM-dd HH:mm:ss
@@ -48,15 +54,18 @@ public class AliPayTradeModel {
     private String buyer_logon_id;  // 买家支付宝账号，15901825620
     @Length(max = 30)
     private String seller_email;    // 卖家支付宝账号，zhuzhanghu@alitest.com
-    //    @Length(max = 32)
-    @Enumerated
-    private TradeModel.TRADE_STATUS trade_status;    // 交易状态，TRADE_CLOSED
     // (9,2)
+    @Column(precision = 11, scale = 2)
     private BigDecimal total_amount;    // 订单金额，本次交易支付的订单金额，单位为人民币（元）
+    @Column(precision = 11, scale = 2)
     private BigDecimal receipt_amount;  // 实收金额，商家在交易中实际收到的款项，单位为元
+    @Column(precision = 11, scale = 2)
     private BigDecimal invoice_amount;  // 开票金额，用户在交易中支付的可开发票的金额
+    @Column(precision = 11, scale = 2)
     private BigDecimal buyer_pay_amount;// 付款金额，用户在交易中支付的金额
+    @Column(precision = 11, scale = 2)
     private BigDecimal point_amount;    // 集分宝金额，使用集分宝支付的金额
+    @Column(precision = 11, scale = 2)
     private BigDecimal refund_fee;      // 总退款金额，退款通知中，返回总退款金额，单位为元，支持两位小数
     @Length(max = 256)
     private String subject;             // 订单标题，商品的标题/交易标题/订单标题/订单关键字等，是请求时对应的参数，原样通知回来
@@ -85,6 +94,14 @@ public class AliPayTradeModel {
 
     //////////////// GETer / SETer //////////////////
 
+
+    public String getT_status() {
+        return t_status;
+    }
+
+    public void setT_status(String t_status) {
+        this.t_status = t_status;
+    }
 
     public Date getNotify_time() {
         return notify_time;

@@ -27,6 +27,8 @@ public class AliPayTraderServiceImpl implements AliPayTradeService {
 
     @Override
     public AliPayTradeModel save(AliPayTradeModel aliPayTradeModel) {
+        if (aliPayTradeModel.getTrade_status() != null)
+            aliPayTradeModel.setT_status(aliPayTradeModel.getTrade_status().name());
         return repository.save(aliPayTradeModel);
     }
 
