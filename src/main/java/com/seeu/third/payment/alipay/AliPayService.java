@@ -5,7 +5,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
-import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.seeu.ywq.exception.ActionParameterException;
@@ -14,8 +13,6 @@ import com.seeu.ywq.pay.model.TradeModel;
 import com.seeu.ywq.pay.service.AliPayTradeService;
 import com.seeu.ywq.pay.service.OrderService;
 import com.seeu.ywq.pay.service.TradeService;
-import com.seeu.ywq.test.TestXService;
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -93,8 +90,8 @@ public class AliPayService {
     }
 
 
-    @Autowired
-    private TestXService testXService;
+//    @Autowired
+//    private TestXService testXService;
 
 
     public String callBack(HttpServletRequest request) throws AlipayApiException {
@@ -129,7 +126,7 @@ public class AliPayService {
             TradeModel.TRADE_STATUS trade_status = aliPayTradeModel.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
 
-            testXService.info("支付宝 订单JSON：" + JSON.toJSONString(aliPayTradeModel));
+//            testXService.info("支付宝 订单JSON：" + JSON.toJSONString(aliPayTradeModel));
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {
                 case WAIT_BUYER_PAY:// 交易创建，等待买家付款（该通知不可能拿到，支付宝默认不开启该通知）
@@ -146,11 +143,11 @@ public class AliPayService {
                 case TRADE_SUCCESS: // 交易支付成功
                 case TRADE_FINISHED:// 交易结束，不可退款
                     // 成功！
-                    testXService.info("支付宝 订单状态1：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
-                    testXService.info("支付宝 订单状态2：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     orderService.finishOrder(out_trade_no);
-                    testXService.info("支付宝 订单状态3：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态3：" + trade_status.name());
                     break;
             }
             return "success";
