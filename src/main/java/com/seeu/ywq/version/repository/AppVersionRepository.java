@@ -17,13 +17,13 @@ import java.util.List;
  * Describe:
  */
 
-public interface AppVersionRepository extends JpaRepository<AppVersion, AppVersionPKeys> {
+public interface AppVersionRepository extends JpaRepository<AppVersion, Integer> {
 
-    AppVersion findTop1ByClientOrderByVersionDesc(@Param("client") AppVersion.CLIENT client);
+    AppVersion findTop1ByOrderByVersionDesc();
 
-    AppVersion findTop1ByClientAndUpdateOrderByVersionDesc(@Param("client") AppVersion.CLIENT client, @Param("update") AppVersion.FORCE_UPDATE update);
+    AppVersion findTop1ByUpdateOrderByVersionDesc(@Param("update") AppVersion.FORCE_UPDATE update);
 
-    List<AppVersion> findAllByClientAndVersionGreaterThanOrderByVersionDesc(@Param("client") AppVersion.CLIENT client, @Param("version") Integer version);
+    List<AppVersion> findAllByVersionGreaterThanOrderByVersionDesc(@Param("version") Integer version);
 
-    Page<AppVersion> findAllByClient(@Param("client") AppVersion.CLIENT client, Pageable pageable);
+    Page<AppVersion> findAll(Pageable pageable);
 }

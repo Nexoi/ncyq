@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ywq_version_app")
-@IdClass(AppVersionPKeys.class)
+//@IdClass(AppVersionPKeys.class)
 public class AppVersion {
     public enum FORCE_UPDATE {
         FORCE,
@@ -30,11 +30,13 @@ public class AppVersion {
 
     @NotNull
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer version;
-    @ApiParam(hidden = true)
-    @Id
-    @Enumerated
-    private CLIENT client;
+
+//    @ApiParam(hidden = true)
+//    @Id
+//    @Enumerated
+//    private CLIENT client;
 
     @NotNull
     private String versionName;
@@ -84,14 +86,6 @@ public class AppVersion {
 
     public void setUpdate(FORCE_UPDATE update) {
         this.update = update;
-    }
-
-    public CLIENT getClient() {
-        return client;
-    }
-
-    public void setClient(CLIENT client) {
-        this.client = client;
     }
 
     public Date getUpdateTime() {

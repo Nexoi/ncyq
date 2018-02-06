@@ -40,27 +40,26 @@ public class VersionApi {
     private String iosUrl;
 
     @ApiOperation("列出所有版本")
-    @GetMapping("/list/{client}")
-    public Page<AppVersion> list(@PathVariable AppVersion.CLIENT client,
-                                 @RequestParam(defaultValue = "0") Integer page,
+    @GetMapping("/list")
+    public Page<AppVersion> list(@RequestParam(defaultValue = "0") Integer page,
                                  @RequestParam(defaultValue = "10") Integer size) {
-        return appVersionService.findAll(client, new PageRequest(page, size));
+        return appVersionService.findAll(new PageRequest(page, size));
     }
 
-    @DeleteMapping("/{client}/{id}")
-    public ResponseEntity delete(@PathVariable Integer id, @PathVariable AppVersion.CLIENT client) {
-        appVersionService.delete(id, client);
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Integer id) {
+        appVersionService.delete(id);
         return ResponseEntity.ok(R.code(200).message("删除成功"));
     }
 
 
-    @ApiOperation("添加新IOS版本")
-    @PostMapping("/ios")
-    public AppVersion update(@Validated AppVersion appVersion) {
-        appVersion.setClient(AppVersion.CLIENT.IOS);
-        appVersion.setDownloadUrl(iosUrl);
-        return appVersionService.save(appVersion);
-    }
+//    @ApiOperation("添加新IOS版本")
+//    @PostMapping("/ios")
+//    public AppVersion update(@Validated AppVersion appVersion) {
+//        appVersion.setClient(AppVersion.CLIENT.IOS);
+//        appVersion.setDownloadUrl(iosUrl);
+//        return appVersionService.save(appVersion);
+//    }
 
     @ApiOperation("添加新APK资源")
     @PostMapping("/android")
@@ -71,7 +70,7 @@ public class VersionApi {
         try {
             String url = fileUploadService.uploadAPK(apk);
             AppVersion appVersion = new AppVersion();
-            appVersion.setClient(AppVersion.CLIENT.ANDROID);
+//            appVersion.setClient(AppVersion.CLIENT.ANDROID);
             appVersion.setUpdateTime(new Date());
             appVersion.setUpdate(forceUpdate);
             appVersion.setDownloadUrl(url);

@@ -17,22 +17,22 @@ import java.util.List;
 public interface AppVersionService {
 
     // 是否需要更新（FORCE更新）
-    boolean shouldUpdate(Integer clientVersion, AppVersion.CLIENT client);
+    boolean shouldUpdate(Integer clientVersion);
 
     // 是否有更新
-    boolean hasUpdate(Integer clientVersion, AppVersion.CLIENT client);
+    boolean hasUpdate(Integer clientVersion);
 
-    List<AppVersion> findAllAvailable(Integer clientVersion, AppVersion.CLIENT client);
+    List<AppVersion> findAllAvailable(Integer clientVersion);
 
-    AppVersion getNewVersion(AppVersion.CLIENT client);
+    AppVersion getNewVersion();
 
-    AppVersion getNewForceVersion(AppVersion.CLIENT client); // 这是必要的更新
+    AppVersion getNewForceVersion(); // 这是必要的更新
 
     // admin //
 
-    Page<AppVersion> findAll(AppVersion.CLIENT client, Pageable pageable);
+    Page<AppVersion> findAll(Pageable pageable);
 
     AppVersion save(AppVersion appVersion);
 
-    void delete(Integer id, AppVersion.CLIENT client);
+    void delete(Integer id);
 }
