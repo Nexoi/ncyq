@@ -3,6 +3,7 @@ package com.seeu.ywq.api.release.pay;
 import com.alipay.api.AlipayApiException;
 import com.seeu.third.payment.alipay.AliPayService;
 import com.seeu.third.payment.wxpay.WxPayService;
+import com.seeu.ywq.test.TestXService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,9 @@ public class PayCallBackController {
         }
     }
 
+    @Autowired
+    private TestXService testXService;
+
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(HttpServletRequest request) {
         try {
@@ -59,6 +63,7 @@ public class PayCallBackController {
 //            }
             return aliPayService.callBack(request);
         } catch (AlipayApiException e) {
+            testXService.info(e.getMessage());
             return "failure";
         }
     }
