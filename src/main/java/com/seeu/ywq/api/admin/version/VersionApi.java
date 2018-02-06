@@ -40,12 +40,19 @@ public class VersionApi {
     private String iosUrl;
 
     @ApiOperation("列出所有版本")
-    @GetMapping("/{client}/list")
+    @GetMapping("/list/{client}")
     public Page<AppVersion> list(@PathVariable AppVersion.CLIENT client,
                                  @RequestParam(defaultValue = "0") Integer page,
                                  @RequestParam(defaultValue = "10") Integer size) {
         return appVersionService.findAll(client, new PageRequest(page, size));
     }
+
+    @DeleteMapping("/{client}/{id}")
+    public ResponseEntity delete(@PathVariable Integer id, @PathVariable AppVersion.CLIENT client) {
+        appVersionService.delete(id, client);
+        return ResponseEntity.ok(R.code(200).message("删除成功"));
+    }
+
 
     @ApiOperation("添加新IOS版本")
     @PostMapping("/ios")

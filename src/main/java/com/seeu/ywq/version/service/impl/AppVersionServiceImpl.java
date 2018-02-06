@@ -1,6 +1,7 @@
 package com.seeu.ywq.version.service.impl;
 
 import com.seeu.ywq.version.model.AppVersion;
+import com.seeu.ywq.version.model.AppVersionPKeys;
 import com.seeu.ywq.version.repository.AppVersionRepository;
 import com.seeu.ywq.version.service.AppVersionService;
 import org.springframework.data.domain.Page;
@@ -66,5 +67,12 @@ public class AppVersionServiceImpl implements AppVersionService {
         if (appVersion == null) return null;
         appVersion.setUpdateTime(new Date());
         return repository.save(appVersion);
+    }
+
+    @Override
+    public void delete(Integer id, AppVersion.CLIENT client) {
+        AppVersion version = repository.findOne(new AppVersionPKeys(id, client));
+        if (version != null)
+            repository.delete(version);
     }
 }

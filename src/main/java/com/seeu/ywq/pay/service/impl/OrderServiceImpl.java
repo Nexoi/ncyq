@@ -232,20 +232,20 @@ public class OrderServiceImpl implements OrderService {
         try {
             OrderLog log = balanceService.update(genOrderID(), uid, OrderLog.EVENT.BUY_VIP, diamonds);
             // 激活会员 (更新：建议使用 userVIPService.active(uid,day) 方法进行激活)
-            Date date = new Date();
-            UserVIP vip = userVIPService.findOne(uid);
-            if (vip == null) {
-                vip.setVipLevel(UserVIP.VIP.none);
-                vip.setTerminationDate(date);
-                vip.setUid(uid);
-            }
-            if (vip.getTerminationDate() == null || vip.getTerminationDate().before(date))// 在今天之前（表示过期了）
-                vip.setTerminationDate(date);
-            vip.setUpdateTime(date);
-            vip.setVipLevel(UserVIP.VIP.vip);
-            long time = vipTable.getDay() * 24 * 60 * 60 * 1000;
-            vip.setTerminationDate(new Date(vip.getTerminationDate().getTime() + time));
-            userVIPService.save(vip);
+//            Date date = new Date();
+//            UserVIP vip = userVIPService.findOne(uid);
+//            if (vip == null) {
+//                vip.setVipLevel(UserVIP.VIP.none);
+//                vip.setTerminationDate(date);
+//                vip.setUid(uid);
+//            }
+//            if (vip.getTerminationDate() == null || vip.getTerminationDate().before(date))// 在今天之前（表示过期了）
+//                vip.setTerminationDate(date);
+//            vip.setUpdateTime(date);
+//            vip.setVipLevel(UserVIP.VIP.vip);
+//            long time = vipTable.getDay() * 24 * 60 * 60 * 1000;
+//            vip.setTerminationDate(new Date(vip.getTerminationDate().getTime() + time));
+            userVIPService.active(uid, day);
             return log;
         } catch (ActionNotSupportException e) {
             e.printStackTrace();// 不可能事件

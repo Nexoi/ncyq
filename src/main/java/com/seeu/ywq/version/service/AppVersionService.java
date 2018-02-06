@@ -33,4 +33,6 @@ public interface AppVersionService {
     Page<AppVersion> findAll(AppVersion.CLIENT client, Pageable pageable);
 
     AppVersion save(AppVersion appVersion);
+
+    void delete(Integer id, AppVersion.CLIENT client);
 }

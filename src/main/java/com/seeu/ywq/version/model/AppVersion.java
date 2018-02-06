@@ -39,7 +39,7 @@ public class AppVersion {
     @NotNull
     private String versionName;
     @Column(length = 1024)
-    @NotNull
+    @ApiParam(hidden = true)
     private String downloadUrl;
 
     @NotNull

@@ -50,9 +50,9 @@ public class HomeUserServiceImpl implements HomeUserService {
     public Page<HomeUser> queryAll(Long uid, Pageable pageable) {
         List<Object[]> list = null;
         if (uid != null)
-            list = repository.queryPage(uid, pageable.getPageNumber(), pageable.getPageSize());
+            list = repository.queryPage(uid, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         else
-            list = repository.queryPage(pageable.getPageNumber(), pageable.getPageSize());
+            list = repository.queryPage(pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         if (list == null || list.size() == 0) return new PageImpl<>(new ArrayList<>());
         // counts
         int totalEls = repository.countPage();
@@ -70,9 +70,9 @@ public class HomeUserServiceImpl implements HomeUserService {
     public Page<HomeUser> queryAllByLABEL(Long uid, HomeUser.LABEL label, Pageable pageable) {
         List<Object[]> list = null;
         if (uid != null)
-            list = repository.queryPageByLabel(uid, label.ordinal(), pageable.getPageNumber(), pageable.getPageSize());
+            list = repository.queryPageByLabel(uid, label.ordinal(), pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         else
-            list = repository.queryPageByLabel(label.ordinal(), pageable.getPageNumber(), pageable.getPageSize());
+            list = repository.queryPageByLabel(label.ordinal(), pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         if (list == null || list.size() == 0) return new PageImpl<>(new ArrayList<>());
         // counts
         int totalEls = repository.countPageByLabel(label.ordinal());
