@@ -15,6 +15,9 @@ public class Balance {
     @Column(name = "bind_uid")
     private Long bindUid;
 
+    @Transient
+    private Integer tuiguangNum; // 累计推广人数
+
     @Column(name = "balance")
     private Long balance;
 
@@ -240,5 +243,13 @@ public class Balance {
 
     public void setSignInReceive(Long signInReceive) {
         this.signInReceive = signInReceive;
+    }
+
+    public Integer getTuiguangNum() {
+        return tuiguangNum;
+    }
+
+    public void setTuiguangNum(Integer tuiguangNum) {
+        this.tuiguangNum = tuiguangNum;
     }
 }

@@ -43,6 +43,7 @@ public class BalanceServiceImpl implements BalanceService {
         if (balance == null)
             throw new NoSuchUserException(uid);
         balance.setBindUid(null); // 匿掉
+        balance.setTuiguangNum(countMyChildren(uid)); // 累计推广人数
         return balance;
     }
 
@@ -115,6 +116,11 @@ public class BalanceServiceImpl implements BalanceService {
             balance.setRecharge(0L);
             payBalanceRepository.save(balance);
         }
+    }
+
+    @Override
+    public int countMyChildren(Long uid) {
+        return payBalanceRepository.countAllByBindUid(uid);
     }
 
     // 相对于自己，主语：I

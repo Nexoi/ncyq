@@ -23,4 +23,7 @@ public interface BalanceService {
 
     // 初始化一个账户，如果该账户存在，则不初始化
     void initAccount(Long uid, Long bindUid);
+
+    // 或得累计推广人数
+    int countMyChildren(Long uid);
 }
