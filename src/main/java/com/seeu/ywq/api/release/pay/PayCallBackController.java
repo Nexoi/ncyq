@@ -1,9 +1,7 @@
 package com.seeu.ywq.api.release.pay;
 
-import com.alipay.api.AlipayApiException;
 import com.seeu.third.payment.alipay.AliPayService;
 import com.seeu.third.payment.wxpay.WxPayService;
-import com.seeu.ywq.test.TestXService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by suneo.
@@ -48,9 +43,6 @@ public class PayCallBackController {
         }
     }
 
-    @Autowired
-    private TestXService testXService;
-
     @RequestMapping(value = "/alipay/callback", method = {RequestMethod.POST, RequestMethod.GET})
     public String ali(HttpServletRequest request) {
         try {
@@ -63,11 +55,11 @@ public class PayCallBackController {
 //            }
             return aliPayService.callBack(request);
         } catch (Exception e) {
-            testXService.info(e.getMessage());
-            testXService.info(e.getCause().getMessage());
-            for (StackTraceElement element : e.getStackTrace()) {
-                testXService.info(element.getClassName() + " # " + element.getMethodName());
-            }
+//            testXService.info(e.getMessage());
+//            testXService.info(e.getCause().getMessage());
+//            for (StackTraceElement element : e.getStackTrace()) {
+//                testXService.info(element.getClassName() + " # " + element.getMethodName());
+//            }
             return "failure";
         }
     }
