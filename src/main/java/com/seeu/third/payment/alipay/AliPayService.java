@@ -116,45 +116,46 @@ public class AliPayService {
         }
 //        boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
         boolean signVerified = true;
-        testXService.info("支付宝 验证签名结束");
+//        testXService.info("支付宝 验证签名结束");
         if (signVerified) {
-            testXService.info("支付宝 验证签名成功！");
+//            testXService.info("支付宝 验证签名成功！");
             AliPayTradeModel aliPayTradeModel = JSON.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(JSON.toJSONString(params)), AliPayTradeModel.class);
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayTradeModel.getOut_trade_no();
-            testXService.info("NO: " + out_trade_no);
+//            testXService.info("NO: " + out_trade_no);
             // 查询该订单是否已经完成交易，若否，则继续
             if (tradeService.hasProcessed(out_trade_no)) return "success";
             // 继续
             TradeModel.TRADE_STATUS trade_status = aliPayTradeModel.getTrade_status();
 //            logger.info(out_trade_no1 + ":" + trade_status1);
 
-            testXService.info("支付宝 订单状态：" + trade_status.name());
+            testXService.info("支付宝 订单JSON：" + JSON.toJSONString(aliPayTradeModel));
             // 修改订单状态，判断是否完成交易
             switch (trade_status) {
                 case WAIT_BUYER_PAY:// 交易创建，等待买家付款（该通知不可能拿到，支付宝默认不开启该通知）
-                    testXService.info("支付宝 订单状态1：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
-                    testXService.info("支付宝 订单状态1：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     break;
                 case TRADE_CLOSED:// 未付款交易超时关闭，或支付完成后全额退款
-                    testXService.info("支付宝 订单状态2：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
                     orderService.failOrder(out_trade_no);
-                    testXService.info("支付宝 订单状态2：" + trade_status.name());
+//                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     break;
                 case TRADE_SUCCESS: // 交易支付成功
                 case TRADE_FINISHED:// 交易结束，不可退款
                     // 成功！
-                    testXService.info("支付宝 订单状态3：" + trade_status.name());
+                    testXService.info("支付宝 订单状态1：" + trade_status.name());
                     aliPayTradeService.save(aliPayTradeModel);
+                    testXService.info("支付宝 订单状态2：" + trade_status.name());
                     orderService.finishOrder(out_trade_no);
                     testXService.info("支付宝 订单状态3：" + trade_status.name());
                     break;
             }
             return "success";
         } else {
-            testXService.info("支付宝 验证签名失败！");
+//            testXService.info("支付宝 验证签名失败！");
             //验签失败则记录异常日志，并在response中返回failure.
             return "failure";
         }
