@@ -64,6 +64,10 @@ public class PayCallBackController {
             return aliPayService.callBack(request);
         } catch (Exception e) {
             testXService.info(e.getMessage());
+            testXService.info(e.getCause().getMessage());
+            for (StackTraceElement element : e.getStackTrace()) {
+                testXService.info(element.getClassName() + " # " + element.getMethodName());
+            }
             return "failure";
         }
     }
