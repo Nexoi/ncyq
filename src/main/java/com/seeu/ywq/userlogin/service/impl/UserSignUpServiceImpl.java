@@ -210,7 +210,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         userLogin.setRoles(roles);
         UserLogin savedUserLogin = userReactService.save(userLogin);
         // 更新昵称
-        if (name == null) {
+        if (name == null || name.trim().length() <= 1) {
             userLogin.setNickname("user_" + userLogin.getUid());
             savedUserLogin = userReactService.save(userLogin);
         }

@@ -26,4 +26,7 @@ public interface FileUploadService {
     Video uploadVideo(MultipartFile videoFile, MultipartFile coverImage) throws IOException;
 
     Video uploadVideo(MultipartFile videoFile) throws IOException;
+
+    // app apk
+    String uploadAPK(MultipartFile apk) throws IOException;
 }

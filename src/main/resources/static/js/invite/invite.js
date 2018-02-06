@@ -40,7 +40,15 @@ function sendMessage() {
     if (!validatemobile(phone)) {
         return;
     }
-
+    //
+    curCount = count;
+    console.log(curCount);
+    //设置button效果，开始计时
+    ock.attr("disabled", true);
+    gaincode.html("");
+    gaincode.html(curCount + "s");
+    InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+    //
     $.ajax({
         type: "POST",
         url: "/api/v1/signup/sendcode/" + phone,
@@ -59,13 +67,6 @@ function sendMessage() {
             }
         },
         success: function (data) {
-            curCount = count;
-            console.log(curCount);
-            //设置button效果，开始计时
-            ock.attr("disabled", true);
-            gaincode.html("");
-            gaincode.html(curCount + "s");
-            InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
 
         },
         error: function (err) {
@@ -101,15 +102,17 @@ function userRegister() {
         return;
     }
     var inviteUid = $("#invitedUid").val();
-    if (inviteUid.length == 0 || inviteUid == 0 || inviteUid == "0") {
+    if (inviteUid == undefined || inviteUid == 0 || inviteUid == "0") {
         postData = {
-            username: userNo,
+            username: "x",
+            phone: userNo,
             password: loginPsw,
             code: vcNum
         }
     } else {
         postData = {
-            username: userNo,
+            username: "x",
+            phone: userNo,
             password: loginPsw,
             code: vcNum,
             inviteUid: inviteUid
@@ -122,7 +125,7 @@ function userRegister() {
         dataType: "json",
         data: postData,
         statusCode: {
-            200: function () {
+            201: function () {
                 alert("注册成功！");
                 // qrcode???
                 $("div.invite").html(

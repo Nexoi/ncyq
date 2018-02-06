@@ -50,9 +50,10 @@ public class ResourceAuthServiceImpl implements ResourceAuthService {
 
     @Override
     public boolean canVisitVideo(Long uid, Long videoId, Date currentTime) {
-        if (uid == null) return false;
-        return userVIPService.isActive(uid) // 会员全部放行
-                || 0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.video, videoId, currentTime);
+        return true; // update 2018-02-06 暂时全部放行
+//        if (uid == null) return false;
+//        return userVIPService.isActive(uid) // 会员全部放行
+//                || 0 != resourceAuthRepository.countAllByUidAndTypeAndResourceIdAndOutTimeAfter(uid, ResourceAuth.TYPE.video, videoId, currentTime);
     }
 
     @Override

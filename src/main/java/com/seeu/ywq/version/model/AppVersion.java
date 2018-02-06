@@ -47,6 +47,9 @@ public class AppVersion {
     @Column(name = "update_type")
     private FORCE_UPDATE update;
 
+    @Column(length = Integer.MAX_VALUE)
+    private String updateLog;
+
     @ApiParam(hidden = true)
     private Date updateTime;
 
@@ -97,5 +100,13 @@ public class AppVersion {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getUpdateLog() {
+        return updateLog;
+    }
+
+    public void setUpdateLog(String updateLog) {
+        this.updateLog = updateLog;
     }
 }

@@ -1,5 +1,4 @@
-﻿<!DOCTYPE>
-<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+﻿<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport"
@@ -23,7 +22,7 @@
     <div class="img">
         <input id="user_psw" type="password" name="userPass" placeholder="请设置密码"/>
     </div>
-    <input type="hidden" ,id="invitedUid" th:value="${invitedUid}"/>
+    <input type="hidden" id="invitedUid" th:value="${invitedUid}"/>
     <p>注册表示您已同意尤物圈
         <a href="#">《用户服务协议》</a>
     </p>
@@ -31,6 +30,7 @@
 </div>
 <script type="text/javascript" src="/js/invite/jquery-1.7.min.js"></script>
 <script src="/js/invite/layer.js"></script>
+<script src="/js/invite/qrcode.min.js"></script>
 <script src="/js/invite/invite.js"></script>
 </body>
 </html>
