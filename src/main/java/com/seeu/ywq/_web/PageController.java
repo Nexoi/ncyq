@@ -79,7 +79,7 @@ public class PageController {
         }
         // 其余情况都下载 apk
         String androidUrl;
-        AppVersion version = appVersionService.getNewVersion(AppVersion.CLIENT.ANDROID);
+        AppVersion version = appVersionService.getNewVersion();
         if (version == null || version.getDownloadUrl() == null)
             androidUrl = host + "/" + "youwuquan.apk";
         else
