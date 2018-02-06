@@ -1,6 +1,5 @@
 package com.seeu.ywq.pay.model;
 
-import com.seeu.ywq.pay.model.TradeModel;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +9,8 @@ import java.util.Date;
 
 /**
  * 支付宝回调参数
+ * <p>
+ * update 2018-02-06 数据库写入异常，删除部分不必要参数
  */
 @Entity
 @Table(name = "ywq_pay_trade_ali")
@@ -35,14 +36,14 @@ public class AliPayTradeModel {
     private String notify_id;   // 通知校验ID
     @Length(max = 32)
     private String app_id;       // 支付宝分配给开发者的应用Id
-    @Length(max = 10)
-    private String charset;      // 编码格式，如utf-8、gbk、gb2312等
-    @Length(max = 3)
-    private String version;      // 调用的接口版本，固定为：1.0
+    //    @Length(max = 10)
+//    private String charset;      // 编码格式，如utf-8、gbk、gb2312等
+//    @Length(max = 3)
+//    private String version;      // 调用的接口版本，固定为：1.0
     @Length(max = 10)
     private String sign_type;    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2
-    @Length(max = 266)
-    private String sign;          // 签名，请参考异步返回结果的验签
+    //    @Length(max = 266)
+//    private String sign;          // 签名，请参考异步返回结果的验签
     @Length(max = 64)
     private String trade_no;      // 支付宝交易号（支付宝交易凭证号，2013112011001004330000121536）
 
@@ -86,11 +87,11 @@ public class AliPayTradeModel {
 
     @Length(max = 512)
     private String fund_bill_list;     // 支付金额信息，支付成功的各个渠道金额信息。[{“amount”:“15.00”,“fundChannel”:“ALIPAYACCOUNT”}]
-    @Length(max = 512)
-    private String passback_params;    // 回传参数，公共回传参数，如果请求时传递了该参数，则返回给商户时会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝。merchantBizType%3d3C%26merchantBizNo%3d2016010101111
-    //    @Length(max = )
-    @Column(length = 1024)
-    private String voucher_detail_list;// 优惠券信息，本交易支付时所使用的所有优惠券信息。[{“amount”:“0.20”,“merchantContribute”:“0.00”,“name”:“一键创建券模板的券名称”,“otherContribute”:“0.20”,“type”:“ALIPAY_DISCOUNT_VOUCHER”,“memo”:“学生卡8折优惠”]
+//    @Length(max = 512)
+//    private String passback_params;    // 回传参数，公共回传参数，如果请求时传递了该参数，则返回给商户时会在异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝。merchantBizType%3d3C%26merchantBizNo%3d2016010101111
+//    //    @Length(max = )
+//    @Column(length = 1024)
+//    private String voucher_detail_list;// 优惠券信息，本交易支付时所使用的所有优惠券信息。[{“amount”:“0.20”,“merchantContribute”:“0.00”,“name”:“一键创建券模板的券名称”,“otherContribute”:“0.20”,“type”:“ALIPAY_DISCOUNT_VOUCHER”,“memo”:“学生卡8折优惠”]
 
     //////////////// GETer / SETer //////////////////
 
@@ -135,36 +136,12 @@ public class AliPayTradeModel {
         this.app_id = app_id;
     }
 
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public String getSign_type() {
         return sign_type;
     }
 
     public void setSign_type(String sign_type) {
         this.sign_type = sign_type;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
     }
 
     public String getTrade_no() {
@@ -327,19 +304,4 @@ public class AliPayTradeModel {
         this.fund_bill_list = fund_bill_list;
     }
 
-    public String getPassback_params() {
-        return passback_params;
-    }
-
-    public void setPassback_params(String passback_params) {
-        this.passback_params = passback_params;
-    }
-
-    public String getVoucher_detail_list() {
-        return voucher_detail_list;
-    }
-
-    public void setVoucher_detail_list(String voucher_detail_list) {
-        this.voucher_detail_list = voucher_detail_list;
-    }
 }
