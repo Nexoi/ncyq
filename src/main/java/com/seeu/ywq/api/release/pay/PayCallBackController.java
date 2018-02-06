@@ -62,7 +62,7 @@ public class PayCallBackController {
 //                map.put(key, value);
 //            }
             return aliPayService.callBack(request);
-        } catch (AlipayApiException e) {
+        } catch (Exception e) {
             testXService.info(e.getMessage());
             return "failure";
         }

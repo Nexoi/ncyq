@@ -19,7 +19,7 @@ public class AliPayTradeModel {
 
 
     @Id
-    @Length(max = 64)
+//    @Length(max = 64)
     @Column(length = 20)
     private String out_trade_no;    // 商户订单号
 
