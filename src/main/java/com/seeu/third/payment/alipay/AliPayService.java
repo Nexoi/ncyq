@@ -112,6 +112,7 @@ public class AliPayService {
             //乱码解决，这段代码在出现乱码时使用。
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
+            testXService.info(name + " :: " + valueStr);
         }
 //        boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "utf-8", "RSA2");          //调用SDK验证签名
         boolean signVerified = true;
@@ -121,6 +122,7 @@ public class AliPayService {
             AliPayTradeModel aliPayTradeModel = JSON.toJavaObject(com.alibaba.fastjson.JSONObject.parseObject(JSON.toJSONString(params)), AliPayTradeModel.class);
             //验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             String out_trade_no = aliPayTradeModel.getOut_trade_no();
+            testXService.info("NO: " + out_trade_no);
             // 查询该订单是否已经完成交易，若否，则继续
             if (tradeService.hasProcessed(out_trade_no)) return "success";
             // 继续
