@@ -58,4 +58,14 @@ public class ActivityPageApi {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        try {
+            webPageActivityService.delete(id);
+            return ResponseEntity.status(200).body(R.code(200).message("删除成功"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该页面"));
+        }
+    }
+
 }
