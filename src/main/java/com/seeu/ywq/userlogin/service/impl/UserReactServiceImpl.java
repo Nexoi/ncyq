@@ -270,11 +270,11 @@ public class UserReactServiceImpl implements UserReactService {
     }
 
     @Override
-    public UserLogin add(UserLogin userLogin, User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException {
-        UserLogin ul = userSignUpService.signUpByAdmin(userLogin.getNickname(), userLogin.getPhone(), userLogin.getPassword());
+    public UserLogin add(String phone, String nickname, String password, UserLogin.GENDER gender, String headIconUrl, User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException {
+        UserLogin ul = userSignUpService.signUpByAdmin(nickname, phone, password);
         if (ul != null) {
-            ul.setGender(userLogin.getGender());
-            ul.setHeadIconUrl(userLogin.getHeadIconUrl());
+            ul.setGender(gender);
+            ul.setHeadIconUrl(headIconUrl);
             ul = userLoginRepository.save(ul);
         }
         Long uid = ul.getUid();

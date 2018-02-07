@@ -75,10 +75,15 @@ public class UserLoginApi {
 
     @ApiOperation(value = "添加用户", notes = "初始化权限为基本用户")
     @PostMapping
-    public ResponseEntity add(UserLogin userLogin, User user,
+    public ResponseEntity add(@RequestParam(required = true) String phone,
+                              @RequestParam(required = true) String nickname,
+                              @RequestParam(required = true) String password,
+                              @RequestParam(required = false) UserLogin.GENDER gender,
+                              @RequestParam(required = false) String headIconUrl,
+                              User user,
                               @AuthenticationPrincipal UserLogin authUser) {
         try {
-            UserLogin ul = userReactService.add(userLogin, user);
+            UserLogin ul = userReactService.add(phone, nickname, password, gender, headIconUrl, user);
             bindUserService.bind(authUser.getUid(), ul.getUid());
             return ResponseEntity.ok(ul);
         } catch (NickNameSetException e) {

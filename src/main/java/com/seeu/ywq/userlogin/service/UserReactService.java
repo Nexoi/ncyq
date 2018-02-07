@@ -80,7 +80,12 @@ public interface UserReactService {
 
     Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable) throws ActionParameterException;
 
-    UserLogin add(UserLogin userLogin, User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException;
+    UserLogin add(String phone,
+                  String nickname,
+                  String password,
+                  UserLogin.GENDER gender,
+                  String headIconUrl,
+                  User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException;
 
     Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable);
 }
