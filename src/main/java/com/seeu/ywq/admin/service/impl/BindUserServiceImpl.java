@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,7 +51,11 @@ public class BindUserServiceImpl implements BindUserService {
 
     @Override
     public BindUser bind(Long adminUid, Long userUid) {
-        return null;
+        BindUser user = new BindUser();
+        user.setAdminUid(adminUid);
+        user.setNickUid(userUid);
+        user.setCreateTime(new Date());
+        return repository.save(user);
     }
 
     @Override
