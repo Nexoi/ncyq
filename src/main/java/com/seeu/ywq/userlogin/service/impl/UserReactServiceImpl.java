@@ -6,6 +6,7 @@ import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.exception.NickNameSetException;
 import com.seeu.ywq.userlogin.exception.PasswordSetException;
 import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.repository.UserLoginAccessRepository;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
@@ -38,6 +39,8 @@ import java.util.List;
 public class UserReactServiceImpl implements UserReactService {
     @Resource
     private UserLoginRepository userLoginRepository;
+    @Resource
+    private UserLoginAccessRepository userLoginAccessRepository;
     @Resource
     private UserLikeRepository userLikeRepository;
     @Resource
@@ -289,6 +292,6 @@ public class UserReactServiceImpl implements UserReactService {
 
     @Override
     public Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable) {
-        return userLoginRepository.findAllByUidIn(uids, pageable);
+        return userLoginAccessRepository.findAllByUidIn(uids, pageable);
     }
 }
