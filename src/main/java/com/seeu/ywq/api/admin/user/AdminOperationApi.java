@@ -31,11 +31,11 @@ import java.util.List;
  * Describe:
  */
 
-@Api(tags = "管理员", description = "管理员操作")
-@RestController("adminApi")
+@Api(tags = "管理员操作接口", description = "管理员操作")
+@RestController("adminOperateApi")
 @RequestMapping("/api/admin/v1/admin")
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminUserApi {
+public class AdminOperationApi {
 
     @Autowired
     private UserReactService userReactService;
