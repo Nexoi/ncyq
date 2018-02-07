@@ -125,7 +125,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (password == null || password.length() < 6) throw new PasswordSetException(password);
 
         try {
-            initAccount(name, phone, password, headIcon);
+            initAccount(true, name, phone, password, headIcon);
         } catch (PhoneNumberHasUsedException e) {
             throw new PhoneNumberHasUsedException(phone);
         }
@@ -143,7 +143,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (password == null || password.length() < 6) throw new PasswordSetException(password);
 
         try {
-            return initAccount(name, phone, password, headIcon);
+            return initAccount(false, name, phone, password, headIcon);
         } catch (PhoneNumberHasUsedException e) {
             throw new PhoneNumberHasUsedException(phone);
         }
@@ -186,7 +186,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         if (null != thirdUserLogin)
             throw new AccountNameAlreadyExistedException(name);
         String credential = "defaultPassword";
-        UserLogin ul = initAccount(map.get("nickname"), phone, credential, map.get("headIconUrl"));
+        UserLogin ul = initAccount(true, map.get("nickname"), phone, credential, map.get("headIconUrl"));
         // record third part info
         if (null == ul)
             return null;
@@ -205,7 +205,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         return ul;
     }
 
-    private UserLogin initAccount(String name, String phone, String credential, String headIconUrl) throws PhoneNumberHasUsedException {
+    private UserLogin initAccount(boolean signup, String name, String phone, String credential, String headIconUrl) throws PhoneNumberHasUsedException {
         if (headIconUrl == null) headIconUrl = headIcon;
         UserLogin ul = userReactService.findByPhone(phone);
         if (null != ul)
@@ -244,7 +244,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
         balanceService.initAccount(savedUserLogin.getUid(), null);
         //...
         // 自動登陸
-        appAuthFlushService.flush(savedUserLogin.getUid());
+        if (signup) appAuthFlushService.flush(savedUserLogin.getUid());
         return savedUserLogin;
     }
 

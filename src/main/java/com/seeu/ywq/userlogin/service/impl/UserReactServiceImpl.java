@@ -292,6 +292,7 @@ public class UserReactServiceImpl implements UserReactService {
 
     @Override
     public Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable) {
-        return userLoginAccessRepository.findAllByUidIn(uids, pageable);
+        Page p = userLoginAccessRepository.findAllByUidIn(uids, pageable);
+        return p;
     }
 }
