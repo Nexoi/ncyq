@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "搜索关键词", description = "搜索关键词修改")
 @RestController("adminSearchApi")
 @RequestMapping("/api/admin/v1/hotword")
+@PreAuthorize("hasRole('ADMIN')")
 public class SearchApi {
     @Autowired
     private HotWordService hotWordService;

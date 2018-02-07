@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "用户-基础信息", description = "用户登录信息")
 @RestController("adminUserLoginApi")
 @RequestMapping("/api/admin/v1/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserLoginApi {
     @Autowired
     private UserReactService userReactService;

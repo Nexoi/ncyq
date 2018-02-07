@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "配置-首页人物配置", description = "首页")
 @RestController("adminHomePageUsersApi")
 @RequestMapping("/api/admin/v1/app/home")
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class HomePageUserApi {
 
     @Autowired

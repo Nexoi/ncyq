@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,6 +30,7 @@ import java.util.Map;
 @Api(tags = "用户-常用信息", description = "用户基本信息／标签／认证（粉丝／喜欢的具体信息不展示）")
 @RestController("adminUserInfoApi")
 @RequestMapping("/api/admin/v1/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserInfoApi {
     @Autowired
     private UserInfoService userInfoService;

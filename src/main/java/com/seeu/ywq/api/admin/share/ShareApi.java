@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -24,6 +25,7 @@ import java.util.List;
 @Api(tags = "配置-分享", description = "分享图片")
 @RestController("adminShareApi")
 @RequestMapping("/api/admin/v1/share")
+@PreAuthorize("hasRole('ADMIN')")
 public class ShareApi {
 
     @Autowired

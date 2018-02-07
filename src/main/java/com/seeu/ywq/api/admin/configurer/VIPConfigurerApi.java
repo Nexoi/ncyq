@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = "配置-用户VIP购买列表", description = "配置VIP充值类型")
 @RestController("adminVIPApi")
 @RequestMapping("/api/admin/v1/user/vip")
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class VIPConfigurerApi {
     @Autowired
     private VIPTableService vipTableService;

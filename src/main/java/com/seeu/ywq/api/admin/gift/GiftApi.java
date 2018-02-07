@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "配置-在线送礼/打赏礼物配置", description = "送礼礼物列表")
 @RestController("adminGiftApi")
 @RequestMapping("/api/admin/v1/gift")
+@PreAuthorize("hasRole('ADMIN')")
 public class GiftApi {
     @Autowired
     private GiftService giftService;

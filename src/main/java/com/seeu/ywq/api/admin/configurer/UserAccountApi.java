@@ -16,7 +16,7 @@ import java.util.List;
 @Api(tags = "配置-充值列表", description = "配置充值类型")
 @RestController("adminUserAccountApi")
 @RequestMapping("/api/admin/v1/account")
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserAccountApi {
 
     @Autowired

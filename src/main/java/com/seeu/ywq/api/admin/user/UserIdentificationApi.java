@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.List;
 @Api(tags = "用户-认证信息", description = "用户认证／申请")
 @RestController("adminUserIdentificationApi")
 @RequestMapping("/api/admin/v1/identification")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserIdentificationApi {
 
     @Autowired

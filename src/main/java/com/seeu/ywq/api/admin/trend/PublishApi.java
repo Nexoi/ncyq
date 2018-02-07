@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ import java.util.Date;
 @Api(tags = "动态-动态信息", description = "list/get/post/delete")
 @RestController("adminPublishApi")
 @RequestMapping("/api/admin/v1/publish")
+@PreAuthorize("hasRole('ADMIN')")
 public class PublishApi {
 
     @Autowired

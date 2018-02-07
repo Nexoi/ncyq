@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "活动内容", description = "推荐/活动页面")
 @RestController("adminActivityApi")
 @RequestMapping("/api/admin/v1/app/activity")
+@PreAuthorize("hasRole('ADMIN')")
 public class ActivityApi {
 
     @Autowired
