@@ -46,14 +46,19 @@ public class AdminUserApi {
 
     @ApiOperation("新建管理员")
     @PostMapping
-    public ResponseEntity add(UserLogin userLogin, User user) {
+    public ResponseEntity add(@RequestParam(required = true) String phone,
+                              @RequestParam(required = true) String nickname,
+                              @RequestParam(required = true) String password,
+                              @RequestParam(required = false) UserLogin.GENDER gender,
+                              @RequestParam(required = false) String headIconUrl,
+                              User user) {
         try {
-            UserLogin ul = userReactService.add(userLogin, user);
+            UserLogin ul = userReactService.add(phone, nickname, password, gender, headIconUrl, user);
             // 增加权限
             List<UserAuthRole> roles = new ArrayList<>();
             roles.add(userAuthRoleRepository.findByName("ROLE_USER"));
             roles.add(userAuthRoleRepository.findByName("ROLE_ADMIN"));
-            userLogin.setRoles(roles);
+            ul.setRoles(roles);
             ul = userReactService.save(ul);
             return ResponseEntity.ok(ul);
         } catch (NickNameSetException e) {
