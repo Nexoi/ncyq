@@ -279,6 +279,10 @@ public class UserReactServiceImpl implements UserReactService {
         }
         Long uid = ul.getUid();
         user.setUid(uid);
+        user.setFansNum(0L);
+        user.setPublishNum(0L);
+        user.setFollowNum(0L);
+        user.setLikeNum(0L);
         userInfoRepository.save(user);
         return ul;
     }
