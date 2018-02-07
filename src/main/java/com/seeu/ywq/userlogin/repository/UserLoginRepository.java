@@ -82,4 +82,9 @@ public interface UserLoginRepository extends JpaRepository<UserLogin, Long> {
 
     Integer countAllByUidNotNull();
 
+
+    // admin //
+
+    Page<UserLogin> findAllByUidIn(@Param("uid") Collection<Long> uids, Pageable pageable);
+
 }

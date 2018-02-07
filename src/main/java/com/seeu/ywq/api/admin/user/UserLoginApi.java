@@ -1,7 +1,13 @@
 package com.seeu.ywq.api.admin.user;
 
 import com.seeu.core.R;
+import com.seeu.ywq.admin.service.BindUserService;
 import com.seeu.ywq.exception.ActionParameterException;
+import com.seeu.ywq.user.model.User;
+import com.seeu.ywq.user.service.UserInfoService;
+import com.seeu.ywq.userlogin.exception.NickNameSetException;
+import com.seeu.ywq.userlogin.exception.PasswordSetException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.Api;
@@ -10,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -56,6 +63,53 @@ public class UserLoginApi {
         if (user == null)
             return ResponseEntity.status(404).body(R.code(404).message("無此用戶"));
         return ResponseEntity.ok(user);
+    }
+
+
+    @Autowired
+    private BindUserService bindUserService;
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @ApiOperation(value = "添加用户", notes = "初始化权限为基本用户")
+    @PostMapping
+    public ResponseEntity add(UserLogin userLogin, User user,
+                              @AuthenticationPrincipal UserLogin authUser) {
+        try {
+            UserLogin ul = userReactService.add(userLogin, user);
+            bindUserService.bind(authUser.getUid(), ul.getUid());
+            return ResponseEntity.ok(ul);
+        } catch (NickNameSetException e) {
+            return ResponseEntity.badRequest().body(R.code(4000).message("用户名不可为空"));
+        } catch (PhoneNumberHasUsedException e) {
+            return ResponseEntity.badRequest().body(R.code(4001).message("手机号码不可为空"));
+        } catch (PasswordSetException e) {
+            return ResponseEntity.badRequest().body(R.code(4002).message("密码需大于 6 位"));
+        }
+    }
+
+    @ApiOperation(value = "修改用户信息")
+    @PutMapping("/{uid}")
+    public ResponseEntity updateUser(@PathVariable Long uid,
+                                     @RequestParam(required = false) String phone,
+                                     @RequestParam(required = false) String nickname,
+                                     @RequestParam(required = false) UserLogin.GENDER gender,
+                                     @RequestParam(required = false) String headIconUrl,
+                                     User user,
+                                     @AuthenticationPrincipal UserLogin authUser) {
+        UserLogin ul = userReactService.findOne(uid);
+        if (ul == null)
+            return ResponseEntity.status(404).body(R.code(404).message("找不到该用户"));
+        if (!bindUserService.canOperateUser(authUser.getUid(), uid))
+            return ResponseEntity.badRequest().body(R.code(4001).message("无权操作该用户数据"));
+        if (headIconUrl != null) ul.setHeadIconUrl(headIconUrl);
+        if (gender != null) ul.setGender(gender);
+        if (nickname != null) ul.setNickname(nickname);
+        if (phone != null) ul.setPhone(phone);
+        userReactService.save(ul);
+        user.setUid(uid);
+        userInfoService.saveInfo(user);
+        return ResponseEntity.ok(R.code(200).message("更新成功"));
     }
 
 }

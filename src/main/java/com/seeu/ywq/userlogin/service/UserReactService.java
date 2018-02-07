@@ -3,7 +3,11 @@ package com.seeu.ywq.userlogin.service;
 import com.seeu.ywq.api.admin.user.USERLogin;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
+import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.userlogin.dvo.UserLoginVO;
+import com.seeu.ywq.userlogin.exception.NickNameSetException;
+import com.seeu.ywq.userlogin.exception.PasswordSetException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
 import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,4 +79,8 @@ public interface UserReactService {
     Page<UserLogin> findAll(Pageable pageable);
 
     Page<UserLogin> searchAll(USERLogin searchType, String word, Pageable pageable) throws ActionParameterException;
+
+    UserLogin add(UserLogin userLogin, User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException;
+
+    Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable);
 }

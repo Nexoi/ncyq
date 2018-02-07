@@ -85,4 +85,7 @@ public interface UserSignUpService {
         }
     }
 
+
+    UserLogin signUpByAdmin(String name, String phone, String password) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException;
+
 }

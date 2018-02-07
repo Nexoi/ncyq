@@ -3,6 +3,10 @@ package com.seeu.ywq.userlogin.service.impl;
 import com.seeu.ywq.api.admin.user.USERLogin;
 import com.seeu.ywq.exception.ActionParameterException;
 import com.seeu.ywq.user.dvo.SimpleUserVO;
+import com.seeu.ywq.userlogin.exception.NickNameSetException;
+import com.seeu.ywq.userlogin.exception.PasswordSetException;
+import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.AppVOUtils;
 import com.seeu.ywq.user.model.User;
 import com.seeu.ywq.user.model.UserLike;
@@ -42,6 +46,8 @@ public class UserReactServiceImpl implements UserReactService {
     private UserInfoService userInfoService;
     @Autowired
     private AppVOUtils appVOUtils;
+    @Autowired
+    private UserSignUpService userSignUpService;
 
     @Transactional
     @Override
@@ -261,5 +267,24 @@ public class UserReactServiceImpl implements UserReactService {
         if (searchType == USERLogin.nickname)
             return userLoginRepository.findAllByUsernameLike("%" + word + "%", pageable);
         return findAll(pageable);
+    }
+
+    @Override
+    public UserLogin add(UserLogin userLogin, User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException {
+        UserLogin ul = userSignUpService.signUpByAdmin(userLogin.getNickname(), userLogin.getPhone(), userLogin.getPassword());
+        if (ul != null) {
+            ul.setGender(userLogin.getGender());
+            ul.setHeadIconUrl(userLogin.getHeadIconUrl());
+            ul = userLoginRepository.save(ul);
+        }
+        Long uid = ul.getUid();
+        user.setUid(uid);
+        userInfoRepository.save(user);
+        return ul;
+    }
+
+    @Override
+    public Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable) {
+        return userLoginRepository.findAllByUidIn(uids, pageable);
     }
 }

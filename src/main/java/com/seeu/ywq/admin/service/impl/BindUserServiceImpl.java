@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by suneo.
@@ -16,7 +18,7 @@ import javax.annotation.Resource;
  * Date: 29/01/2018
  * Time: 7:22 PM
  * Describe:
- *
+ * <p>
  * TODO
  */
 @Service
@@ -30,17 +32,24 @@ public class BindUserServiceImpl implements BindUserService {
     }
 
     @Override
+    public List<Long> findAll(Long adminUid) {
+        List<BindUser> users = repository.findAll();
+        if (users.size() == 0) return new ArrayList<>();
+        List<Long> uids = new ArrayList<>();
+        for (BindUser user : users) {
+            if (user != null)
+                uids.add(user.getNickUid());
+        }
+        return uids;
+    }
+
+    @Override
     public BindUser findOne(Long uid) {
         return repository.findOne(uid);
     }
 
     @Override
     public BindUser bind(Long adminUid, Long userUid) {
-        return null;
-    }
-
-    @Override
-    public UserLogin createUser(Long adminUid) {
         return null;
     }
 
@@ -52,5 +61,11 @@ public class BindUserServiceImpl implements BindUserService {
     @Override
     public void deleteUser(Long adminUid, Long userUid) {
 
+    }
+
+    @Override
+    public boolean canOperateUser(Long adminUid, Long userUid) {
+        BindUser user = repository.findOne(userUid);
+        return user.getAdminUid().equals(adminUid);
     }
 }

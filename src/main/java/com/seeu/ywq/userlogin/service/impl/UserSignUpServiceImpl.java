@@ -134,6 +134,22 @@ public class UserSignUpServiceImpl implements UserSignUpService {
     }
 
     @Override
+    public UserLogin signUpByAdmin(String name, String phone, String password) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException {
+        // 规整化字符串
+        if (name == null) throw new NickNameSetException(name);
+        name = name.trim();
+        if (phone == null) throw new PhoneNumberHasUsedException(phone);
+        phone = phone.trim();
+        if (password == null || password.length() < 6) throw new PasswordSetException(password);
+
+        try {
+            return initAccount(name, phone, password, headIcon);
+        } catch (PhoneNumberHasUsedException e) {
+            throw new PhoneNumberHasUsedException(phone);
+        }
+    }
+
+    @Override
     public UserLogin signUpWithThirdPart(ThirdUserLogin.TYPE type, String name, String token, String phone, String code, String signCheck) throws PhoneNumberHasUsedException, AccountNameAlreadyExistedException, JwtCodeException, ThirdPartTokenException {
         // 验证验证码
         if (signCheck == null || signCheck.trim().length() == 0)

@@ -215,6 +215,7 @@ public class UserLogin implements UserDetails {
     // 以下是权限验证块
 
 
+    @ApiParam(hidden = true)
     public List<UserAuthRole> getRoles() {
         return roles;
     }
@@ -223,6 +224,7 @@ public class UserLogin implements UserDetails {
         this.roles = roles;
     }
 
+    @ApiParam(hidden = true)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
@@ -244,21 +246,25 @@ public class UserLogin implements UserDetails {
         return this.phone;
     }
 
+    @ApiParam(hidden = true)
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @ApiParam(hidden = true)
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @ApiParam(hidden = true)
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @ApiParam(hidden = true)
     @Override
     public boolean isEnabled() {
         return true;

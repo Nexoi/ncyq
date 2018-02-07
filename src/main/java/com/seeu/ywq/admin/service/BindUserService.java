@@ -5,6 +5,8 @@ import com.seeu.ywq.userlogin.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by suneo.
  * User: neo
@@ -17,13 +19,15 @@ public interface BindUserService {
 
     Page<BindUser> findAll(Long adminUid, Pageable pageable);
 
+    List<Long> findAll(Long adminUid);
+
     BindUser findOne(Long uid);
 
     BindUser bind(Long adminUid, Long userUid);
 
-    UserLogin createUser(Long adminUid); // 会返回一个默认用户的基础信息，之后自行修改
-
     UserLogin update(Long adminUid, UserLogin user);
 
     void deleteUser(Long adminUid, Long userUid); // 删除并解绑
+
+    boolean canOperateUser(Long adminUid, Long userUid);
 }
