@@ -71,10 +71,6 @@ public class UserLoginAccess {
     @Column(name = "member_status")
     private USER_STATUS memberStatus;
 
-    @ApiParam(hidden = true)
-    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
-    private List<UserAuthRole> roles;
-
     public Long getUid() {
         return uid;
     }
@@ -163,11 +159,4 @@ public class UserLoginAccess {
         this.memberStatus = memberStatus;
     }
 
-    public List<UserAuthRole> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<UserAuthRole> roles) {
-        this.roles = roles;
-    }
 }
