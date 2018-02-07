@@ -6,6 +6,7 @@ import com.seeu.ywq.user.dvo.SimpleUserVO;
 import com.seeu.ywq.userlogin.exception.NickNameSetException;
 import com.seeu.ywq.userlogin.exception.PasswordSetException;
 import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
+import com.seeu.ywq.userlogin.model.UserLoginAccess;
 import com.seeu.ywq.userlogin.repository.UserLoginAccessRepository;
 import com.seeu.ywq.userlogin.service.UserSignUpService;
 import com.seeu.ywq.utils.AppVOUtils;
@@ -291,7 +292,7 @@ public class UserReactServiceImpl implements UserReactService {
     }
 
     @Override
-    public Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable) {
+    public Page<UserLoginAccess> findAllByUids(Collection<Long> uids, Pageable pageable) {
         Page p = userLoginAccessRepository.findAllByUidIn(uids, pageable);
         return p;
     }

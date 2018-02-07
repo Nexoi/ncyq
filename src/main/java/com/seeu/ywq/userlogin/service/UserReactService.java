@@ -9,6 +9,7 @@ import com.seeu.ywq.userlogin.exception.NickNameSetException;
 import com.seeu.ywq.userlogin.exception.PasswordSetException;
 import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserLoginAccess;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -87,5 +88,5 @@ public interface UserReactService {
                   String headIconUrl,
                   User user) throws NickNameSetException, PhoneNumberHasUsedException, PasswordSetException;
 
-    Page<UserLogin> findAllByUids(Collection<Long> uids, Pageable pageable);
+    Page<UserLoginAccess> findAllByUids(Collection<Long> uids, Pageable pageable);
 }

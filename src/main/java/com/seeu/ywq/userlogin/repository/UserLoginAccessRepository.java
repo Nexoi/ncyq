@@ -21,5 +21,5 @@ public interface UserLoginAccessRepository extends JpaRepository<UserLoginAccess
 
     // admin //
 
-    Page<UserLogin> findAllByUidIn(@Param("uid") Collection<Long> uids, Pageable pageable);
+    Page<UserLoginAccess> findAllByUidIn(@Param("uid") Collection<Long> uids, Pageable pageable);
 }

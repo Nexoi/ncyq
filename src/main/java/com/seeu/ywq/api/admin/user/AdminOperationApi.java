@@ -8,6 +8,7 @@ import com.seeu.ywq.userlogin.exception.PasswordSetException;
 import com.seeu.ywq.userlogin.exception.PhoneNumberHasUsedException;
 import com.seeu.ywq.userlogin.model.UserAuthRole;
 import com.seeu.ywq.userlogin.model.UserLogin;
+import com.seeu.ywq.userlogin.model.UserLoginAccess;
 import com.seeu.ywq.userlogin.repository.UserAuthRoleRepository;
 import com.seeu.ywq.userlogin.service.UserReactService;
 import io.swagger.annotations.Api;
@@ -72,9 +73,9 @@ public class AdminOperationApi {
 
     @ApiOperation("查看自己可以管理的用户（绑定用户）")
     @GetMapping("/list-users")
-    public Page<UserLogin> list(@AuthenticationPrincipal UserLogin authUser,
-                                @RequestParam(defaultValue = "0") Integer page,
-                                @RequestParam(defaultValue = "10") Integer size) {
+    public Page<UserLoginAccess> list(@AuthenticationPrincipal UserLogin authUser,
+                                      @RequestParam(defaultValue = "0") Integer page,
+                                      @RequestParam(defaultValue = "10") Integer size) {
         List<Long> uids = bindUserService.findAll(authUser.getUid());
         return userReactService.findAllByUids(uids, new PageRequest(page, size));
     }
